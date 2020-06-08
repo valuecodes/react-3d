@@ -16,6 +16,7 @@ export default function Three() {
     const [gridColumn,setGridColumn]=useState([]);
 
     const [cameraPosition, setCameraPosition]=useState([0,0,120]);
+    const [cameraRotation, setCameraRotation]=useState([0,0,0]);
 
     useEffect(()=>{
         let newGridRow=[];
@@ -36,10 +37,17 @@ export default function Three() {
     }
 
     const changeCameraPosition=(newPosition)=>{
-        console.log(newPosition)
-        // setCameraPosition(newPosition)
+        setCameraPosition(newPosition)
     }
 
+    const changeCameraRotation=(rad)=>{
+        
+        let newRotation = [...cameraRotation];
+        newRotation[2]=newRotation[2]+rad;
+        console.log(newRotation);
+        setCameraRotation(newRotation)
+    }
+console.log(...cameraPosition)
     return (
         <div className='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
@@ -48,8 +56,8 @@ export default function Three() {
             >
             <Canvas
                 camera={{
-                    // position:{cameraPosition}
-                }}    
+                    position:[0,0,120]
+                }}   
             >
                 <ambientLight />
                 <pointLight 
@@ -59,13 +67,13 @@ export default function Three() {
                     />
 
                 <group
-                    // rotation={[-120,0,0]}
-                    rotation={[0,0,0]}
+                    rotation={cameraRotation}
                     size={[160,160,160]}
-                    position={[-80,-80,100]}
+                    // position={[-80,-80,100]}
+                    position={[0,0,100]}
                 >
                     {/* <Pointer position={light}/> */}
-                    <GroundGrid/>
+                    <GroundGrid cameraPosition={cameraPosition}/>
                 </group>
 
                 <pointLight distance={100} intensity={4} color="white" />
@@ -74,7 +82,10 @@ export default function Three() {
                     <Box position={box}/>
                 )}
             </Canvas>
-            <CameraControls changeCameraPosition={changeCameraPosition} />
+            <CameraControls 
+                changeCameraPosition={changeCameraPosition} 
+                changeCameraRotation={changeCameraRotation}    
+            />
         </div>
     )
 }

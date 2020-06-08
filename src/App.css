@@ -27,4 +27,42 @@ body{
     position: absolute;
     right: 20px;
     top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3,50px);
+    grid-template-rows: 50px 50px 50px 50px;
+}
+
+.initial{
+    grid-row: 2/3;
+    grid-column: 2/3;
+}
+
+.bot{
+    grid-row: 3/4;
+    grid-column: 2/3;
+}
+
+.top{
+    grid-row: 1/2;
+    grid-column: 2/3;
+}
+
+.left{
+    grid-row: 2/3;
+    grid-column: 1/2;
+}
+
+.right{
+    grid-row: 2/3;
+    grid-column: 3/4;
+}
+
+.rLeft{
+    grid-row: 4/5;
+    grid-column: 1/2;
+}
+
+.rRight{
+    grid-row: 4/5;
+    grid-column: 3/4;
 }
