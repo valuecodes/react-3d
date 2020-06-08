@@ -29,9 +29,9 @@ export default function Grid() {
 
     return (
         <>
-            {/* {gridRow.map(elem=>
+            {gridRow.map(elem=>
                 <GridRow position={elem}/>
-            )} */}
+            )}
             {gridColumn.map(elem=>
                 <GridColumn position={elem}/>
             )}
