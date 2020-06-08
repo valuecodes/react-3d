@@ -17,9 +17,9 @@ export default function GridColumn(props) {
         <mesh
         {...props}
         ref={mesh}
-        rotation={[250,0,0]}
+        // rotation={[250,0,0]}
         scale={[2, 2, 2]}>
-        <boxBufferGeometry attach="geometry" args={[1, 1000, 1]} />
+        <boxBufferGeometry attach="geometry" args={[1, 10000, 1]} />
         <meshStandardMaterial attach="material" color={'gray'} />
       </mesh>
     )

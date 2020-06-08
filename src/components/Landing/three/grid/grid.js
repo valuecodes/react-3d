@@ -12,7 +12,7 @@ export default function Grid() {
 
     useEffect(()=>{
         let newGridRow=[];
-        for(var i=200;i>-400;i-=20){
+        for(var i=2000;i>-2000;i-=20){
             newGridRow.push([0,i,-250]);
         }
         setGridRow(newGridRow)
@@ -20,10 +20,9 @@ export default function Grid() {
 
     useEffect(()=>{
         let newGridColumn=[];
-        for(var i=900;i>-900;i-=20){
+        for(var i=2000;i>-2000;i-=20){
             newGridColumn.push([i,-110,-250]);
         }
-        console.log(newGridColumn)
         setGridColumn(newGridColumn)
     },[])
 

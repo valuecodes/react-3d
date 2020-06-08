@@ -17,7 +17,17 @@ export default function GridBlock(props) {
         }
     }
 
-    console.log(keyDown);
+    useFrame(() => {
+        // if (hovered && !active) {
+        //   mesh.current.rotation.z += 0.01
+        //   mesh.current.rotation.x += 0.01
+        // }
+        // if (hovered && active) {
+        //   mesh.current.rotation.y += 0.02
+        //   mesh.current.rotation.x += 0.06
+        // }
+      })
+
     return (
         <mesh
         onClick={e => 
@@ -29,8 +39,10 @@ export default function GridBlock(props) {
 
         {...props}
         ref={mesh}
-        scale={[1.5, 1.5, 1.5] }>
-        <boxBufferGeometry attach="geometry" args={[10, 10, hover||selected?5:1]} />
+        rotate={[30,30,30]}
+        // scale={[1, 1.5, 1.5] }
+        >
+        <boxBufferGeometry attach="geometry" args={[9, 9, hover||selected?5:1]} />
         <meshStandardMaterial attach="material" color={selected?'green':hover?'red':'orange'} />
       </mesh>
     )
