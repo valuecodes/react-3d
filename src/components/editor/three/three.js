@@ -5,8 +5,13 @@ import Pointer from './pointer'
 import Grid from './grid/grid'
 import Ground from './ground/ground'
 import GroundGrid from './ground/groundGrid'
-import CameraControls from './camera/cameraControls'
+// import CameraControls from './camera/cameraControls'
 import { Canvas, useFrame,useThree} from 'react-three-fiber'
+import OrbitControl from './../../../utils/orbit/orbitControl'
+import CameraControls from './../../../utils/orbit/cameraControls'
+import CustomBox from './custom/customBox'
+
+import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
 export default function Three() {
 
@@ -17,6 +22,14 @@ export default function Three() {
 
     const [cameraPosition, setCameraPosition]=useState([0,0,120]);
     const [cameraRotation, setCameraRotation]=useState([0,0,0]);
+    const [orbit, setOrbit]=useState(true);
+
+    // const [{ rotation }, setCameraRotation] = useSpring(() => ({
+    //     rotation: [0, 0, 0],
+    //     config: { mass: 10, tension: 1000, friction: 300, precision: 0.00001 }
+    //   }))
+
+      
 
     useEffect(()=>{
         let newGridRow=[];
@@ -31,8 +44,6 @@ export default function Three() {
     }
 
     const trackPosition=(e)=>{
-        console.log([e.clientX-900,(e.clientY-400)*-1,-450])
-
         setLight([e.clientX-window.innerWidth/2 ,(e.clientY-window.innerHeight/2)*-1,-150])
     }
 
@@ -41,13 +52,15 @@ export default function Three() {
     }
 
     const changeCameraRotation=(rad)=>{
-        
         let newRotation = [...cameraRotation];
         newRotation[2]=newRotation[2]+rad;
-        console.log(newRotation);
         setCameraRotation(newRotation)
     }
-console.log(...cameraPosition)
+
+    const changeOrbit=()=>{
+        setOrbit(!orbit);
+    }
+
     return (
         <div className='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
@@ -69,22 +82,26 @@ console.log(...cameraPosition)
                 <group
                     rotation={cameraRotation}
                     size={[160,160,160]}
-                    // position={[-80,-80,100]}
                     position={[0,0,100]}
                 >
                     {/* <Pointer position={light}/> */}
-                    <GroundGrid cameraPosition={cameraPosition}/>
+                    {/* <GroundGrid  orbit={orbit}/> */}
+                    <OrbitControl cameraPosition={cameraPosition} orbit={orbit}/>
                 </group>
 
                 <pointLight distance={100} intensity={4} color="white" />
-                {/* <Box position={light} /> */}
+                <CustomBox position={[0,0,20]} />
                 {boxes.map(box=>
                     <Box position={box}/>
                 )}
+
             </Canvas>
+
             <CameraControls 
                 changeCameraPosition={changeCameraPosition} 
                 changeCameraRotation={changeCameraRotation}    
+                changeOrbit = {changeOrbit}
+                orbit = {orbit}
             />
         </div>
     )

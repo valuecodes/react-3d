@@ -1,13 +1,11 @@
 import React from 'react'
 import './App.css'
-import Navbar from './components/Navigation/Navbar'
-import LandingPage from './components/Landing/LandingPage'
+import Editor from './components/editor/editor'
 
 export default function App() {
   return (
     <div>
-      <Navbar/>
-      <LandingPage/>
+      <Editor/>
     </div>
   )
 }

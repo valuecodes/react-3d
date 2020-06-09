@@ -3,6 +3,8 @@ import { useFrame } from 'react-three-fiber'
 
 export default function GridBlock(props) {
 
+    const {orbit}=props
+
     const mesh = useRef();
     const [color, setColor] = useState('orange')
     const [hover, setHover] = useState(false)
@@ -12,7 +14,7 @@ export default function GridBlock(props) {
 
     const selectBlocks=(e)=>{
         setHover(true)
-        if(e.buttons===1){
+        if(e.buttons===1 && !orbit){
             setSelected(true)
         }
     }

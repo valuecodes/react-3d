@@ -1,7 +1,14 @@
 import React from 'react'
 
-export default function CameraControls({changeCameraPosition, changeCameraRotation}) {
+export default function CameraControls(props) {
     
+    const {
+        changeCameraPosition, 
+        changeCameraRotation,
+        changeOrbit,
+        orbit
+    } = props
+
     const rotate=(deg)=>{
         let rad = deg * (Math.PI/180)
         changeCameraRotation(rad)
@@ -16,6 +23,8 @@ export default function CameraControls({changeCameraPosition, changeCameraRotati
             <button className="right" onClick={e => changeCameraPosition([0,-90,0])}>Right</button>
             <button className="rLeft" onClick={e => rotate(90)}>Rotate left</button>
             <button className="rRight" onClick={e => rotate(-90)}>Rotate right</button>
+            <button onClick={e => changeOrbit()}>{`Orbit Controlls ${orbit}`}</button>
+            {/* <input onChange={e => rotate(-1)} className="range" type='range'/> */}
         </div>
     )
 }
