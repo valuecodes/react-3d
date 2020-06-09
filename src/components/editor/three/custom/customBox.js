@@ -28,6 +28,22 @@ export default function CustomBox(props) {
       // mesh.current.verticesNeedUpdate = true;
     }
 
+    const updateY=(cor,index)=>{
+      let updatedCube=[...cube];
+      updatedCube[index].y=cor;
+      setCube(updatedCube);
+      mesh.current.geometry.vertices[index].y=cor
+      // mesh.current.verticesNeedUpdate = true;
+    }
+
+    const updateZ=(cor,index)=>{
+      let updatedCube=[...cube];
+      updatedCube[index].z=cor;
+      setCube(updatedCube);
+      mesh.current.geometry.vertices[index].z=cor
+      // mesh.current.verticesNeedUpdate = true;
+    }
+
     return (
       <>
       <mesh
@@ -39,7 +55,7 @@ export default function CustomBox(props) {
         <meshStandardMaterial  attach="material" color='blue' /> <axesHelper args={[20,20,20]}/>   
 
         {cube.map((cor,index)=>
-          <Vertice position={Object.values(cor)} updateX={updateX} key={index} index={index}/>
+          <Vertice position={Object.values(cor)} updateX={updateX} updateY={updateY} updateZ={updateZ} key={index} index={index}/>
         )}
         <arrowHelper/>
       </mesh>

@@ -2,6 +2,8 @@ import React,{useRef,useState,useEffect} from 'react'
 import { useFrame } from 'react-three-fiber'
 import { PlaneGeometry, Vector3, Math, DoubleSide, BufferGeometry } from "three";
 import XAxis from './xAxis'
+import YAxis from './yAxis'
+import ZAxis from './zAxis'
 import { element } from 'prop-types';
 
 export default function Vertice(props) {
@@ -39,7 +41,11 @@ export default function Vertice(props) {
         <meshStandardMaterial  attach="material" color={selected?'red':'green'} />  
       </mesh>
         {active.map(element =>
-            <XAxis position={props} selected={selected} updateX={props.updateX} index={props.index}/>
+            <>
+              <XAxis position={props} selected={selected} updateX={props.updateX} index={props.index}/>
+              <YAxis position={props} selected={selected} updateY={props.updateY} index={props.index}/>
+              <ZAxis position={props} selected={selected} updateZ={props.updateZ} index={props.index}/>
+            </>
         )}
       </>
     )

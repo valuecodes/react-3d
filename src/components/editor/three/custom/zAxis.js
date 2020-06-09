@@ -3,16 +3,12 @@ import { useFrame } from 'react-three-fiber'
 import { PlaneGeometry, Vector3, Math, DoubleSide, BufferGeometry } from "three";
 
 
-export default function XAxis({position, selected, updateX,index}) {
+export default function ZAxis({position, selected, updateZ,index}) {
     const mesh = useRef()
 
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const [initialPos, setInitialPos]=useState({ x: 0, y: 0 })
     const [active, setActive]=useState(false)
-
-    useEffect(()=>{
-        // setInitialPos(position)
-    },[position])
 
     useEffect(() => {
       const setFromEvent = e => setPos({ x: e.clientX, y: e.clientY });
@@ -23,11 +19,7 @@ export default function XAxis({position, selected, updateX,index}) {
       };
     }, []);
 
-    // const pos=[[position.x,position.y,position.z]];
-
     const startDrag=(e)=>{
-        console.log(e.screenX)
-        // setInitialPos()
         setActive(!active)
         setInitialPos(e.clientX)
     }
@@ -39,8 +31,8 @@ export default function XAxis({position, selected, updateX,index}) {
         
         if(active){
             // console.log(initialPos)
-            mesh.current.position.x=pos.x-initialPos
-            updateX(pos.x-initialPos,index);
+            mesh.current.position.z=pos.x-initialPos
+            updateZ(pos.x-initialPos,index);
          }
        })
         return (
@@ -52,7 +44,7 @@ export default function XAxis({position, selected, updateX,index}) {
             ref={mesh}
             scale={[1,1,1]}>
             
-            <boxGeometry attach="geometry" args={active?[1000,0.1,1000]:[20, 1, 1]} />
+            <boxGeometry attach="geometry" args={active?[1000,1000,0.1]:[1, 1, 20]} />
             <meshStandardMaterial  attach="material" opacity={active?0:1} color={'orange'} transparent/>
         </mesh>  
         <gridHelper {...position} scale={[10,10,10]} />
