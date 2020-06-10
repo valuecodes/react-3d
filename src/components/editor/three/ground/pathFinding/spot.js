@@ -5,9 +5,9 @@ let rows=30;
 function Spot(x,y,z){
     this.i=x;
     this.j=y;
-    this.z=z;
+    this.z=150-(z*10);
     this.x=150-(x*10)
-    this.y=250-(y*10)
+    this.y=0
     this.f=0;
     this.g=0;
     this.h=0;

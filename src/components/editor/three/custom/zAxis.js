@@ -47,7 +47,6 @@ export default function ZAxis({position, selected, updateZ,index}) {
             <boxGeometry attach="geometry" args={active?[1000,1000,0.1]:[1, 1, 20]} />
             <meshStandardMaterial  attach="material" opacity={active?0:1} color={'orange'} transparent/>
         </mesh>  
-        <gridHelper {...position} scale={[10,10,10]} />
         </>
         )         
         

@@ -2,10 +2,13 @@ import React,{useRef,useState,useEffect} from 'react'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import ReactDOM from 'react-dom'
 import { extend, useThree, useFrame } from 'react-three-fiber'
+import {useSpring, animated} from 'react-spring'
+import { element } from 'prop-types';
+
 extend({ OrbitControls })
 
-export default function OrbitControlPanel({orbit,cameraPosition}) {
-
+export default function OrbitControlPanel({cameraSettings}) {
+    const {cameraPosition, orbit}=cameraSettings
     const cameraRef =useRef();
     const [cameraPos, setCameraPos]=useState([0,0,120])
     const [buttonClick, setButtonClick] =useState(false);
@@ -16,17 +19,15 @@ export default function OrbitControlPanel({orbit,cameraPosition}) {
 
 
     useEffect(()=>{
-
-        // camera.position.set(cameraPosition);
-        // cameraRef.current.update();
-
         setCameraPos(cameraPosition)
         setButtonClick(true);
-
     },[cameraPosition])
 
         // Camera
 
+    const calculateX=(current, target)=>{
+
+    }
 
     useFrame(() => {
         if(buttonClick){
@@ -58,6 +59,10 @@ export default function OrbitControlPanel({orbit,cameraPosition}) {
                 Math.abs(cameraPos[1]-camera.position.y)<=3 && 
                 Math.abs(cameraPos[2]-camera.position.z)<=3 
             ){
+                camera.position.x=cameraPos[0]
+                camera.position.y=cameraPos[1]
+                camera.position.z=cameraPos[2]
+                cameraRef.current.update();
                 setButtonClick(false)
             }
         }

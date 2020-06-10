@@ -53,12 +53,12 @@ export default function CustomBox(props) {
         scale={[1,1,1]}
         verticesNeedUpdate={true}>
         <boxGeometry attach="geometry" args={[10,10,10]} />
-        <meshStandardMaterial  attach="material" color='blue' /> <axesHelper args={[20,20,20]}/>   
+        <meshStandardMaterial  attach="material" color='blue' wireframe/>  
 
         {cube.map((cor,index)=>
           <Vertice position={Object.values(cor)} updateX={updateX} updateY={updateY} updateZ={updateZ} key={index} index={index}/>
         )}
-        <arrowHelper/>
+        <arrowHelper args={[100]}/>
       </mesh>
         {/* <gridHelper args={[200,20,'red','blue']} /> */}
       </>

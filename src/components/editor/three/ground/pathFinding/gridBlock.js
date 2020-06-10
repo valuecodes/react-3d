@@ -47,7 +47,7 @@ export default function GridBlock(props) {
         rotate={[30,30,30]}
         // scale={[1, 1.5, 1.5] }
         >
-        <boxBufferGeometry attach="geometry" args={[9, 9, hover||selected?5:1]} />
+        <boxBufferGeometry attach="geometry" args={[9, hover||selected?5:1,9 ]} />
         <meshStandardMaterial attach="material" color={color} />
       </mesh>
     )

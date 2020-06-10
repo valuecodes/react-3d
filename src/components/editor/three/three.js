@@ -7,8 +7,12 @@ import Ground from './ground/ground'
 import GroundGrid from './ground/groundGrid'
 // import CameraControls from './camera/cameraControls'
 import { Canvas, useFrame,useThree} from 'react-three-fiber'
+
 import OrbitControl from './../../../utils/orbit/orbitControl'
 import CameraControls from './../../../utils/orbit/cameraControls'
+import HelperGrid from './../../../utils/helpers/helperGrid'
+import HelperAxes from './../../../utils/helpers/helperAxes'
+
 import CustomBox from './custom/customBox'
 import AStar from './ground/pathFinding/aStar'
 import Grid from './ground/customGrid/grid'
@@ -23,16 +27,13 @@ export default function Three() {
     const [gridRow,setGridRow]=useState([]);
     const [gridColumn,setGridColumn]=useState([]);
 
-    const [cameraPosition, setCameraPosition]=useState([0,-90,120]);
-    const [cameraRotation, setCameraRotation]=useState([0,0,0]);
-    const [orbit, setOrbit]=useState(true);
-
-    // const [{ rotation }, setCameraRotation] = useSpring(() => ({
-    //     rotation: [0, 0, 0],
-    //     config: { mass: 10, tension: 1000, friction: 300, precision: 0.00001 }
-    //   }))
-
-      
+    const [cameraSettings, setCameraSettings]=useState({
+        cameraPosition:[0,90,120],
+        cameraRotation:[0,0,0],
+        orbit:true,
+        axes:false,
+        grid:true
+    })
 
     useEffect(()=>{
         let newGridRow=[];
@@ -50,20 +51,12 @@ export default function Three() {
         setLight([e.clientX-window.innerWidth/2 ,(e.clientY-window.innerHeight/2)*-1,-150])
     }
 
-    const changeCameraPosition=(newPosition)=>{
-        setCameraPosition(newPosition)
+    const changeCameraSettings=(option,newValue)=>{
+        let updatedSettings={...cameraSettings}
+        updatedSettings[option]=newValue;
+        setCameraSettings(updatedSettings)
     }
-
-    const changeCameraRotation=(rad)=>{
-        let newRotation = [...cameraRotation];
-        newRotation[2]=newRotation[2]+rad;
-        setCameraRotation(newRotation)
-    }
-
-    const changeOrbit=()=>{
-        setOrbit(!orbit);
-    }
-
+    console.log(cameraSettings)
     return (
         <div className='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
@@ -83,32 +76,33 @@ export default function Three() {
                     />
 
                 <group
-                    rotation={cameraRotation}
+                    rotation={cameraSettings.cameraRotation}
                     size={[160,160,160]}
-                    position={[0,0,180]}
+                    position={[0,0,0]}
                 >
                     
                     {/* <Pointer position={light}/> */}
                     {/* <GroundGrid  orbit={orbit}/> */}
-                    <OrbitControl cameraPosition={cameraPosition} orbit={orbit}/>
-                    <AStar/>
-                    {/* <CustomBox position={[0,0,-120]} /> */}
-                    
+                    <OrbitControl cameraSettings={cameraSettings}/>
+                    {/* <AStar/> */}
+                    {/* <Grid shape={{cols:5, rows:5}} /> */}
+                    <CustomBox position={[0,5,0]} />
+
+                    <HelperAxes cameraSettings={cameraSettings}  size={[50]}/>
+                    <HelperGrid cameraSettings={cameraSettings} size={[200,20]}/>
                 </group>
-                {/* <gridHelper rotate={[45,45,45]} args={[200,20,'red','blue',50]} /> */}
+
                 <pointLight distance={100} intensity={4} color="white" />
                 
-                {boxes.map(box=>
+                {/* {boxes.map(box=>
                     <Box position={box}/>
-                )}
+                )} */}
 
             </Canvas>
 
             <CameraControls 
-                changeCameraPosition={changeCameraPosition} 
-                changeCameraRotation={changeCameraRotation}    
-                changeOrbit = {changeOrbit}
-                orbit = {orbit}
+                cameraSettings={cameraSettings}
+                changeCameraSettings={changeCameraSettings}
             />
         </div>
     )

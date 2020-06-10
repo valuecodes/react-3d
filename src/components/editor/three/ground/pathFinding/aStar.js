@@ -30,7 +30,7 @@ export default function AStar({cameraPosition,orbit}) {
 
         for(var i=0;i<rows;i++){
             for(var a=0;a<cols;a++){
-                newGrid[i][a]=new Spot(i,a,-200);
+                newGrid[i][a]=new Spot(i,a,a);
             }
         }
 

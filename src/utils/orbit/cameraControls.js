@@ -1,29 +1,36 @@
 import React from 'react'
-
-export default function CameraControls(props) {
+import {useSpring, animated} from 'react-spring'
+export default function CameraControls({cameraSettings, changeCameraSettings}) {
     
     const {
-        changeCameraPosition, 
-        changeCameraRotation,
-        changeOrbit,
-        orbit
-    } = props
+        cameraRotation,
+        orbit,
+        grid,
+        axes
+    } = cameraSettings
 
     const rotate=(deg)=>{
+        let newRotation = [...cameraRotation];
         let rad = deg * (Math.PI/180)
-        changeCameraRotation(rad)
+        newRotation[1]=newRotation[1]+rad;
+        changeCameraSettings('cameraRotation',newRotation)
     }
+
+    const test = useSpring({opacity: orbit ? 1 : 0})
     
     return (
         <div className='cameraControls'>
-            <button className="initial" onClick={e => changeCameraPosition([0,-90,120])}>Initial</button>
-            <button className="bot" onClick={e => changeCameraPosition([0,0,-120])}>Bot</button>
-            <button className="top" onClick={e => changeCameraPosition([0,0,120])}>Top</button>
-            <button className="left" onClick={e => changeCameraPosition([0,90,0])}>Left</button>
-            <button className="right" onClick={e => changeCameraPosition([0,-90,0])}>Right</button>
+        <animated.div style={test}>i will fade</animated.div>
+            <button className="initial" onClick={e => changeCameraSettings('cameraPosition',[0,90,120])}>Initial</button>
+            <button className="back" onClick={e => changeCameraSettings('cameraPosition',[0,0,-120])}>Back</button>
+            <button className="front" onClick={e => changeCameraSettings('cameraPosition',[0,0,120])}>Front</button>
+            <button className="top" onClick={e => changeCameraSettings('cameraPosition',[0,90,0])}>Top</button>
+            <button className="bot" onClick={e => changeCameraSettings('cameraPosition',[0,-90,0])}>Bot</button>
             <button className="rLeft" onClick={e => rotate(90)}>Rotate left</button>
             <button className="rRight" onClick={e => rotate(-90)}>Rotate right</button>
-            <button onClick={e => changeOrbit()}>{`Orbit Controlls ${orbit}`}</button>
+            <button onClick={e => changeCameraSettings('orbit',!orbit)}>{`Orbit Controlls ${orbit}`}</button>
+            <button onClick={e => changeCameraSettings('grid',!grid)} className='grid'>Grid</button>
+            <button onClick={e => changeCameraSettings('axes',!axes)} className='axes' >Axes</button>
             {/* <input onChange={e => rotate(-1)} className="range" type='range'/> */}
         </div>
     )

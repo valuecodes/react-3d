@@ -43,7 +43,6 @@ export default function YAxis({position, selected, updateY,index}) {
             <boxGeometry attach="geometry" args={active?[0.1,1000,1000]:[1, 20, 1]} />
             <meshStandardMaterial  attach="material" opacity={active?0:1} color={'orange'} transparent/>
         </mesh>  
-        <gridHelper {...position} scale={[10,10,10]} />
         </>
         )         
         
