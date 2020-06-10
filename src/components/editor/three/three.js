@@ -13,9 +13,11 @@ import CameraControls from './../../../utils/orbit/cameraControls'
 import HelperGrid from './../../../utils/helpers/helperGrid'
 import HelperAxes from './../../../utils/helpers/helperAxes'
 
-import CustomBox from './custom/customBox'
+import CustomBox from './components/box/customBox'
 import AStar from './ground/pathFinding/aStar'
 import Grid from './ground/customGrid/grid'
+
+import Line from './components/line/line'
 
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
@@ -32,7 +34,8 @@ export default function Three() {
         cameraRotation:[0,0,0],
         orbit:true,
         axes:false,
-        grid:true
+        grid:true,
+        mode:'orbit'
     })
 
     useEffect(()=>{
@@ -56,7 +59,7 @@ export default function Three() {
         updatedSettings[option]=newValue;
         setCameraSettings(updatedSettings)
     }
-    console.log(cameraSettings)
+
     return (
         <div className='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
@@ -86,8 +89,8 @@ export default function Three() {
                     <OrbitControl cameraSettings={cameraSettings}/>
                     {/* <AStar/> */}
                     {/* <Grid shape={{cols:5, rows:5}} /> */}
-                    <CustomBox position={[0,5,0]} />
-
+                    {/* <CustomBox position={[0,5,0]} /> */}
+                    <Line cameraSettings={cameraSettings}/>
                     <HelperAxes cameraSettings={cameraSettings}  size={[50]}/>
                     <HelperGrid cameraSettings={cameraSettings} size={[200,20]}/>
                 </group>

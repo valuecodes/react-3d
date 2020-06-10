@@ -31,6 +31,10 @@ export default function CameraControls({cameraSettings, changeCameraSettings}) {
             <button onClick={e => changeCameraSettings('orbit',!orbit)}>{`Orbit Controlls ${orbit}`}</button>
             <button onClick={e => changeCameraSettings('grid',!grid)} className='grid'>Grid</button>
             <button onClick={e => changeCameraSettings('axes',!axes)} className='axes' >Axes</button>
+            <button onClick={e => changeCameraSettings('mode','orbit')} className='orbit' >Orbit</button>
+            <button onClick={e => changeCameraSettings('mode','add')} className='add' >Add</button>
+            <button onClick={e => changeCameraSettings('mode','edit')} className='edit' >Edit</button>
+
             {/* <input onChange={e => rotate(-1)} className="range" type='range'/> */}
         </div>
     )

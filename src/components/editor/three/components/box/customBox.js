@@ -1,11 +1,12 @@
 import React,{useRef,useState,useEffect} from 'react'
 import { useFrame } from 'react-three-fiber'
-import Vertice from './vertice'
+import Vertice from './../vertice/vertice'
 import { PlaneGeometry, Vector3, Math, DoubleSide, BufferGeometry, ArrowHelper } from "three";
 export default function CustomBox(props) {
     // This reference will give us direct access to the mesh
     const mesh = useRef()
     const [cube, setCube] = useState([]);
+    const [selected, setSelected]=useState(false);
     // Set up state for the hovered and active state
 
     useEffect(() => {
@@ -44,16 +45,18 @@ export default function CustomBox(props) {
       // mesh.current.verticesNeedUpdate = true;
     }
 
+
+
     return (
       <>
       <mesh
         {...props}
-        onHover={e => console.log(e.target.value)}
+        onClick={e => setSelected(!selected)}
         ref={mesh}
         scale={[1,1,1]}
         verticesNeedUpdate={true}>
         <boxGeometry attach="geometry" args={[10,10,10]} />
-        <meshStandardMaterial  attach="material" color='blue' wireframe/>  
+        <meshStandardMaterial  attach="material" color={selected?'red':'blue'} wireframe/>  
 
         {cube.map((cor,index)=>
           <Vertice position={Object.values(cor)} updateX={updateX} updateY={updateY} updateZ={updateZ} key={index} index={index}/>
