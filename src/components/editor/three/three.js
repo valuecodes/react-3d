@@ -2,7 +2,7 @@ import React,{useState,useEffect,useRef,useRender} from 'react'
 import ReactDOM from 'react-dom'
 import Box from './box'
 import Pointer from './pointer'
-import Grid from './grid/grid'
+// import Grid from './grid/grid'
 import Ground from './ground/ground'
 import GroundGrid from './ground/groundGrid'
 // import CameraControls from './camera/cameraControls'
@@ -10,6 +10,9 @@ import { Canvas, useFrame,useThree} from 'react-three-fiber'
 import OrbitControl from './../../../utils/orbit/orbitControl'
 import CameraControls from './../../../utils/orbit/cameraControls'
 import CustomBox from './custom/customBox'
+import AStar from './ground/pathFinding/aStar'
+import Grid from './ground/customGrid/grid'
+
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -20,7 +23,7 @@ export default function Three() {
     const [gridRow,setGridRow]=useState([]);
     const [gridColumn,setGridColumn]=useState([]);
 
-    const [cameraPosition, setCameraPosition]=useState([0,0,120]);
+    const [cameraPosition, setCameraPosition]=useState([0,-90,120]);
     const [cameraRotation, setCameraRotation]=useState([0,0,0]);
     const [orbit, setOrbit]=useState(true);
 
@@ -82,15 +85,19 @@ export default function Three() {
                 <group
                     rotation={cameraRotation}
                     size={[160,160,160]}
-                    position={[0,0,100]}
+                    position={[0,0,180]}
                 >
+                    
                     {/* <Pointer position={light}/> */}
                     {/* <GroundGrid  orbit={orbit}/> */}
                     <OrbitControl cameraPosition={cameraPosition} orbit={orbit}/>
+                    <AStar/>
+                    {/* <CustomBox position={[0,0,-120]} /> */}
+                    
                 </group>
-
+                {/* <gridHelper rotate={[45,45,45]} args={[200,20,'red','blue',50]} /> */}
                 <pointLight distance={100} intensity={4} color="white" />
-                <CustomBox position={[0,0,20]} />
+                
                 {boxes.map(box=>
                     <Box position={box}/>
                 )}

@@ -1,7 +1,7 @@
 import React,{useState, useEffect, useRef} from 'react'
 import GridBlock from './gridBlock'
 
-export default function GroundGrid({cameraPosition,orbit}) {
+export default function Grid({cameraPosition,orbit}) {
 
     const [grid, setGrid]=useState([]);
 

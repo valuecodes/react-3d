@@ -20,7 +20,6 @@ export default function YAxis({position, selected, updateY,index}) {
     }, []);
 
     const startDrag=(e)=>{
-        // setInitialPos()
         setActive(!active)
         setInitialPos(e.clientY)
     }

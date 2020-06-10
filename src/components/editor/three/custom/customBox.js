@@ -47,6 +47,7 @@ export default function CustomBox(props) {
     return (
       <>
       <mesh
+        {...props}
         onHover={e => console.log(e.target.value)}
         ref={mesh}
         scale={[1,1,1]}
