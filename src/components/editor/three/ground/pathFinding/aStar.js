@@ -3,6 +3,7 @@ import { useFrame } from 'react-three-fiber'
 import GridBlock from './gridBlock'
 import Spot from './spot'
 import Row from './row'
+import DragControl from './../../../../../utils/other/dragControl'
 
 
 export default function AStar({cameraPosition,orbit}) {
@@ -183,12 +184,14 @@ export default function AStar({cameraPosition,orbit}) {
       console.log('update')
     return (
         <>
-            <mesh onClick={e => setAStar(!AStar)}>
+            <mesh
+
+            onClick={e => setAStar(!AStar)}>
                 {sgrid.map(row=>
                     <Row row={row}/>
-                )}                
-            </mesh>
+                )}     
 
+            </mesh>
         </>
     )
 }

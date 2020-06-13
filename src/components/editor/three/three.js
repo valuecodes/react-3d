@@ -1,10 +1,7 @@
 import React,{useState,useEffect,useRef,useRender} from 'react'
 import ReactDOM from 'react-dom'
-import Box from './box'
+// import Box from './box'
 import Pointer from './pointer'
-// import Grid from './grid/grid'
-import Ground from './ground/ground'
-import GroundGrid from './ground/groundGrid'
 // import CameraControls from './camera/cameraControls'
 import { Canvas, useFrame,useThree} from 'react-three-fiber'
 
@@ -16,9 +13,16 @@ import HelperAxes from './../../../utils/helpers/helperAxes'
 import CustomBox from './components/box/customBox'
 import AStar from './ground/pathFinding/aStar'
 import Grid from './ground/customGrid/grid'
+import Circle from './components/circle/circle'
+
+// import TestBox from './../three/components/customBox/testbox'
+
+import Box from './box/box'
+import BoxEdit from './box/boxEdit'
 
 import Line from './components/line/line'
-
+import LineLoop from './components/lineLoop/line'
+import { useDrag } from "react-use-gesture"
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -61,9 +65,10 @@ export default function Three() {
     }
 
     return (
-        <div className='canvas' 
+        <div id='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
             // onClick={addBox}
+            // onKeyDown={e => console.log(e.keyCode)}
             onScroll={e => console.log(e)}
             >
             <Canvas
@@ -88,9 +93,15 @@ export default function Three() {
                     {/* <GroundGrid  orbit={orbit}/> */}
                     <OrbitControl cameraSettings={cameraSettings}/>
                     {/* <AStar/> */}
+                    {/* <Circle position={[10,0,0]}/> */}
+                    {/* <Circle position={[0,0,10]}/> */}
                     {/* <Grid shape={{cols:5, rows:5}} /> */}
                     {/* <CustomBox position={[0,5,0]} /> */}
-                    <Line cameraSettings={cameraSettings}/>
+                    {/* <Box position={[0,5,0]} /> */}
+                    <BoxEdit/>
+                    {/* <Line cameraSettings={cameraSettings}/> */}
+                    {/* <LineLoop cameraSettings={cameraSettings}/> */}
+                    {/* <TestBox position={[0,5,0]}/> */}
                     <HelperAxes cameraSettings={cameraSettings}  size={[50]}/>
                     <HelperGrid cameraSettings={cameraSettings} size={[200,20]}/>
                 </group>

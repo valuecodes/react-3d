@@ -1,12 +1,14 @@
 import React,{useRef} from 'react'
 import { useFrame } from 'react-three-fiber'
+import DragControl from './../../../utils/other/dragControl'
 
 export default function Pointer(props) {
     // console.log(props);
     const mesh = useRef()
     return (
+        <>
         <mesh
-        {...props}
+        // {...props}
         ref={mesh}
         scale={[2, 2, 2]}
         // onClick={e => setActive(!active)}
@@ -14,7 +16,10 @@ export default function Pointer(props) {
         // onPointerOut={e => setHover(false)}
         >
         <boxBufferGeometry attach="geometry" args={[10, 10, 10]} />
-        <meshStandardMaterial attach="material" color={'red'} />
+        <meshStandardMaterial attach="material" color={'red'} />  
       </mesh>
+
+      {/* <DragControl ex={mesh} /> */}
+      </>
     )
 }

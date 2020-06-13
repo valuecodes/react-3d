@@ -41,7 +41,7 @@ body{
 }
 
 /* Canvas */
-.canvas{
+#canvas{
     height: 100vh;
     width: 100vw;
 }

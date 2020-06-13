@@ -5,12 +5,19 @@ import HelperGrid from './../../../../../utils/helpers/helperGrid'
 import { Canvas, extend, useThree, useResource, mouse,useFrame  } from 'react-three-fiber'
 import { transcode } from 'buffer';
 import LineVertice from './lineVertice/lineVertice'
+import Tracker from './../../../../../utils/other/tracker'
+import BackgroundPlane from './../../../../../utils/other/backgroundPlane'
+import Plane from './mesh/plane'
 
-export default function Line({cameraSettings}) {
+import BoxBuffer from './boxBuffer/boxBuffer'
+
+export default function LineLoop({cameraSettings}) {
     const {orbit, mode}=cameraSettings
     const [position, setPosition]=useState([100,100,100])
     const [selected, setSelected]=useState(null);
     const [edit, setEdit] =useState(false);
+
+    const [objects, setObjects]=useState([]);
     
     const {
         camera,
@@ -18,22 +25,37 @@ export default function Line({cameraSettings}) {
     } = useThree()
     
     const [points, setPoints]=useState([
-        new Vector3(0, 0, 0), 
-        new Vector3(15, 0, 10), 
-        new Vector3(0, 0, 20)
+        // new Vector3(-4, 1, 10), 
+        // new Vector3(-4, 1, -10), 
+        // new Vector3(4, 1, 10),
+        // new Vector3(4, 1, -10),
+        // new Vector3(6, 1, -5),
+        // new Vector3(8, 1, -10)
     ])
 
     const line = useRef()
     const mesh = useRef();
+    const plane = useRef()
 
     const onUpdate = useCallback(self => self.setFromPoints(points), [points])
 
     const addPoint=(e)=>{
         if(mode==='add'){
             const newPoint = new Vector3(position[0],0,position[1] );
-            setPoints([...points,newPoint ])            
+            setPoints([...points,newPoint ])    
+                    
+        }
+        if(points.length===3){
+
+            let newObjects=[...objects]
+            newObjects.push({
+                position:[position[0],0,position[1]],
+                points:points
+            })
+            setObjects(newObjects)
         }
         
+        console.log(objects)
         if(edit){
             setEdit(!edit)
         }else{
@@ -41,20 +63,8 @@ export default function Line({cameraSettings}) {
         }
     }
 
-    const trackPosition=(e)=>{
-        // var vector = new Vector3( mouse.x,-1, mouse.y ).unproject( camera );
-        let x = (mouse.x * window.innerWidth) / 10
-        let y = ((mouse.y * window.innerHeight) / 15)*-1
-
-        setPosition([x ,y,-150])
-    }
-
     useFrame(() => {
-        if(mesh.current){
-            mesh.current.position.x=position[0]
-            mesh.current.position.z=position[1]
-        }
-        
+
         if(selected!==null){
             let updatedPoints=[...points];
             updatedPoints[selected].x=position[0]
@@ -86,32 +96,55 @@ export default function Line({cameraSettings}) {
         };
       });
 
+      useEffect(()=>{
+        
+      },[cameraSettings])
+
+
+    useEffect(()=>{
+        let vertices=plane.current.geometry.vertices.map(ver => ver);
+
+        plane.current.geometry.vertices=points
+        plane.current.geometry.verticesNeedUpdate = true;
+        // setPoints(vertices) 
+    },[])
+
+    useFrame(() => {
+        if(plane.current){
+            // plane.current.geometry.vertices=points
+            // plane.current.geometry.verticesNeedUpdate = true;
+         }
+       })
+
+       
     return (
         <>
+         
+        <mesh
+            ref={plane}
+            // rotation={[-Math.PI/2,0,0]} 
+        >
         <line
             onKeyDown={e => console.log(e)}
-            position={[0, 0, 0]} ref={line}>
+             ref={line}>
+             
             <bufferGeometry attach="geometry" onUpdate={onUpdate} />
-            <lineBasicMaterial attach="material" color={'blue'} linecap={'round'} linejoin={'round'} />            
-        </line>
-        <mesh 
-            onClick={e => addPoint(e)} 
-            onPointerMove={e => trackPosition(e)}
-            
-            rotation={[-Math.PI/2,0,0]} 
-            receiveShadow={true} 
-            position={[0,-1,0]} 
-            ref={mesh}>
-            <planeBufferGeometry attach="geometry" args={[1000, 1000, 1]} />
-            <meshBasicMaterial attach="material" color="white" />
-          </mesh>
-        <mesh
-        onMouseOver={e => trackPosition(e)}
-        ref={mesh}
-        scale={[2,2,2]}>
-        <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-        <meshStandardMaterial attach="material" color={'orange'} />
+            <lineBasicMaterial attach="material" color={'blue'} linecap={'round'} linejoin={'round'} />         
+
+        </line>   
+            <planeGeometry attach="geometry" args={[8,20,1]}/>       
+            <meshBasicMaterial attach="material" color="green" />   
+
+        {objects.map(object =>
+            <Plane position={object} points={points}/> 
+        )}
+                
         </mesh>
+
+
+        <Tracker position={position}/>
+        <BackgroundPlane addPoint={addPoint} setPosition={setPosition}/>
+
         {points.map((point,index)=>{
             if(mode==='edit'){
                 return <LineVertice position={Object.values(point)} selectVertice={selectVertice} selected={selected} key={index} index={index}/>                
