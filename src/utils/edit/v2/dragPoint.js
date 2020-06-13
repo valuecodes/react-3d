@@ -8,6 +8,7 @@ export default function DragPoint(props) {
         updateVertices, 
         updateFaces, 
         index, 
+        type,
         current,
         position,
         setFaceVertice,
@@ -21,23 +22,23 @@ export default function DragPoint(props) {
 
     const [lastPosition, setLastPosition]=useState(null);
     const [start, setStart]=useState(0);
+    const [dragType, setType] = useState(null)
 
     const [faceVertice, setFacevertice]=useState(null);
 
     useEffect(()=>{
-        if(selectedFace===index){
-             select();
-        }else{
-            setSelected(false)
-            setFacevertice(null)
-            setStart(0);            
-        }
+
     },[selectedFace])
 
+    useEffect(() => {
+        setType(type)
+
+    }, [type])
 
     const select=()=>{        
-        if(faceVertice===null){
-            let savedVertices=getFaceVerticePositions(current.geometry, index)
+        console.log(index,ref.current.position)
+        if(type==='face'&&faceVertice===null){
+            let savedVertices=getFaceVerticePositions(current.current.geometry, index)
             setFacevertice(savedVertices)
         }else{
             setFacevertice(null)
@@ -49,7 +50,15 @@ export default function DragPoint(props) {
     useFrame(() => {
         if(selected){
             if(JSON.stringify(ref.current.position)!==lastPosition){
-                updateFaces(ref.current.position,start,faceVertice,index);
+
+                if(dragType==='vertice'){
+                     updateVertices(ref.current.position, index);
+                }
+
+                if(dragType==='face'){
+                    updateFaces(ref.current.position,start,faceVertice,index);
+                }    
+
                 setLastPosition(JSON.stringify(ref.current.position))         
             }
          }
@@ -57,9 +66,15 @@ export default function DragPoint(props) {
     return (
         <>
         <mesh
+            onClick={e => select()}
             {...props}
             ref={ref}
-            >
+            scale={[1,1,1]}>
+            <boxGeometry attach="geometry" args={[1, 1, 1]} />
+            <meshStandardMaterial  attach="material" 
+            color={selected?'red':'green'} 
+            />  
+            
       </mesh>
       <TransformControl mesh={mesh} selected={selected}/>
       </>

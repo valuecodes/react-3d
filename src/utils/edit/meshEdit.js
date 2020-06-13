@@ -3,7 +3,7 @@ import { computeFaceCentroids, computetaEdgeCentroids } from './../calculations/
 import DragPoint from './dragPoint'
 import Faces from './faces'
 import { extend, Canvas, useRender, useThree, useResource, useFrame } from 'react-three-fiber'
-
+import VerticeDragPoint from './verticeDragPoint'
 
 
 import Edges from './v1/edges'
@@ -11,7 +11,7 @@ import Edges from './v1/edges'
 export default function MeshEdit({current}) {
 
     const [vertices, setVertices] = useState([]);
-    const [faces, setFaces] = useState([]);
+    const [faceCentroids, setFaceCentroids] = useState([]);
     const [edges, setEdges] = useState([]);
     const [updated, setUpdated] = useState(false);
     const [selectedFace, setSelectedFace]=useState(null);
@@ -20,9 +20,8 @@ export default function MeshEdit({current}) {
         let newVertices = current.current.geometry.vertices.map(ver => ver);
         let newFaces=computeFaceCentroids(current.current.geometry)
         let newEdges=computetaEdgeCentroids(current.current.geometry)
-        console.log(newEdges)
         setVertices(newVertices)
-        setFaces(newFaces)
+        setFaceCentroids(newFaces)
     },[current])
 
 
@@ -43,63 +42,67 @@ export default function MeshEdit({current}) {
        setVertices(updatedVertices);
        setUpdated(true);
        let updatedFaces=computeFaceCentroids(current.current.geometry)
-       setFaces(updatedFaces);
+       setFaceCentroids(updatedFaces);
       }
       
-    function updateFaces(newPosition,start,startingPosition, index){
+    function updateFaces(newPosition,start,newStart, index){
 
-        let newStart={...startingPosition}
+        // let newStart={...startingPosition}
+        // console.log(newStart.length, !newStart, newStart)
+        if(newStart){
+            let xAmount=newPosition.x-start.x
+            let yAmount=newPosition.y-start.y
+            let zAmount=newPosition.z-start.z
 
-        let xAmount=newPosition.x-start.x
-        let yAmount=newPosition.y-start.y
-        let zAmount=newPosition.z-start.z
-    
-        let id1=newStart[0].index
-        let id2=newStart[1].index
-        let id3=newStart[2].index
-    
-        let xStart1=newStart[0].a.x+xAmount
-        let xStart2=newStart[1].b.x+xAmount
-        let xStart3=newStart[2].c.x+xAmount
-    
-        let yStart1=newStart[0].a.y+yAmount
-        let yStart2=newStart[1].b.y+yAmount
-        let yStart3=newStart[2].c.y+yAmount
+            let id1=newStart[0].index
+            let id2=newStart[1].index
+            let id3=newStart[2].index
         
-        let zStart1=newStart[0].a.z+zAmount
-        let zStart2=newStart[1].b.z+zAmount
-        let zStart3=newStart[2].c.z+zAmount
-    
-        let updatedVertices=[...vertices];
-    
-        current.current.geometry.vertices[id1].x=xStart1;
-        current.current.geometry.vertices[id2].x=xStart2;
-        current.current.geometry.vertices[id3].x=xStart3;
-    
-        current.current.geometry.vertices[id1].y=yStart1;
-        current.current.geometry.vertices[id2].y=yStart2;
-        current.current.geometry.vertices[id3].y=yStart3;
-    
-        current.current.geometry.vertices[id1].z=zStart1;
-        current.current.geometry.vertices[id2].z=zStart2;
-        current.current.geometry.vertices[id3].z=zStart3;
-    
-        updatedVertices[id1].x=xStart1;
-        updatedVertices[id2].x=xStart2;
-        updatedVertices[id3].x=xStart3;
-    
-        updatedVertices[id1].y=yStart1;
-        updatedVertices[id2].y=yStart2;
-        updatedVertices[id3].y=yStart3;
-    
-        updatedVertices[id1].z=zStart1;
-        updatedVertices[id2].z=zStart2;
-        updatedVertices[id3].z=zStart3;   
-    
-        setVertices(updatedVertices);
-        setUpdated(true)
-        let updatedFaces=computeFaceCentroids(current.current.geometry)
-        setFaces(updatedFaces);
+            let xStart1=newStart[0].a.x+xAmount
+            let xStart2=newStart[1].b.x+xAmount
+            let xStart3=newStart[2].c.x+xAmount
+        
+            let yStart1=newStart[0].a.y+yAmount
+            let yStart2=newStart[1].b.y+yAmount
+            let yStart3=newStart[2].c.y+yAmount
+            
+            let zStart1=newStart[0].a.z+zAmount
+            let zStart2=newStart[1].b.z+zAmount
+            let zStart3=newStart[2].c.z+zAmount
+        
+            let updatedVertices=[...vertices];
+        
+            current.current.geometry.vertices[id1].x=xStart1;
+            current.current.geometry.vertices[id2].x=xStart2;
+            current.current.geometry.vertices[id3].x=xStart3;
+        
+            current.current.geometry.vertices[id1].y=yStart1;
+            current.current.geometry.vertices[id2].y=yStart2;
+            current.current.geometry.vertices[id3].y=yStart3;
+        
+            current.current.geometry.vertices[id1].z=zStart1;
+            current.current.geometry.vertices[id2].z=zStart2;
+            current.current.geometry.vertices[id3].z=zStart3;
+        
+            updatedVertices[id1].x=xStart1;
+            updatedVertices[id2].x=xStart2;
+            updatedVertices[id3].x=xStart3;
+        
+            updatedVertices[id1].y=yStart1;
+            updatedVertices[id2].y=yStart2;
+            updatedVertices[id3].y=yStart3;
+        
+            updatedVertices[id1].z=zStart1;
+            updatedVertices[id2].z=zStart2;
+            updatedVertices[id3].z=zStart3;   
+        
+            setVertices(updatedVertices);
+            setUpdated(true)
+            let updatedFaces=computeFaceCentroids(current.current.geometry)
+            setFaceCentroids(updatedFaces);            
+        }
+
+
     }
 
     function selectFace(index){
@@ -109,7 +112,7 @@ export default function MeshEdit({current}) {
     return (
         <>
             {vertices.map((position,index)=>
-                <DragPoint 
+                <VerticeDragPoint 
                     updateVertices={updateVertices} 
                     current={current} 
                     position={Object.values(position)} 
@@ -119,24 +122,13 @@ export default function MeshEdit({current}) {
                     selectedFace={selectedFace}
                 />
             )}
-            {faces.map((position,index)=>
-                <DragPoint 
-                    updateFaces={updateFaces} 
-                    current={current} 
-                    position={Object.values(position)} 
-                    key={index} 
-                    index={index}
-                    type={'face'}
-                />
-            )}
             <Faces 
                 current={current} 
-                faces={faces} 
+                faceCentroids={faceCentroids} 
                 selectFace={selectFace}
-                selectedFace={selectedFace}    
+                selectedFace={selectedFace} 
+                updateFaces={updateFaces} 
             />
-            {/* <Edges current={current}/> */}
-            {/* <edgesGeometry args={[current.current]} /> */}
         </>
     )
 }
