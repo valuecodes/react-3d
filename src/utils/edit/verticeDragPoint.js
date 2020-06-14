@@ -56,9 +56,8 @@ export default function DragPoint(props) {
     useFrame(() => {
         if(selected){
             if(JSON.stringify(ref.current.position)!==lastPosition){
-
+                console.log(ref.current.position)
                 updateVertices(ref.current.position, index);
-
                 setLastPosition(JSON.stringify(ref.current.position))         
             }
          }

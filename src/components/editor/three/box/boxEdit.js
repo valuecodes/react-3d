@@ -12,7 +12,7 @@ export default function BoxEdit() {
             onClick={e => console.log(box)}
         >
             <boxGeometry attach="geometry" args={[10, 10, 10]} />
-            <meshBasicMaterial  attach="material" color='blue' wireframe/>  
+            <meshBasicMaterial  attach="material" color='white'/>  
             <MeshEdit current={box}/>
         </mesh>
     )

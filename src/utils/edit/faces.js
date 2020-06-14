@@ -17,7 +17,6 @@ export default function Faces({current, faceCentroids, selectFace, selectedFace,
             geom.vertices=[vertices[face.a],vertices[face.b],vertices[face.c]]
             geom.faces.push(new THREE.Face3(0,1,2))
             geom.computeFaceNormals()
-            console.log(selectedFace)
             let color=selectedFace===index?"#63c263":"rgb(179, 181, 179)" 
             return new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color:color }))
         }) 
@@ -47,7 +46,6 @@ export default function Faces({current, faceCentroids, selectFace, selectedFace,
 function Face({face, index, selectFace, selectedFace}){
 
     function setColor(type){
-        console.log(index, selectedFace)
         let color;
         if(index===selectedFace){   
             color='#63c263'

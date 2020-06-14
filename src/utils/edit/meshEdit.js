@@ -1,12 +1,10 @@
 import React,{ useState, useEffect } from 'react'
-import { computeFaceCentroids, computetaEdgeCentroids } from './../calculations/calculations'
+import { computeFaceCentroids, computetaEdges } from './../calculations/calculations'
 import DragPoint from './dragPoint'
 import Faces from './faces'
 import { extend, Canvas, useRender, useThree, useResource, useFrame } from 'react-three-fiber'
 import VerticeDragPoint from './verticeDragPoint'
-
-
-import Edges from './v1/edges'
+import Edge from './edge'
 
 export default function MeshEdit({current}) {
 
@@ -15,20 +13,19 @@ export default function MeshEdit({current}) {
     const [edges, setEdges] = useState([]);
     const [updated, setUpdated] = useState(false);
     const [selectedFace, setSelectedFace]=useState(null);
+    const [selectedEdge, setSelectedEdge]=useState(null);
 
     useEffect(()=>{
         let newVertices = current.current.geometry.vertices.map(ver => ver);
-        let newFaces=computeFaceCentroids(current.current.geometry)
-        let newEdges=computetaEdgeCentroids(current.current.geometry)
-        setVertices(newVertices)
-        setFaceCentroids(newFaces)
+        updateMesh(newVertices);
     },[current])
-
-
 
     useFrame(() => {
         if(updated){
             current.current.geometry.verticesNeedUpdate = true;               current.current.geometry.normalsNeedUpdate = true;
+            current.current.geometry.elementsNeedUpdate = true;
+            current.current.geometry.groupsNeedUpdate = true;
+            current.current.geometry.uvsNeedUpdate = true;
             setUpdated(false)
          }
        })
@@ -36,20 +33,13 @@ export default function MeshEdit({current}) {
     const updateVertices=(newPosition, index)=>{
        let updatedVertices=[...vertices];
        updatedVertices[index]=newPosition;
-       current.current.geometry.vertices[index].x=newPosition.x;
-       current.current.geometry.vertices[index].y=newPosition.y;
-       current.current.geometry.vertices[index].z=newPosition.z;
-       setVertices(updatedVertices);
-       setUpdated(true);
-       let updatedFaces=computeFaceCentroids(current.current.geometry)
-       setFaceCentroids(updatedFaces);
+       current.current.geometry.vertices[index]=newPosition;
+       updateMesh(updatedVertices) 
       }
       
     function updateFaces(newPosition,start,newStart, index){
-
-        // let newStart={...startingPosition}
-        // console.log(newStart.length, !newStart, newStart)
         if(newStart){
+
             let xAmount=newPosition.x-start.x
             let yAmount=newPosition.y-start.y
             let zAmount=newPosition.z-start.z
@@ -95,18 +85,36 @@ export default function MeshEdit({current}) {
             updatedVertices[id1].z=zStart1;
             updatedVertices[id2].z=zStart2;
             updatedVertices[id3].z=zStart3;   
-        
-            setVertices(updatedVertices);
-            setUpdated(true)
-            let updatedFaces=computeFaceCentroids(current.current.geometry)
-            setFaceCentroids(updatedFaces);            
+
+            updateMesh(updatedVertices)       
         }
-
-
     }
 
     function selectFace(index){
         setSelectedFace(index===selectedFace?null:index);
+    }
+
+    function selectEdge(index){
+        setSelectedEdge(index=selectedEdge?null:index);
+    }
+
+    function updateEdge(updatedPos){
+        let updatedVertices=[...vertices];
+        for(var i=0;i<updatedPos.length;i++){
+            let id=updatedPos[i].vertice
+            current.current.geometry.vertices[id]=updatedPos[i].vector
+            updatedVertices[id]=Object.values(updatedPos[i].vector);
+        }
+        updateMesh(updatedVertices)
+    }
+
+    function updateMesh(newVertices){
+        let newFaces=computeFaceCentroids(current.current.geometry)
+        let newEdges=computetaEdges(current.current.geometry)
+        setUpdated(true)
+        setVertices(newVertices)
+        setFaceCentroids(newFaces)
+        setEdges(newEdges)
     }
 
     return (
@@ -122,6 +130,18 @@ export default function MeshEdit({current}) {
                     selectedFace={selectedFace}
                 />
             )}
+
+            {edges.map((edge,index)=>
+                <Edge 
+                    edge={edge} 
+                    index={index} 
+                    current={current} 
+                    selectedEdge={selectedEdge}
+                    selectEdge={selectEdge}
+                    updateEdge={updateEdge}
+                />
+            )}
+
             <Faces 
                 current={current} 
                 faceCentroids={faceCentroids} 

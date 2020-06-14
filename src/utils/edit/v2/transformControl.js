@@ -8,7 +8,7 @@ export default function TransformControl({mesh, selected}) {
 
     const transform = useRef()
     const { camera, gl } = useThree()
-    console.log(mesh)
+    
     if(selected){
         return (     
             <transformControls 
