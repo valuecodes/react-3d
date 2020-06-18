@@ -60,6 +60,10 @@ export default function DragPoint(props) {
             {...props}
             ref={ref}
             >
+            {/* <boxGeometry attach="geometry" args={[1, 1, 1]} />
+            <meshStandardMaterial  attach="material" 
+            color={selected?'red':'green'} 
+            /> */}
       </mesh>
       <TransformControl mesh={mesh} selected={selected}/>
       </>

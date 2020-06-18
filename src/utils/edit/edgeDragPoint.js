@@ -56,14 +56,13 @@ export default function EdgeDragPoint(props) {
     return (
         <>
         <mesh
-            onClick={e => select()}
             {...props}
             ref={ref}    
-        >               
-        <boxGeometry attach="geometry" args={hover?[1, 1, 1]:[0.1,0.1,0.1]} />
+        >          
+        {/* <boxGeometry attach="geometry" args={[1, 1, 1]} />
         <meshStandardMaterial  attach="material" 
         color={selected?'red':'green'} 
-        />  
+        />   */}
         
       </mesh>
       <TransformControl mesh={mesh} selected={selected}/>

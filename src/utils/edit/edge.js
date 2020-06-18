@@ -1,6 +1,7 @@
 import React,{ useRef, useState, useCallback, useEffect } from 'react'
 import { Vector3 } from "three";
 import TransformControl from './transformControl'
+
 import EdgeDragPoint from './edgeDragPoint'
 
 
@@ -22,7 +23,7 @@ export default function Edge(props) {
         if(index===selectedEdge){
             return 'red'
         }else if(hover){
-            return 'green'
+            return 'red'
         }else{
             return 'gray'
         }
@@ -32,9 +33,17 @@ export default function Edge(props) {
         selectEdge(index);
     }
 
+    function edgeHover(){
+        
+    }
+
+
+
+
     return (
         <>
         <line
+            onClick={e => select()}
             onPointerOver={e => setHover(true)}
             onPointerOut={e => setHover(false)}
             >

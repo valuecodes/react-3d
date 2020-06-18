@@ -131,7 +131,7 @@ export default function MeshEdit({current}) {
                 />
             )}
 
-            {edges.map((edge,index)=>
+            {/* {edges.map((edge,index)=>
                 <Edge 
                     edge={edge} 
                     index={index} 
@@ -140,7 +140,7 @@ export default function MeshEdit({current}) {
                     selectEdge={selectEdge}
                     updateEdge={updateEdge}
                 />
-            )}
+            )} */}
 
             <Faces 
                 current={current} 

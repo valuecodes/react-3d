@@ -8,6 +8,12 @@ export default function TransformControl({mesh, selected}) {
 
     const transform = useRef()
     const { camera, gl } = useThree()
+
+    // if(transform.current){
+    //     const controls = transform.current
+    //     controls.setMode('rotate')        
+    // }
+
     
     if(selected){
         return (     

@@ -9,10 +9,9 @@ export default function BoxEdit() {
     return (
         <mesh
             ref={box}
-            onClick={e => console.log(box)}
         >
-            <boxGeometry attach="geometry" args={[10, 10, 10]} />
-            <meshBasicMaterial  attach="material" color='white'/>  
+            <boxGeometry attach="geometry" args={[20, 20, 20]} />
+            <meshBasicMaterial  attach="material" color='rgb(179, 181, 179)'/>  
             <MeshEdit current={box}/>
         </mesh>
     )

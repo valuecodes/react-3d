@@ -19,10 +19,14 @@ import Circle from './components/circle/circle'
 
 import Box from './box/box'
 import BoxEdit from './box/boxEdit'
+import SmoothBox from './box/smoothBox'
 
 import Line from './components/line/line'
 import LineLoop from './components/lineLoop/line'
 import { useDrag } from "react-use-gesture"
+
+import Maze from './ground/maze/maze'
+import GridRef from './ground/gridRef/gridRef'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -38,7 +42,7 @@ export default function Three() {
         cameraRotation:[0,0,0],
         orbit:true,
         axes:false,
-        grid:true,
+        grid:false,
         mode:'orbit'
     })
 
@@ -73,14 +77,14 @@ export default function Three() {
             >
             <Canvas
                 camera={{
-                    position:[0,0,120]
+                    position:[20,100,20]
                 }}   
             >
                 <ambientLight />
                 <pointLight 
                     // position={light} 
                     // position={[0,-100,-100]} 
-                    position={[0,0,120]} 
+                    position={[0,120,-120]} 
                     />
 
                 <group
@@ -98,7 +102,10 @@ export default function Three() {
                     {/* <Grid shape={{cols:5, rows:5}} /> */}
                     {/* <CustomBox position={[0,5,0]} /> */}
                     {/* <Box position={[0,5,0]} /> */}
-                    <BoxEdit/>
+                    {/* <BoxEdit/> */}
+                    {/* <SmoothBox/> */}
+                    {/* <Maze/> */}
+                    <GridRef/>
                     {/* <Line cameraSettings={cameraSettings}/> */}
                     {/* <LineLoop cameraSettings={cameraSettings}/> */}
                     {/* <TestBox position={[0,5,0]}/> */}
