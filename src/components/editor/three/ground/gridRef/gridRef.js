@@ -24,11 +24,13 @@ export default function GridRef() {
                 let gridCell=new GridCell(j,i,i*j)
                 gridCell.mesh.position.x=(j*5)
                 gridCell.mesh.position.z=(i*5)
+                gridCell.createWalls()
                 newGridcells.push(gridCell)
             }
         }
         cubes.current=newGridcells;
         savedData.current.current=newGridcells[0]
+        console.log(newGridcells)
         setGridCells(newGridcells)
     },[])
 
@@ -37,23 +39,26 @@ export default function GridRef() {
             
             let {current,stack}=savedData.current
             let currentCubes={...cubes.current}
-            console.log(cubes)
+            // console.log(current,stack,currentCubes)
             // let newGrid=[...grid]
             current.visited=true
             current.current=false;
-            currentCubes[current.index].mesh.material.color.b=150
+            // currentCubes[current.index].mesh.material.color.g=0
             let next = current.checkNeigbors(currentCubes);
             
-            console.log(next)
+            
             if (next) {
                 next.visited = true;
                 stack.push(current);
                 removeWalls(current, next);
+                current.setWalls(current);
+                next.setWalls(next);
                 savedData.current.current=next
                 next.current=true;
                 cubes.current=currentCubes
-                console.log(next.index)
-                currentCubes[next.index].mesh.material.color.r=100
+                // console.log(stack)
+                // currentCubes[next.index].mesh.material.color.g=250
+                // currentCubes[next.index].mesh.material.color.r=250
                 // setGrid(newGrid);
               } 
             else if (stack.length > 0) {
@@ -77,7 +82,7 @@ export default function GridRef() {
 
 
 function removeWalls(a, b) {
-    
+
     let x = a.x - b.x;
     if (x === 1) {
       a.walls[3] = false;
