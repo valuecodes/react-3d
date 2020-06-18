@@ -17,8 +17,8 @@ export default function GridRef() {
 
     useEffect(()=>{
         let newGridcells=[];
-        let rows=10;
-        let cols=10;
+        let rows=20;
+        let cols=20;
         for(var j=0;j<rows;j++){
             for(var i=0;i<cols;i++){
                 let gridCell=new GridCell(j,i,i*j)
@@ -30,7 +30,6 @@ export default function GridRef() {
         }
         cubes.current=newGridcells;
         savedData.current.current=newGridcells[0]
-        console.log(newGridcells)
         setGridCells(newGridcells)
     },[])
 
@@ -71,6 +70,7 @@ export default function GridRef() {
 
     return (
         <mesh
+        position={[-50,0,-50]}
         onClick={e => setStart(!start)}
         >
             {gridCells.map(elem=>

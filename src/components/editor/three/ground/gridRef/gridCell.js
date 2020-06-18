@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { Vector3, Geometry } from 'three';
 
-let rows=10;
-let cols=10;
+let rows=20;
+let cols=20;
 
 function getIndex(i, j) {
     if (i < 0 || j < 0 || i > cols - 1 || j > rows - 1) {
@@ -81,7 +81,6 @@ export default function GridCell(x,z,index){
         current.mesh.children[1].visible=current.walls[1];
         current.mesh.children[2].visible=current.walls[2];
         current.mesh.children[3].visible=current.walls[3];
-        console.log(current);
     }
 
     this.checkNeigbors=(grid)=>{
