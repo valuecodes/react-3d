@@ -42,11 +42,11 @@ export default function GridRef() {
             // let newGrid=[...grid]
             current.visited=true
             current.current=false;
+            current.material.color.set( 'red' )
             // currentCubes[current.index].mesh.material.color.g=0
             let next = current.checkNeigbors(currentCubes);
-            
-            
             if (next) {
+                next.material.color.set( 'purple' )
                 next.visited = true;
                 stack.push(current);
                 removeWalls(current, next);
@@ -55,6 +55,7 @@ export default function GridRef() {
                 savedData.current.current=next
                 next.current=true;
                 cubes.current=currentCubes
+                
                 // console.log(stack)
                 // currentCubes[next.index].mesh.material.color.g=250
                 // currentCubes[next.index].mesh.material.color.r=250

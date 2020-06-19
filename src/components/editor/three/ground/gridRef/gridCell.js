@@ -21,7 +21,7 @@ export default function GridCell(x,z,index){
     this.current=false;
     this.offSet=10;
     this.geometry= new THREE.BoxGeometry( 5, 1, 5 );
-    this.material= new THREE.MeshBasicMaterial( {color:'orange'} );
+    this.material= new THREE.MeshBasicMaterial( {color:'white'} );
     this.mesh=new THREE.Mesh( this.geometry, this.material);
 
     this.createWalls=()=>{
@@ -59,7 +59,7 @@ export default function GridCell(x,z,index){
         currentWalls.map(wall=>{
 
                 let geo = new THREE.BoxGeometry( ...wall.geometry )
-                let mat =  new THREE.MeshStandardMaterial( {color:'green'} );
+                let mat =  new THREE.MeshStandardMaterial( {color:'gray'} );
                 let wall1=new THREE.Mesh( geo, mat);
                 wall1.position.x=wall1.position.x+(wall.pos==='right'?2.5:wall.pos==='left'?-2.5:0);
                 wall1.position.z=wall1.position.z+(wall.pos==='top'?-2.5:wall.pos==='bot'?2.5:0);
