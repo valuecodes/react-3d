@@ -59,7 +59,7 @@ export default function GridCell(x,z,index){
         currentWalls.map(wall=>{
 
                 let geo = new THREE.BoxGeometry( ...wall.geometry )
-                let mat =  new THREE.MeshStandardMaterial( {color:'gray'} );
+                let mat =  new THREE.MeshStandardMaterial( {color:'black'} );
                 let wall1=new THREE.Mesh( geo, mat);
                 wall1.position.x=wall1.position.x+(wall.pos==='right'?2.5:wall.pos==='left'?-2.5:0);
                 wall1.position.z=wall1.position.z+(wall.pos==='top'?-2.5:wall.pos==='bot'?2.5:0);

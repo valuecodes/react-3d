@@ -1,7 +1,7 @@
 import React,{ useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from 'react-three-fiber'
-import CellObject from './objects/cell'
+
 import { Vector3 } from 'three';
 import GridCell from './gridCell'
 

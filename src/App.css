@@ -37,7 +37,8 @@ body{
 /* Editor */
 .editor{
     margin: 0px;
-    background-color: azure;
+    /* background-color: rgb(235, 240, 247); */
+    background: linear-gradient(#ffffff, #969696);
 }
 
 /* Canvas */

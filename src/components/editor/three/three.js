@@ -25,8 +25,8 @@ import Line from './components/line/line'
 import LineLoop from './components/lineLoop/line'
 import { useDrag } from "react-use-gesture"
 
-import Maze from './ground/maze/maze'
 import GridRef from './ground/gridRef/gridRef'
+import MazeAstar from './ground/mazeAStar/mazeAstar'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -105,7 +105,8 @@ export default function Three() {
                     {/* <BoxEdit/> */}
                     {/* <SmoothBox/> */}
                     {/* <Maze/> */}
-                    <GridRef/>
+                    {/* <GridRef/> */}
+                    <MazeAstar size={[20,20]}/>
                     {/* <Line cameraSettings={cameraSettings}/> */}
                     {/* <LineLoop cameraSettings={cameraSettings}/> */}
                     {/* <TestBox position={[0,5,0]}/> */}
