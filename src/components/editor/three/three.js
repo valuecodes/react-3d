@@ -11,8 +11,8 @@ import HelperGrid from './../../../utils/helpers/helperGrid'
 import HelperAxes from './../../../utils/helpers/helperAxes'
 
 import CustomBox from './components/box/customBox'
-import AStar from './ground/pathFinding/aStar'
-import Grid from './ground/customGrid/grid'
+
+
 import Circle from './components/circle/circle'
 
 // import TestBox from './../three/components/customBox/testbox'
@@ -25,8 +25,8 @@ import Line from './components/line/line'
 import LineLoop from './components/lineLoop/line'
 import { useDrag } from "react-use-gesture"
 
-import GridRef from './ground/gridRef/gridRef'
-import MazeAstar from './ground/mazeAStar/mazeAstar'
+
+import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -106,7 +106,7 @@ export default function Three() {
                     {/* <SmoothBox/> */}
                     {/* <Maze/> */}
                     {/* <GridRef/> */}
-                    <MazeAstar size={[20,20]}/>
+                    <MazePathFinder size={[20,20]}/>
                     {/* <Line cameraSettings={cameraSettings}/> */}
                     {/* <LineLoop cameraSettings={cameraSettings}/> */}
                     {/* <TestBox position={[0,5,0]}/> */}
