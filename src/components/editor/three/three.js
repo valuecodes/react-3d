@@ -27,6 +27,10 @@ import { useDrag } from "react-use-gesture"
 
 
 import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
+import Maze from './algorithms/maze/maze'
+import AStar from './algorithms/astar/aStar'
+
+import Navigation from './navigation/navigation'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
 
@@ -45,6 +49,8 @@ export default function Three() {
         grid:false,
         mode:'orbit'
     })
+
+    const main=useRef();
 
     useEffect(()=>{
         let newGridRow=[];
@@ -71,7 +77,7 @@ export default function Three() {
     return (
         <div id='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
-            // onClick={addBox}
+            onClick={e => console.log('test')}
             // onKeyDown={e => console.log(e.keyCode)}
             onScroll={e => console.log(e)}
             >
@@ -79,6 +85,7 @@ export default function Three() {
                 camera={{
                     position:[20,100,20]
                 }}   
+                
             >
                 <ambientLight />
                 <pointLight 
@@ -91,12 +98,13 @@ export default function Three() {
                     rotation={cameraSettings.cameraRotation}
                     size={[160,160,160]}
                     position={[0,0,0]}
+                    ref={main}
                 >
                     
                     {/* <Pointer position={light}/> */}
                     {/* <GroundGrid  orbit={orbit}/> */}
                     <OrbitControl cameraSettings={cameraSettings}/>
-                    {/* <AStar/> */}
+                    
                     {/* <Circle position={[10,0,0]}/> */}
                     {/* <Circle position={[0,0,10]}/> */}
                     {/* <Grid shape={{cols:5, rows:5}} /> */}
@@ -104,9 +112,15 @@ export default function Three() {
                     {/* <Box position={[0,5,0]} /> */}
                     {/* <BoxEdit/> */}
                     {/* <SmoothBox/> */}
-                    {/* <Maze/> */}
+                    
                     {/* <GridRef/> */}
-                    <MazePathFinder size={[20,20]}/>
+
+                    <MazePathFinder position={[0,0,0]} size={[20,20]}/>
+                    {/* <Maze position={[0,0,0]} size={[20,20]}/> */}
+                    {/* <AStar position={[0,0,0]} size={[20,20]}/> */}
+
+                    {/* <Text text={'Testing'}/> */}
+
                     {/* <Line cameraSettings={cameraSettings}/> */}
                     {/* <LineLoop cameraSettings={cameraSettings}/> */}
                     {/* <TestBox position={[0,5,0]}/> */}
@@ -121,7 +135,7 @@ export default function Three() {
                 )} */}
 
             </Canvas>
-
+            <Navigation />
             <CameraControls 
                 cameraSettings={cameraSettings}
                 changeCameraSettings={changeCameraSettings}

@@ -4,8 +4,9 @@ import { useFrame } from 'react-three-fiber'
 export default function Maze(props) {
 
     const {
+        mesh,
+        phase,
         gridCells, 
-        mazeCreator,
         savedData,
         cubes,
         startPathFinding
@@ -14,18 +15,22 @@ export default function Maze(props) {
     const [maze, setMaze]=useState(false)
 
     useEffect(()=>{
-        setMaze(mazeCreator)
-    },[mazeCreator])
+        setMaze(phase==='mazeCreator')
+    },[phase])
 
     useFrame(()=>{
         if(maze){
-            let {current,stack}=savedData.current
+            let {current,stack,count}=savedData.current
             let currentCubes={...cubes.current}
             current.visited=true
             current.current=false;
             current.material.color.set( 'gray' )
             let next = current.getNextNeighbor();
             if (next) {
+                savedData.current.count+=1           
+                mesh.current.children[mesh.current.children.length-1].text='Creating Maze...'+((count/Object.keys(gridCells).length)*100).toFixed(1)+'%'
+
+                console.log(mesh.current.children[mesh.current.children.length-1].geometry.instanceCount)
                 next.material.color.set( 'purple' )
                 next.visited = true;
                 stack.push(current);

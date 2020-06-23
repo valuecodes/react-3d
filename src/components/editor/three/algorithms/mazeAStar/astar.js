@@ -2,7 +2,7 @@ import React,{ useRef, useState, useEffect } from 'react'
 import { useFrame } from 'react-three-fiber'
 import { Vector3 } from 'three';
 
-export default function Astar({pathFinding, cubes, startTracking}) {
+export default function Astar({mesh,phase, cubes, startTracking}) {
     const line=useRef();
     const [aStart, setaStart]=useState(false);
 
@@ -16,10 +16,10 @@ export default function Astar({pathFinding, cubes, startTracking}) {
     })
 
     useEffect(()=>{
-        if(pathFinding){
+        if(phase==='pathFinding'){
             startAstar()
         }
-    },[pathFinding])
+    },[phase])
     
     function startAstar(){
         savedAstar.current={
@@ -32,6 +32,7 @@ export default function Astar({pathFinding, cubes, startTracking}) {
             currentPosition:[0,0,0],
             currentTarget:null
         }  
+        mesh.current.children[mesh.current.children.length-1].text='Finding Path...'
         setaStart(true)
     }
 
@@ -150,6 +151,7 @@ export default function Astar({pathFinding, cubes, startTracking}) {
     return (
         <line
             ref={line}
+
         >
             <bufferGeometry attach="geometry"/>
             <lineBasicMaterial attach="material" color={'red'}/>
