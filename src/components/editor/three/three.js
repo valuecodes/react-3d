@@ -28,7 +28,7 @@ import { useDrag } from "react-use-gesture"
 
 import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 import Maze from './algorithms/maze/maze'
-import AStar from './algorithms/astar/aStar'
+import AStar from './algorithms/astar/astar'
 
 import Navigation from './navigation/navigation'
 
@@ -117,7 +117,7 @@ export default function Three() {
 
                     <MazePathFinder position={[0,0,0]} size={[20,20]}/>
                     {/* <Maze position={[0,0,0]} size={[20,20]}/> */}
-                    {/* <AStar position={[0,0,0]} size={[20,20]}/> */}
+                    {/* <AStar position={[0,0,0]} size={[60,60]}/> */}
 
                     {/* <Text text={'Testing'}/> */}
 

@@ -2,7 +2,7 @@ import React,{ useRef, useState, useEffect } from 'react'
 import { useFrame } from 'react-three-fiber'
 import { Vector3 } from 'three';
 
-export default function Astar({mesh,phase, cubes, startTracking}) {
+export default function Astar({mesh,listMesh,phase, cubes, startTracking}) {
     const line=useRef();
     const [aStart, setaStart]=useState(false);
 
@@ -32,7 +32,8 @@ export default function Astar({mesh,phase, cubes, startTracking}) {
             currentPosition:[0,0,0],
             currentTarget:null
         }  
-        mesh.current.children[mesh.current.children.length-1].text='Finding Path...'
+        listMesh[1].text='Finding Path...'
+        listMesh[1].children[0].material.color.set('green')
         setaStart(true)
     }
 
@@ -66,6 +67,8 @@ export default function Astar({mesh,phase, cubes, startTracking}) {
                     addLine(line,path)
                     setaStart(false)
                     ending=true;
+                    listMesh[1].text='Path Found!'
+                    listMesh[1].children[0].material.color.set('black')
                 }
 
                 removeFromArray(openSet,current)

@@ -4,8 +4,9 @@ import Tracker from './tracker'
 import Astar from './astar'
 import Maze from './maze'
 import { calculatePosition, calculateTextHeaderPosition, calculateListPosition }from './../../../../../utils/other/calculatePosition'
-import HeaderText from './../../../../../utils/helpers/headerText'
-import TextList from './../../../../../utils/helpers/text/textList'
+import HeaderText from './../../../../../utils/helpers/text/header/headerText'
+import TextList from './../../../../../utils/helpers/text/list/textList'
+
 
 export default function MazePathFinder({ size, position }) {
     
@@ -14,6 +15,8 @@ export default function MazePathFinder({ size, position }) {
     const [phase, setPhase] = useState(null)
     const [text, setText] =useState('');
     const [list, setList] = useState(['Maze Creator','Pathfinder','Path tracker'])
+    const [listMesh, setListMesh]=useState(null);
+    
     const mesh=useRef();
     const cubes=useRef();
     let savedData=useRef({
@@ -21,21 +24,6 @@ export default function MazePathFinder({ size, position }) {
         stack:[],
         count:1
     })
-
-    useEffect(()=>{
-        console.log()
-
-        let newText='123'
-        if(phase==='mazeCreator') newText='Creating Maze'
-        if(phase==='pathFinding') newText='Finding Path'
-        if(phase==='trackPath') newText='Tracking Path'        
-        console.log(mesh)
-        if( mesh.current.children[27]){
-            // mesh.current.children[27].text=newText
-        }
-        
-        // setText(newText)
-    },[phase])
 
     useEffect(()=>{
         let newGridcells=[];
@@ -69,6 +57,10 @@ export default function MazePathFinder({ size, position }) {
         setPhase('trackPath')
     }
 
+    function addListMesh(mesh){
+        setListMesh(mesh)
+    }
+
     return (
         <mesh
             ref={mesh}
@@ -77,6 +69,7 @@ export default function MazePathFinder({ size, position }) {
         >
             <Maze 
                 mesh={mesh}
+                listMesh={listMesh}
                 phase={phase}
                 gridCells={gridCells} 
                 savedData={savedData} 
@@ -85,12 +78,14 @@ export default function MazePathFinder({ size, position }) {
             />
             <Astar 
                 mesh={mesh}
+                listMesh={listMesh}
                 phase={phase}
                 cubes={cubes} 
                 startTracking={startTracking}
             />
             <Tracker 
                 mesh={mesh}
+                listMesh={listMesh}
                 phase={phase}
                 pathCoordinates={pathCoordinates}
             />
@@ -100,14 +95,14 @@ export default function MazePathFinder({ size, position }) {
                 phase={true}
                 position={calculateTextHeaderPosition(size,position)}    
             />
-            {list.map((elem,index)=>
-                <TextList
-                    text={elem}
-                    phase={true}
-                    position={calculateListPosition(size,position,index)} 
-                />            
-            )}
-
+            <TextList
+                list={list}
+                listMesh={listMesh}
+                addListMesh={addListMesh}
+                text={'test'}
+                size={size}
+                position={calculateListPosition(size,position,0)} 
+            />   
         </mesh>
     )
 }

@@ -4,8 +4,8 @@ import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
 import { extend, Canvas } from "react-three-fiber";
 import TextBackGround from './textBackGround'
 extend({ TextMesh });
+export default function TextListElement({ text, position }) {
 
-export default function TextList({ text, phase, position }) {
     const [currentText, setCurrentText] = useState("");
     const [visibility, setVisibility] = useState(false)
     
@@ -39,6 +39,5 @@ export default function TextList({ text, phase, position }) {
                 <meshPhongMaterial attach="material" color="black" side={2}/>   <TextBackGround position={position}/>
             </textMesh>
         </>
-
     )
 }

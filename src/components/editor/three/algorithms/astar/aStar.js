@@ -1,191 +1,110 @@
-import React,{useState, useEffect, useRef} from 'react'
-import { useFrame } from 'react-three-fiber'
-import GridBlock from './gridBlock'
-import Spot from './spot'
-import Row from './row'
-import DragControl from './../../../../../utils/other/dragControl'
-import { calculatePosition, calculateTextHeaderPosition }from './../../../../../utils/other/calculatePosition'
-import HeaderText from './../../../../../utils/helpers/headerText'
+import React,{ useState, useEffect, useRef } from 'react'
+import Cell from './cell'
+// import Tracker from './tracker'
+// import Astar from './astar'
+// import Maze from './maze'
+import { calculatePosition, calculateTextHeaderPosition, calculateListPosition }from './../../../../../utils/other/calculatePosition'
+import HeaderText from './../../../../../utils/helpers/text/header/headerText'
+import TextList from './../../../../../utils/helpers/text/list/textList'
 
-export default function AStar({size,position}) {
+import Algoritm from './algorithm'
+import Tracker from './tracker'
 
-    const [sgrid, setGrid]=useState([[]]);
-    const [matrix, setMatrix]=useState({rows:20,cols:20})
-    const [AStar, setAStar]=useState(false)
+export default function Astar({ size, position }) {
+    
+    const [gridCells, setGridCells] = useState([]);
+    const [pathCoordinates, setPathCoordinates]=useState([]);
+    const [phase, setPhase] = useState(null)
+    const [text, setText] =useState('');
+    const [list, setList] = useState(['Pathfinder','Path tracker'])
+    const [listMesh, setListMesh]=useState(null);
+    
+    const mesh=useRef();
+    const cubes=useRef();
     let savedData=useRef({
-        openSet:[],
-        closedSet:[],
-        path:[],
-        noSolution:false,
-        start:[],
-        end:[]
+        current:null,
+        stack:[],
+        count:1
     })
 
-
     useEffect(()=>{
-        const [rows, cols]=size;
-
-        let newGrid=[];
-        for(var i=0;i<rows;i++){      
-            newGrid[i] = new Array()
-        }
-
-        for(var i=0;i<rows;i++){
-            for(var a=0;a<cols;a++){
-                newGrid[i][a]=new Spot(i,a,a,rows,cols);
+        let newGridcells=[];
+        let rows=size[0];
+        let cols=size[1];
+        for(var j=0;j<rows;j++){
+            for(var i=0;i<cols;i++){
+                let gridCell=new Cell(j,i,i*j,rows,cols)
+                gridCell.mesh.position.x=(j*2)
+                gridCell.mesh.position.z=(i*2)
+                newGridcells.push(gridCell)
             }
         }
-
-        for(var i=0;i<rows;i++){
-            for(var a=0;a<cols;a++){
-                newGrid[i][a].addNeighbors(newGrid)
+        newGridcells.forEach(cell => cell.addNeigbors(newGridcells))
+        newGridcells.forEach((cell,index) => {
+            if(Math.random(1)<0.1){
+                cell.addWall(newGridcells)
+                cell.addMiddleWall(newGridcells,index)
+                if(newGridcells[index+1])newGridcells[index+1].addWall(newGridcells)
+                if(newGridcells[index+2])newGridcells[index+2].addWall(newGridcells)
+                
             }
-        }
-        savedData.current={
-            openSet:[newGrid[0][0]],
-            closedSet:[],
-            path:[],
-            noSolution:false,
-            start:newGrid[0][0],
-            end:newGrid[rows-1][cols-1]
-        }     
-
-        setGrid(newGrid)
+        })
+        cubes.current=newGridcells;
+        savedData.current.current=newGridcells[0];
+        newGridcells[newGridcells.length-1].wall=false;
+        setGridCells(newGridcells)
     },[])
 
-    function removeFromArray(arr,elt){
-        for(var i=arr.length-1;i>=0;i--){
-            if(arr[i]==elt){
-                arr.splice(i,1);
-            }
-        }
+    function startMazeCreator(){
+        setPhase('pathFinding')
+    }
+
+    function startPathFinding(){
+        setPhase('pathFinding')
     }
     
-    function heuristic(a,b){
-        return Math.sqrt( Math.pow((a.i-b.i), 2) + Math.pow((a.j-b.j), 2) );
-        // return Math.abs(a.i-b.i)+Math.abs(a.j-b.j)
+    function startTracking(path){
+        setPathCoordinates(path)
+        setPhase('trackPath')
     }
 
-    useFrame(() => {      
+    function addListMesh(mesh){
+        setListMesh(mesh)
+    }
 
-        if(AStar){
-            let {
-                openSet,
-                closedSet,
-                path,
-                noSolution,
-                start,
-                end
-            }=savedData.current;
-            let grid=[...sgrid];
-
-
-            let notFound=true;
-                const [rows, cols]=size
-
-                if(openSet.length >0){
-                    var winner=0;
-                    for(var i=0;i<openSet.length;i++){
-                        if(openSet[i].f<openSet[winner].f){
-                            winner=i;
-                        }
-                    }
-                    var current = openSet[winner];
-                    if(openSet[winner]===end){
-                        console.log('Done!')
-                        setGrid(grid)
-                        setAStar(false)
-                    }
-            
-                    removeFromArray(openSet,current)
-                    closedSet.push(current);
-            
-                    let neighbors=current.neighbors;
-            
-                    for(var i=0;i<neighbors.length;i++){
-                        var neighbor=neighbors[i];
-                        if(!closedSet.includes(neighbor)&&!neighbor.wall){
-                            var tempG=current.g+1;
-                            let newPath=false;
-                            if(openSet.includes(neighbor)){
-                                if(tempG<neighbor.g){
-                                    neighbor.g=tempG
-                                    newPath=true;
-                                }
-                            }else{
-                                neighbor.g=tempG;
-                                newPath=true;
-                                openSet.push(neighbor);
-                            }
-                            if(newPath){
-                                neighbor.h=heuristic(neighbor,end)
-                                neighbor.f=neighbor.g+neighbor.h;   
-                                neighbor.previous=current                    
-                            }
-                        }
-                        neighbor.g=current.g+1;
-                    }
-            
-                }else{
-                    notFound=false
-                    noSolution=true;
-                    setAStar(false)
-                }
-            
-                for(var i=0;i<cols;i++){
-                    for(var j=0;j<rows;j++){
-                        grid[i][j].changeColor('yellow');
-                        setGrid(grid)
-                    }
-                }
-            
-                for(var q=0;q<closedSet.length;q++){
-                    closedSet[q].changeColor('red')
-                    setGrid(grid)
-                }
-                
-            
-                for(var z=0;z<openSet.length;z++){
-                    openSet[z].changeColor('green')
-                    setGrid(grid)
-                }
-            
-                if(!noSolution){
-                    path=[];
-                    var temp=current;
-                    path.push(temp)
-                    while(temp.previous){
-                        path.push(temp.previous)
-                        temp=temp.previous
-                    }        
-                }
-            
-                for(var i=0;i<path.length;i++){
-                    path[i].changeColor('blue')
-                    setGrid(grid)
-                }
-                console.log('testS')       
-        }
-      })
-
-      console.log('update')
-
-
-      console.log('update')
     return (
-        <>
-            <mesh
-                position={calculatePosition(size,position)}
-                onClick={e => setAStar(!AStar)}>
-                    {sgrid.map(row=>
-                        <Row row={row}/>
-                    )}     
-                <HeaderText 
-                    text={'Maze'}
-                    phase={true}
-                    position={calculateTextHeaderPosition(size,position)}    
-                /> 
-            </mesh>
-        </>
+        <mesh
+            ref={mesh}
+            position={calculatePosition(size,position,2)}
+            onClick={e => startMazeCreator()}
+        >
+            <Algoritm 
+                gridCells={gridCells}
+                phase={phase}
+                cubes={cubes}
+                listMesh={listMesh}
+                startTracking={startTracking}
+                />
+            <Tracker 
+                mesh={mesh}
+                listMesh={listMesh}
+                phase={phase}
+                pathCoordinates={pathCoordinates}
+            />
+
+            <HeaderText 
+                text={'Maze Pathfinder'}
+                phase={true}
+                position={calculateTextHeaderPosition(size,position)}    
+            />
+            <TextList
+                list={list}
+                listMesh={listMesh}
+                addListMesh={addListMesh}
+                text={'test'}
+                size={size}
+                position={calculateListPosition(size,position,0)} 
+            />   
+        </mesh>
     )
 }

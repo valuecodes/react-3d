@@ -6,7 +6,6 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
     const box=useRef();
     
     useEffect(()=>{
-        console.log(phase)
         if(phase==='trackPath'){
             startTracking(phase==='trackPath')
         }
@@ -17,8 +16,7 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
         box.current.position.z=0
         box.current.scale.y=1
         box.current.rotation.x=-Math.PI/2
-        // savedAstar.current.currentPosition=null
-        listMesh[2].children[0].material.color.set('green')
+        listMesh[1].children[0].material.color.set('green')
         pathCoordinates.count=1;
         setTracking(trackPath)
     }
@@ -34,11 +32,10 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
             }
 
             pathCoordinates.count+=1
-            listMesh[2].text='Tracking Path...'+(count/((path.length-1)*5)*100).toFixed(2)+'%'
+            listMesh[1].text='Tracking Path...'+(count/((path.length-1)*2)*100).toFixed(2)+'%'
 
-
-            let xTarget=path[currentTarget].x*5
-            let zTarget=path[currentTarget].z*5
+            let xTarget=path[currentTarget].x*2
+            let zTarget=path[currentTarget].z*2
             
             if(xTarget>tracker.position.x){
                 tracker.position.x=tracker.position.x+1
@@ -60,8 +57,8 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
                 zTarget===tracker.position.z
             ){
                 if(currentTarget===0){
-                    listMesh[2].text='Ready!'
-                    listMesh[2].children[0].material.color.set('black')
+                    // listMesh[2].text='Ready!'
+                    // listMesh[2].children[0].material.color.set('black')
                     setTracking(false)
                 }
                 currentTarget--;
@@ -75,8 +72,8 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
             ref={box}
             scale={[1,0.1,1]}
         >
-            <sphereBufferGeometry attach="geometry" args={[2, 32, 32]}/>
-            <meshBasicMaterial attach="material" color={'steelblue'}/>
+            <sphereBufferGeometry attach="geometry" args={[1, 32, 32]}/>
+            <meshBasicMaterial attach="material" color={'red'}/>
         </mesh>
     )
 }

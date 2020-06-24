@@ -5,6 +5,7 @@ export default function Maze(props) {
 
     const {
         mesh,
+        listMesh,
         phase,
         gridCells, 
         savedData,
@@ -16,6 +17,9 @@ export default function Maze(props) {
 
     useEffect(()=>{
         setMaze(phase==='mazeCreator')
+        if(phase==='mazeCreator'){
+            listMesh[0].children[0].material.color.set('green')
+        }
     },[phase])
 
     useFrame(()=>{
@@ -28,7 +32,7 @@ export default function Maze(props) {
             let next = current.getNextNeighbor();
             if (next) {
                 savedData.current.count+=1           
-                mesh.current.children[mesh.current.children.length-1].text='Creating Maze...'+((count/Object.keys(gridCells).length)*100).toFixed(1)+'%'
+                listMesh[0].text='Creating Maze...'+((count/Object.keys(gridCells).length)*100).toFixed(1)+'%'
 
                 console.log(mesh.current.children[mesh.current.children.length-1].geometry.instanceCount)
                 next.material.color.set( 'purple' )
@@ -44,6 +48,8 @@ export default function Maze(props) {
             else if (stack.length > 0) {
                 savedData.current.current=stack.pop();              
             }else{
+                listMesh[0].text='Maze Ready!'
+                listMesh[0].children[0].material.color.set('black')
                 startPathFinding();
             }          
         }

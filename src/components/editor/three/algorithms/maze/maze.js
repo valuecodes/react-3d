@@ -3,18 +3,22 @@ import * as THREE from 'three'
 import { useFrame } from 'react-three-fiber'
 import { Vector3 } from 'three';
 import GridCell from './gridCell'
-import { calculatePosition, calculateTextHeaderPosition}from './../../../../../utils/other/calculatePosition'
-import HeaderText from './../../../../../utils/helpers/headerText'
+import { calculatePosition, calculateTextHeaderPosition, calculateListPosition}from './../../../../../utils/other/calculatePosition'
+import HeaderText from './../../../../../utils/helpers/text/header/headerText'
+import TextList from './../../../../../utils/helpers/text/list/textList'
 
 
 export default function GridRef({size, position}) {
     const [grid, setGrid] = useState([]);
     const [gridCells, setGridCells] = useState([]);
     const [start, setStart]=useState(false)
+    const [list, setList]=useState(['Click on the grid to start'])
+    const [listMesh, setListMesh]=useState(null);
     const cubes=useRef();
     let savedData=useRef({
         current:null,
-        stack:[]
+        stack:[],
+        count:1,
     })
 
     useEffect(()=>{
@@ -44,6 +48,10 @@ export default function GridRef({size, position}) {
             current.material.color.set( 'red' )
             let next = current.checkNeigbors(currentCubes);
             if (next) {
+                
+                savedData.current.count+=1   
+                listMesh[0].text='Creating Maze...'+((count/Object.keys(gridCells).length)*100).toFixed(1)+'%'
+
                 next.material.color.set( 'purple' )
                 next.visited = true;
                 stack.push(current);
@@ -56,12 +64,17 @@ export default function GridRef({size, position}) {
               } 
             else if (stack.length > 0) {
                 savedData.current.current=stack.pop();              
-            }else{
+            }else{  
+                listMesh[0].text='Maze Ready'
                 setStart(false)
             }          
         }     
     })
 
+    function addListMesh(mesh){
+        setListMesh(mesh)
+    }
+    
     return (
         <mesh
         position={calculatePosition(size,position)}
@@ -76,6 +89,14 @@ export default function GridRef({size, position}) {
                 phase={true}
                 position={calculateTextHeaderPosition(size,position)}    
             />
+            <TextList
+                list={list}
+                listMesh={listMesh}
+                addListMesh={addListMesh}
+                text={'test'}
+                size={size}
+                position={calculateListPosition(size,position,0)} 
+            />  
         </mesh>
     )
 }
