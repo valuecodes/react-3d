@@ -1,16 +1,19 @@
 import React,{ useState, useEffect, useRef } from 'react'
-import Cell from './cell'
-// import Tracker from './tracker'
-// import Astar from './astar'
-// import Maze from './maze'
-import { calculatePosition, calculateTextHeaderPosition, calculateListPosition }from './../../../../../utils/other/calculatePosition'
+import { useFrame } from 'react-three-fiber'
+import { 
+    calculatePosition, 
+    calculateTextHeaderPosition, 
+    calculateListPosition,
+    updateAnimation
+}from './../../../../../utils/other/calculatePosition'
 import HeaderText from './../../../../../utils/helpers/text/header/headerText'
 import TextList from './../../../../../utils/helpers/text/list/textList'
-
+import { disposeElements } from './../../../../../utils/other/disposeElements'
+import Cell from './cell'
 import Algoritm from './algorithm'
 import Tracker from './tracker'
 
-export default function Astar({ size, position }) {
+export default function Astar({ size, position, renderer }) {
     
     const [gridCells, setGridCells] = useState([]);
     const [pathCoordinates, setPathCoordinates]=useState([]);
@@ -18,6 +21,7 @@ export default function Astar({ size, position }) {
     const [text, setText] =useState('');
     const [list, setList] = useState(['Pathfinder','Path tracker'])
     const [listMesh, setListMesh]=useState(null);
+    const [animation, setAnimation]=useState(false)
     
     const mesh=useRef();
     const cubes=useRef();
@@ -34,8 +38,8 @@ export default function Astar({ size, position }) {
         for(var j=0;j<rows;j++){
             for(var i=0;i<cols;i++){
                 let gridCell=new Cell(j,i,i*j,rows,cols)
-                gridCell.mesh.position.x=(j*2)
-                gridCell.mesh.position.z=(i*2)
+                let target=[j*5,i*5]
+                gridCell.mesh.target=target
                 newGridcells.push(gridCell)
             }
         }
@@ -53,7 +57,22 @@ export default function Astar({ size, position }) {
         savedData.current.current=newGridcells[0];
         newGridcells[newGridcells.length-1].wall=false;
         setGridCells(newGridcells)
+
+        setTimeout(()=>{
+            setAnimation(true)
+        },[1000])
+
+        return () => disposeElements(mesh.current, renderer)
     },[])
+
+    useFrame(()=>{
+        if(animation){
+            let blocks=mesh.current.children
+            let speed=2.5
+            let ready = updateAnimation(blocks,speed)
+            if(ready) setAnimation(false)             
+        }
+    })
 
     function startMazeCreator(){
         setPhase('pathFinding')
@@ -75,7 +94,7 @@ export default function Astar({ size, position }) {
     return (
         <mesh
             ref={mesh}
-            position={calculatePosition(size,position,2)}
+            position={calculatePosition(size,position,5)}
             onClick={e => startMazeCreator()}
         >
             <Algoritm 
@@ -90,12 +109,14 @@ export default function Astar({ size, position }) {
                 listMesh={listMesh}
                 phase={phase}
                 pathCoordinates={pathCoordinates}
+                renderer={renderer}
             />
 
             <HeaderText 
                 text={'Maze Pathfinder'}
                 phase={true}
-                position={calculateTextHeaderPosition(size,position)}    
+                position={calculateTextHeaderPosition(size,position)} 
+                renderer={renderer}   
             />
             <TextList
                 list={list}
@@ -103,7 +124,8 @@ export default function Astar({ size, position }) {
                 addListMesh={addListMesh}
                 text={'test'}
                 size={size}
-                position={calculateListPosition(size,position,0)} 
+                position={calculateListPosition(size,position,0)}
+                renderer={renderer} 
             />   
         </mesh>
     )

@@ -129,7 +129,7 @@ export default function Algorithm(props) {
                 }
 
                 for(var q=0;q<closedSet.length;q++){
-                    closedSet[q].material.color.set('lightsalmon')
+                    closedSet[q].material.color.set('khaki')
                 }
                 
                 for(var z=0;z<openSet.length;z++){
@@ -158,7 +158,7 @@ export default function Algorithm(props) {
         }
       })
         function addLine(path){
-            let coordinates = path.map(cor => new Vector3(cor.x*2, 0, cor.z*2))
+            let coordinates = path.map(cor => new Vector3(cor.x*5, 0, cor.z*5))
             line.current.geometry.setFromPoints(coordinates)
         }
 

@@ -1,7 +1,7 @@
 import React,{ useRef, useState, useEffect } from 'react'
 import { useFrame } from 'react-three-fiber'
-
-export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
+import { disposeElements } from './../../../../../utils/other/disposeElements'
+export default function Tracker({ phase, pathCoordinates,mesh, listMesh, renderer }) {
     const [tracking, setTracking]=useState(false);
     const box=useRef();
     
@@ -12,14 +12,18 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
         }
     },[phase])
 
+    useEffect(()=>{
+        return () => disposeElements(box.current, renderer)
+    },[])
+
     function startTracking(trackPath){
         box.current.position.x=0
         box.current.position.z=0
         box.current.scale.y=1
         box.current.rotation.x=-Math.PI/2
-        // savedAstar.current.currentPosition=null
         listMesh[2].children[0].material.color.set('green')
         pathCoordinates.count=1;
+        box.current.material.visible=true;
         setTracking(trackPath)
     }
 
@@ -76,7 +80,7 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh }) {
             scale={[1,0.1,1]}
         >
             <sphereBufferGeometry attach="geometry" args={[2, 32, 32]}/>
-            <meshBasicMaterial attach="material" color={'steelblue'}/>
+            <meshBasicMaterial attach="material" color={'steelblue'} visible={false}/>
         </mesh>
     )
 }

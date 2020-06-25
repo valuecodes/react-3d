@@ -15,6 +15,22 @@ body{
     grid-template-rows: 100px 200px;
 }
 
+.navigation{
+    position: absolute;
+    width: 100vw;
+    top: 0px;
+}
+.navigationBar{
+    /* position: relative; */
+    width: 200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+}
+.navigationBarButton{
+    height: 20px;
+}
+
 .options{
     width: 1fr;
     display: grid;

@@ -16,8 +16,8 @@ export default function Cell(x,z,index,rows,cols){
     this.f=0;
     this.g=0;
     this.h=0;
-    this.geometry= new THREE.BoxGeometry( 2, 1, 2 );
-    this.material= new THREE.MeshBasicMaterial( {color:'gray'} );
+    this.geometry= new THREE.BoxBufferGeometry( 4, 1, 4 );
+    this.material= new THREE.MeshBasicMaterial( {color:'gainsboro'} );
     this.mesh=new THREE.Mesh( this.geometry, this.material);
 
     this.getIndex=(i, j)=>{
@@ -29,10 +29,10 @@ export default function Cell(x,z,index,rows,cols){
 
     this.addWall=(grid)=>{
         this.wall=true;        
-        let geometry= new OctahedronBufferGeometry( 1.5, 0 );
+        let geometry= new THREE.IcosahedronBufferGeometry( 2.8, 0 );
         let material= new THREE.MeshBasicMaterial( {color:'black'} );
         let mesh=new THREE.Mesh( geometry, material);
-        this.material.color.set('gray')
+        this.material.visible=false
         this.mesh.add(mesh)
     }
 
@@ -45,11 +45,10 @@ export default function Cell(x,z,index,rows,cols){
 
         if(bot && bot2){
             this.wall=true;        
-            let geometry= new THREE.BoxGeometry( 2, 1.1, 4);
-            let material= new THREE.MeshBasicMaterial( {color:'dimgray'} );
+            let geometry= new THREE.BoxBufferGeometry( 5, 1.1, 10);
+            let material= new THREE.MeshBasicMaterial( {color:'black'} );
             let mesh=new THREE.Mesh( geometry, material);
-            mesh.position.z=2
-            this.material.color.set('gray')
+            mesh.position.z=5
             this.mesh.add(mesh)              
         }
           

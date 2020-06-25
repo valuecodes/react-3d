@@ -16,7 +16,7 @@ export default function Cell(x,z,index,rows,cols){
     this.f=0;
     this.g=0;
     this.h=0;
-    this.geometry= new THREE.BoxGeometry( 5, 1, 5 );
+    this.geometry= new THREE.BoxBufferGeometry( 5, 1, 5 );
     this.material= new THREE.MeshBasicMaterial( {color:'#262729'} );
     this.mesh=new THREE.Mesh( this.geometry, this.material);
 
@@ -54,7 +54,7 @@ export default function Cell(x,z,index,rows,cols){
 
         currentWalls.map(wall=>{
 
-            let geo = new THREE.BoxGeometry( ...wall.geometry )
+            let geo = new THREE.BoxBufferGeometry( ...wall.geometry )
             let mat =  new THREE.MeshStandardMaterial( {color:'#1a1a1a'} );
             let wall1=new THREE.Mesh( geo, mat);
             wall1.position.x=wall1.position.x+(wall.pos==='right'?2.5:wall.pos==='left'?-2.5:0);

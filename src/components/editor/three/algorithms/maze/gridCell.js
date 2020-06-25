@@ -1,11 +1,6 @@
 import * as THREE from 'three'
 import { Vector3, Geometry } from 'three';
 
-let rows=20;
-let cols=20;
-
-
-
 export default function GridCell(x,z,index,rows,cols){
     this.x=x;
     this.y=2;
@@ -17,7 +12,7 @@ export default function GridCell(x,z,index,rows,cols){
     this.walls=[true, true, true, true];
     this.current=false;
     this.offSet=10;
-    this.geometry= new THREE.BoxGeometry( 5, 1, 5 );
+    this.geometry= new THREE.BoxBufferGeometry( 5, 1, 5 );
     this.material= new THREE.MeshBasicMaterial( {color:'white'} );
     this.mesh=new THREE.Mesh( this.geometry, this.material);
 
@@ -62,7 +57,7 @@ export default function GridCell(x,z,index,rows,cols){
 
         currentWalls.map(wall=>{
 
-                let geo = new THREE.BoxGeometry( ...wall.geometry )
+                let geo = new THREE.BoxBufferGeometry( ...wall.geometry )
                 let mat =  new THREE.MeshStandardMaterial( {color:'black'} );
                 let wall1=new THREE.Mesh( geo, mat);
                 wall1.position.x=wall1.position.x+(wall.pos==='right'?2.5:wall.pos==='left'?-2.5:0);

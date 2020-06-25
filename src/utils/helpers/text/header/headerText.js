@@ -3,9 +3,10 @@ import usePromise from "react-promise-suspense"
 import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
 import { extend, Canvas } from "react-three-fiber";
 import HeaderTextBackGround from './headerTextBackground'
+import { disposeElements } from './../../../other/disposeElements'
 extend({ TextMesh });
 
-export default function HeaderText({ text, position }) {
+export default function HeaderText({ text, position, renderer }) {
     const [currentText, setCurrentText] = useState("");
     
     const mesh=useRef();
@@ -14,8 +15,11 @@ export default function HeaderText({ text, position }) {
         setCurrentText(text)
     },[text])
 
+    useEffect(()=>{
+        return () => disposeElements(mesh.current, renderer)
+    },[])
+
     if(mesh.current){  
-        mesh.current.rotation.x=-Math.PI/2
         mesh.current.geometry._maxInstanceCount=30;
     }
 
@@ -23,7 +27,7 @@ export default function HeaderText({ text, position }) {
         <>
             <textMesh
                 position={position}
-                // rotate={[-Math.PI/2,0,0]}
+                rotation={[-Math.PI/2,0,0]}
                 ref={mesh}
                 onClick={e=>console.log(mesh)}
                 text={currentText}
@@ -32,7 +36,7 @@ export default function HeaderText({ text, position }) {
                 anchorY="middle"
                 // visible={visibility}
             >
-                <meshPhongMaterial attach="material" color="black" side={2}/>   <HeaderTextBackGround position={position} text={text}/>
+                <meshPhongMaterial attach="material" color="black" side={2}/>   <HeaderTextBackGround position={position} text={text} renderer={renderer}/>
             </textMesh>
 
 

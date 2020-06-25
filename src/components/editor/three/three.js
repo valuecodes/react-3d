@@ -29,10 +29,12 @@ import { useDrag } from "react-use-gesture"
 import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 import Maze from './algorithms/maze/maze'
 import AStar from './algorithms/astar/astar'
+import Boxes from './test/boxes'
 
 import Navigation from './navigation/navigation'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
+import { WebGLRenderer } from 'three';
 
 export default function Three() {
 
@@ -40,6 +42,13 @@ export default function Three() {
     const [boxes,setBoxes]=useState([]);
     const [gridRow,setGridRow]=useState([]);
     const [gridColumn,setGridColumn]=useState([]);
+    const [position, setPosition] = useState(0);
+    const renderer=useRef()
+    const [scene, setScene] = useState([
+    <Maze position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
+        <MazePathFinder position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
+        <AStar position={[0,0,0]} size={[60,60]} renderer={renderer}/>
+    ])
 
     const [cameraSettings, setCameraSettings]=useState({
         cameraPosition:[0,90,120],
@@ -51,7 +60,7 @@ export default function Three() {
     })
 
     const main=useRef();
-
+    
     useEffect(()=>{
         let newGridRow=[];
         for(var i=200;i>-400;i-=20){
@@ -72,6 +81,18 @@ export default function Three() {
         let updatedSettings={...cameraSettings}
         updatedSettings[option]=newValue;
         setCameraSettings(updatedSettings)
+    }
+
+    const changePosition=(button)=>{
+        let dir=0;
+        if( button === 'Last' && position > 0 ) dir = -1;
+        if( button === 'Next' && position < 2) dir = 1
+        let newPos=position+dir
+        // main.current.children[position].geometry.dispose();
+        // main.current.children[position].material.dispose();
+        // main.current.remove(main.current.children[position])
+        
+        setPosition(newPos);
     }
 
     return (
@@ -115,17 +136,26 @@ export default function Three() {
                     
                     {/* <GridRef/> */}
 
-                    <MazePathFinder position={[0,0,0]} size={[20,20]}/>
-                    {/* <Maze position={[0,0,0]} size={[20,20]}/> */}
-                    {/* <AStar position={[0,0,0]} size={[60,60]}/> */}
+                    {/* <Boxes position={position}/> */}
+
+                    {scene.map((elem,index)=>{
+                        if(index===position){
+                            return elem
+                        }
+                    })}
+
+                    {/* <MazePathFinder position={[0,0,0]} size={[15,15]}/>
+                    <Maze position={[300,0,0]} size={[20,20]}/>
+                    <AStar position={[600,0,0]} size={[30,30]}/> */}
 
                     {/* <Text text={'Testing'}/> */}
 
                     {/* <Line cameraSettings={cameraSettings}/> */}
                     {/* <LineLoop cameraSettings={cameraSettings}/> */}
                     {/* <TestBox position={[0,5,0]}/> */}
-                    <HelperAxes cameraSettings={cameraSettings}  size={[50]}/>
-                    <HelperGrid cameraSettings={cameraSettings} size={[200,20]}/>
+                    {/* <HelperAxes cameraSettings={cameraSettings}  size={[50]}/> */}
+                    {/* <HelperGrid cameraSettings={cameraSettings} size={[200,20]}/> */}
+                    <webGLRenderer antialias={true} ref={renderer}/>
                 </group>
 
                 <pointLight distance={100} intensity={4} color="white" />
@@ -135,7 +165,7 @@ export default function Three() {
                 )} */}
 
             </Canvas>
-            <Navigation />
+            <Navigation changePosition={changePosition}/>
             <CameraControls 
                 cameraSettings={cameraSettings}
                 changeCameraSettings={changeCameraSettings}

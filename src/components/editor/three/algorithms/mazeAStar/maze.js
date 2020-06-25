@@ -10,7 +10,7 @@ export default function Maze(props) {
         gridCells, 
         savedData,
         cubes,
-        startPathFinding
+        startPathFinding,
     } = props
 
     const [maze, setMaze]=useState(false)

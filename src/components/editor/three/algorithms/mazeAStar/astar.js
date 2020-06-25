@@ -53,6 +53,8 @@ export default function Astar({mesh,listMesh,phase, cubes, startTracking}) {
             let notFound=true;
             let ending=false
 
+            listMesh[1].text=`Finding path... Tested ${closedSet.length} / ${Object.keys(cubes.current).length}`
+
             if(openSet.length >0){
                 var winner=0;
                 for(var i=0;i<openSet.length;i++){
@@ -67,7 +69,7 @@ export default function Astar({mesh,listMesh,phase, cubes, startTracking}) {
                     addLine(line,path)
                     setaStart(false)
                     ending=true;
-                    listMesh[1].text='Path Found!'
+                    // listMesh[1].text='Path Found!'
                     listMesh[1].children[0].material.color.set('black')
                 }
 

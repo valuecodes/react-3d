@@ -1,9 +1,17 @@
-import React from 'react'
+import React,{useState} from 'react'
+import NavigationBarButton from './navigationBarButton'
 
-export default function Navigation() {
+export default function Navigation({ changePosition}) {
+
+    const [buttons, setButtons]=useState(['Last', 'test', 'Next'])
+
     return (
-        <div>
-            
+        <div className='navigation'>
+            <div className="navigationBar">
+                {buttons.map(button=>
+                    <NavigationBarButton button={button} changePosition={changePosition}/>
+                )}
+            </div>
         </div>
     )
 }

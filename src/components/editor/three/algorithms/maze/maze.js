@@ -3,18 +3,26 @@ import * as THREE from 'three'
 import { useFrame } from 'react-three-fiber'
 import { Vector3 } from 'three';
 import GridCell from './gridCell'
-import { calculatePosition, calculateTextHeaderPosition, calculateListPosition}from './../../../../../utils/other/calculatePosition'
+import { 
+    calculatePosition, 
+    calculateTextHeaderPosition, 
+    calculateListPosition,
+    updateAnimation
+}from './../../../../../utils/other/calculatePosition'
 import HeaderText from './../../../../../utils/helpers/text/header/headerText'
 import TextList from './../../../../../utils/helpers/text/list/textList'
+import { disposeElements } from './../../../../../utils/other/disposeElements'
 
 
-export default function GridRef({size, position}) {
+export default function GridRef({size, position, renderer}) {
     const [grid, setGrid] = useState([]);
     const [gridCells, setGridCells] = useState([]);
     const [start, setStart]=useState(false)
     const [list, setList]=useState(['Click on the grid to start'])
+    const [animation, setAnimation]=useState(false)
     const [listMesh, setListMesh]=useState(null);
     const cubes=useRef();
+    const mesh=useRef();
     let savedData=useRef({
         current:null,
         stack:[],
@@ -27,9 +35,9 @@ export default function GridRef({size, position}) {
         let cols=size[1];
         for(var j=0;j<rows;j++){
             for(var i=0;i<cols;i++){
+                let target=[j*5,i*5]
                 let gridCell=new GridCell(j,i,i*j,rows,cols)
-                gridCell.mesh.position.x=(j*5)
-                gridCell.mesh.position.z=(i*5)
+                gridCell.mesh.target=target
                 gridCell.createWalls()
                 newGridcells.push(gridCell)
             }
@@ -37,9 +45,27 @@ export default function GridRef({size, position}) {
         cubes.current=newGridcells;
         savedData.current.current=newGridcells[0]
         setGridCells(newGridcells)
+
+        setTimeout(()=>{
+            setAnimation(true)
+        },[1000])
+
+        return () => {
+            mesh.current.children.forEach(elem => disposeElements(elem,renderer))
+            disposeElements(mesh.current,renderer)
+        }
+        
     },[])
 
     useFrame(()=>{
+
+        if(animation){
+            let blocks=mesh.current.children
+            let speed=2.5
+            let ready = updateAnimation(blocks,speed)
+            if(ready) setAnimation(false)             
+        }
+
         if(start){
             let {current,stack,count}=savedData.current
             let currentCubes={...cubes.current}
@@ -75,19 +101,29 @@ export default function GridRef({size, position}) {
         setListMesh(mesh)
     }
     
+    function setOther(index){
+        if(index===gridCells.length-1){
+            console.log('reaaddyyyyy')
+        }
+    }
+
     return (
         <mesh
-        position={calculatePosition(size,position)}
-        onClick={e => setStart(!start)}
+            ref={mesh}
+            position={calculatePosition(size,position)}
+            onClick={e => setStart(!start)}
         >
-            {gridCells.map(elem=>
-                <primitive object={elem.mesh}/>
+            {gridCells.map((elem,index)=>
+                <primitive 
+                    object={elem.mesh}    
+                />
             )}
 
             <HeaderText 
                 text={'Maze'}
                 phase={true}
-                position={calculateTextHeaderPosition(size,position)}    
+                position={calculateTextHeaderPosition(size,position)}
+                renderer={renderer}     
             />
             <TextList
                 list={list}
@@ -95,7 +131,8 @@ export default function GridRef({size, position}) {
                 addListMesh={addListMesh}
                 text={'test'}
                 size={size}
-                position={calculateListPosition(size,position,0)} 
+                position={calculateListPosition(size,position,0)}
+                renderer={renderer} 
             />  
         </mesh>
     )
