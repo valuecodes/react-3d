@@ -148,7 +148,7 @@ export default function Algorithm(props) {
                 }
             
                 for(var i=0;i<path.length;i++){
-                    path[i].material.color.set('blue')
+                    path[i].material.color.set('midnightblue')
                 }
                 addLine(path)     
                 if(ending){

@@ -64,7 +64,7 @@ export default function MazePathFinder({ size, position, renderer }) {
     useFrame(()=>{
         if(animation&&mesh.current){
             let blocks=mesh.current.children
-            let speed=2.5
+            let speed=5
             let ready = updateAnimation(blocks,speed)
             if(ready) setAnimation(false)             
         }

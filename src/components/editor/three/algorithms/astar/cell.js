@@ -17,7 +17,7 @@ export default function Cell(x,z,index,rows,cols){
     this.g=0;
     this.h=0;
     this.geometry= new THREE.BoxBufferGeometry( 4, 1, 4 );
-    this.material= new THREE.MeshBasicMaterial( {color:'gainsboro'} );
+    this.material= new THREE.MeshBasicMaterial( {color:'whitesmoke'} );
     this.mesh=new THREE.Mesh( this.geometry, this.material);
 
     this.getIndex=(i, j)=>{

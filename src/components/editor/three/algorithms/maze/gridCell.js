@@ -29,28 +29,28 @@ export default function GridCell(x,z,index,rows,cols){
         if(this.walls[0]){
             currentWalls.push({
                 position:[this.x,this.y,this.z-this.offSet],
-                geometry:[5,2,1],
+                geometry:[6,2,1],
                 pos:'top'
             })
         }
         if(this.walls[1]){
             currentWalls.push({
                 position:[this.x+this.offSet,this.y,this.z],
-                geometry:[1,2,5],
+                geometry:[1,2,6],
                 pos:'right'
             })
         }
         if(this.walls[2]){
             currentWalls.push({
                 position:[this.x,this.y,this.z+this.offSet],
-                geometry:[5,2,1],
+                geometry:[6,2,1],
                 pos:'bot'
             })            
         }
         if(this.walls[3]){
             currentWalls.push({
                 position:[this.x-this.offSet,this.y,this.z],
-                geometry:[1,2,5],
+                geometry:[1,2,6],
                 pos:'left'
             })            
         }

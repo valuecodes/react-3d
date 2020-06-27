@@ -18,7 +18,9 @@ export default function GridRef({size, position, renderer}) {
     const [grid, setGrid] = useState([]);
     const [gridCells, setGridCells] = useState([]);
     const [start, setStart]=useState(false)
-    const [list, setList]=useState(['Click on the grid to start'])
+    const [list, setList]=useState([
+        'Click here to start',
+    ])
     const [animation, setAnimation]=useState(false)
     const [listMesh, setListMesh]=useState(null);
     const cubes=useRef();

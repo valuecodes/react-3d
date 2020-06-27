@@ -79,7 +79,7 @@ export default function Tracker({ phase, pathCoordinates,mesh, listMesh,renderer
             ref={box}
             scale={[1,0.1,1]}
         >
-            <sphereBufferGeometry attach="geometry" args={[1, 32, 32]}/>
+            <sphereBufferGeometry attach="geometry" args={[2, 32, 32]}/>
             <meshBasicMaterial attach="material" color={'red'} visible={false}/>
         </mesh>
     )

@@ -29,6 +29,8 @@ import { useDrag } from "react-use-gesture"
 import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 import Maze from './algorithms/maze/maze'
 import AStar from './algorithms/astar/astar'
+import CubeMaze from './algorithms/cubemaze/cubemaze'
+// import Steering from './'
 import Boxes from './test/boxes'
 
 import Navigation from './navigation/navigation'
@@ -44,11 +46,6 @@ export default function Three() {
     const [gridColumn,setGridColumn]=useState([]);
     const [position, setPosition] = useState(0);
     const renderer=useRef()
-    const [scene, setScene] = useState([
-    <Maze position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
-        <MazePathFinder position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
-        <AStar position={[0,0,0]} size={[60,60]} renderer={renderer}/>
-    ])
 
     const [cameraSettings, setCameraSettings]=useState({
         cameraPosition:[0,90,120],
@@ -58,6 +55,13 @@ export default function Three() {
         grid:false,
         mode:'orbit'
     })
+
+    const [scene, setScene] = useState([
+        <CubeMaze position={[0,0,0]} size={[7,7]} renderer={renderer} cameraSettings={cameraSettings}/>,
+        <Maze position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
+        <MazePathFinder position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
+        <AStar position={[0,0,0]} size={[30,30]} renderer={renderer}/>
+    ])
 
     const main=useRef();
     
@@ -98,9 +102,7 @@ export default function Three() {
     return (
         <div id='canvas' 
             // onMouseMove={(e)=>trackPosition(e)}
-            onClick={e => console.log('test')}
             // onKeyDown={e => console.log(e.keyCode)}
-            onScroll={e => console.log(e)}
             >
             <Canvas
                 camera={{

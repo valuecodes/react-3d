@@ -45,11 +45,18 @@ export default function Astar({ size, position, renderer }) {
         }
         newGridcells.forEach(cell => cell.addNeigbors(newGridcells))
         newGridcells.forEach((cell,index) => {
-            if(Math.random(1)<0.1){
+            if(Math.random(1)<0.05){
                 cell.addWall(newGridcells)
-                cell.addMiddleWall(newGridcells,index)
+                // cell.addMiddleWall(newGridcells,index)
                 if(newGridcells[index+1])newGridcells[index+1].addWall(newGridcells)
                 if(newGridcells[index+2])newGridcells[index+2].addWall(newGridcells)
+                
+            }
+
+            if(Math.random(1)<0.05){
+                cell.addWall(newGridcells)
+                if(newGridcells[index+rows]) newGridcells[index+rows].addWall(newGridcells)
+                if(newGridcells[index+(rows*2)]) newGridcells[index+(rows*2)].addWall(newGridcells)
                 
             }
         })

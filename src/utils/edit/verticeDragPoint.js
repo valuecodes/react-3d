@@ -85,9 +85,9 @@ function getFaceVerticePositions(geometry, index){
     let faces =JSON.parse(JSON.stringify(geometry.faces))
     let vertices=JSON.parse(JSON.stringify(geometry.vertices))
 
-    let a=faces[index].a;
-    let b=faces[index].b;
-    let c=faces[index].c;
+    // let a=faces[index].a;
+    // let b=faces[index].b;
+    // let c=faces[index].c;
 
     let faceVertices=[
         {a:vertices[faces[index].a],index:faces[index].a},
