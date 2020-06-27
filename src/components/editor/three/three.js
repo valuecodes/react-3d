@@ -16,8 +16,6 @@ import CustomBox from './components/box/customBox'
 import Circle from './components/circle/circle'
 
 // import TestBox from './../three/components/customBox/testbox'
-
-import Box from './box/box'
 import BoxEdit from './box/boxEdit'
 import SmoothBox from './box/smoothBox'
 
@@ -30,6 +28,7 @@ import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 import Maze from './algorithms/maze/maze'
 import AStar from './algorithms/astar/astar'
 import CubeMaze from './algorithms/cubemaze/cubemaze'
+import CubeMaze2 from './algorithms/cubeMaze2/cubemaze2'
 // import Steering from './'
 import Boxes from './test/boxes'
 
@@ -48,8 +47,8 @@ export default function Three() {
     const renderer=useRef()
 
     const [cameraSettings, setCameraSettings]=useState({
-        cameraPosition:[0,90,120],
-        cameraRotation:[0,0,0],
+        cameraPosition:[0,70,100],
+        cameraRotation:[0.5,0,0],
         orbit:true,
         axes:false,
         grid:false,
@@ -57,7 +56,7 @@ export default function Three() {
     })
 
     const [scene, setScene] = useState([
-        <CubeMaze position={[0,0,0]} size={[7,7]} renderer={renderer} cameraSettings={cameraSettings}/>,
+        <CubeMaze2 position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
         <Maze position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
         <MazePathFinder position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
         <AStar position={[0,0,0]} size={[30,30]} renderer={renderer}/>

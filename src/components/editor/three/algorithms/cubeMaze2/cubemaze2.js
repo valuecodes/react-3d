@@ -17,9 +17,10 @@ import ControlPanel from './../../../../../utils/helpers/text/panel/controlPanel
 
 let rotation = [-0.5, -0.90, 0];
 
-export default function CubeMaze(props) {
+export default function CubeMaze2(props) {
 
     const {
+        // size,
         position,
         renderer,
         cameraSettings
@@ -68,6 +69,7 @@ export default function CubeMaze(props) {
     },[])
 
     function createNew(newSize){
+        console.log(newSize)
         let newGridcells={};
         let rows=newSize[0];
         let cols=newSize[1];

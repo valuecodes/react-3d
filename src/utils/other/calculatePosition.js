@@ -47,26 +47,8 @@ export function rotateToCurrentSide(group,current){
     if(side==='bot'){
         target.z=Math.PI
     }
-    console.log(target)
+
     return target
-
-
-    // let speed=0.1
-
-    // if(rotation.x!==target.x){
-    //     let dir=rotation.x>target.x?-1:1;
-    //     rotation.x+=speed*dir;
-    //     if(Math.abs(rotation.x-target.x)<0.1){
-    //         rotation.x=target.x
-    //     }
-    // }
-    // if(rotation.z!==target.z){
-    //     let dir=rotation.z>target.z?-1:1;
-    //     rotation.z+=speed*dir;
-    //     if(Math.abs(rotation.z-target.z)<0.1){
-    //         rotation.z=target.z
-    //     }
-    // }
 }
 
 export function calculateTextHeaderPosition(size,position){
@@ -74,11 +56,11 @@ export function calculateTextHeaderPosition(size,position){
 }
 
 export function calculateListPosition(size,position,index){
-    return [position[0]-25,0,(index*12)+1]
+    return [40,0,35+(index*12)]
 }
 
-export function calculateButtonPosition(size,position,index){
-    return [-75+25*index,0,0]
+export function calculateButtonPosition(index){
+    return [5+(30*index),0,20]
 }
 
 export function updateAnimation(blocks,speed){
