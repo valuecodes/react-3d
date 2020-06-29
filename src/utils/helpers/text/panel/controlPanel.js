@@ -5,13 +5,17 @@ import Header from './header'
 import Buttons from './buttons'
 import List from './list'
 import Slider from './slider'
+import Options from './options'
 
 export default function ControlPanel(props) {
     const {
         controlPanelOptions,
         renderer,
         buttonClick,
-        updateSliderValue
+        updateSliderValue,
+        options,
+        selectOption,
+        cubes
     } = props
     return (
         <>
@@ -27,6 +31,12 @@ export default function ControlPanel(props) {
             <List
                 list={controlPanelOptions.list}
                 renderer={renderer} 
+            />
+            <Options
+                options={controlPanelOptions.options}
+                renderer={renderer} 
+                selectOption={selectOption}
+                cubes={cubes}
             />
             <Slider
                 renderer={renderer} 

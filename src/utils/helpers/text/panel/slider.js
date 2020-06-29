@@ -25,7 +25,7 @@ export default function Slider(props) {
          <group
             ref={mesh}
             rotation={[-Math.PI/2,0,0]}
-            position={[40,0,50]}
+            position={[40,0,65]}
          >
             <DragPoint renderer={renderer} updateSliderValue={updateSliderValue}/>
             <BackGround position={[0,0,0]}/>

@@ -13,6 +13,7 @@
     "react-three-fiber": "^4.2.8",
     "react-use-gesture": "^7.0.15",
     "three": "^0.117.1",
+    "three-instanced-mesh": "^0.96.2",
     "troika-3d-text": "^0.28.1"
   },
   "scripts": {

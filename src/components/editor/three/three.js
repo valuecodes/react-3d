@@ -89,7 +89,7 @@ export default function Three() {
     const changePosition=(button)=>{
         let dir=0;
         if( button === 'Last' && position > 0 ) dir = -1;
-        if( button === 'Next' && position < 2) dir = 1
+        if( button === 'Next' && position < 3) dir = 1
         let newPos=position+dir
         // main.current.children[position].geometry.dispose();
         // main.current.children[position].material.dispose();
