@@ -1,25 +1,27 @@
 import * as THREE from 'three'
 import { Vector3, Geometry } from 'three';
 
-export default function createNewCube(size){
-    let sideLength=size*5;
+export default function createNewCube(size,cellSize){
+    // let cellSize=1
 
-    let top=new CubeSide(size,0,0,'top',0,[1,2,4,3]);
+    let sideLength=size*cellSize;
+
+    let top=new CubeSide(size,0,0,'top',0,[1,2,4,3],cellSize);
     top.addCells();
 
-    let back=new CubeSide(size,0,-sideLength,'back',1,[5,2,0,3]);
+    let back=new CubeSide(size,0,-sideLength,'back',1,[5,2,0,3],cellSize);
     back.addCells()
 
-    let right=new CubeSide(size,sideLength,0,'right',2,[1,5,4,0]);
+    let right=new CubeSide(size,sideLength,0,'right',2,[1,5,4,0],cellSize);
     right.addCells()
 
-    let left=new CubeSide(size,-sideLength,0,'left',3,[1,0,4,5]);
+    let left=new CubeSide(size,-sideLength,0,'left',3,[1,0,4,5],cellSize);
     left.addCells()
 
-    let front=new CubeSide(size,0,sideLength,'front',4,[0,2,5,3]);
+    let front=new CubeSide(size,0,sideLength,'front',4,[0,2,5,3],cellSize);
     front.addCells()
 
-    let bot=new CubeSide(size,0,-sideLength*2,'bot',5,[4,2,1,3]);
+    let bot=new CubeSide(size,0,-sideLength*2,'bot',5,[4,2,1,3],cellSize);
     bot.addCells()
     
     let cubeSides=[
@@ -38,6 +40,23 @@ export default function createNewCube(size){
             if(cubeSides[i].cells[keys[a]].edge!==null){
                 cubeSides[i].sideEdges[keys[a]]=cubeSides[i].cells[keys[a]];
             }
+
+            if(Math.random(1)<0.02){
+                cubeSides[i].cells[keys[a]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a+1]]) cubeSides[i].cells[keys[a+1]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a-1]]) cubeSides[i].cells[keys[a-1]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a+2]]) cubeSides[i].cells[keys[a+2]].addWall(cellSize)   
+                if(cubeSides[i].cells[keys[a+3]]) cubeSides[i].cells[keys[a+3]].addWall(cellSize)   
+            } 
+
+            if(Math.random(1)<0.02){
+                cubeSides[i].cells[keys[a]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a+size]]) cubeSides[i].cells[keys[a+size]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a-size]]) cubeSides[i].cells[keys[a-size]].addWall(cellSize)  
+                if(cubeSides[i].cells[keys[a+size*2]]) cubeSides[i].cells[keys[a+size*2]].addWall(cellSize)   
+                if(cubeSides[i].cells[keys[a+size*-2]]) cubeSides[i].cells[keys[a+size*-2]].addWall(cellSize)   
+            }   
+
         }
     }
 
@@ -53,14 +72,16 @@ export default function createNewCube(size){
     for(var i=0;i<cubeSides.length;i++){
         let keys=Object.keys(cubeSides[i].sideEdges)
         for(var a=0;a<keys.length;a++){
-            cubeSides[i].sideEdges[keys[a]].addEdgeNeigbors(cubeSides[i].sideEdges[keys[a]],newCells,cubeSides)
+            cubeSides[i].sideEdges[keys[a]].addEdgeNeigbors(cubeSides[i].sideEdges[keys[a]],newCells,cubeSides,cellSize)
         }
     } 
+
+
     console.log(newCells)
     return [newCells, cubeSides]
 }
 
-function CubeSide(size, startingX, startingZ, side, sideID,neighborSides){
+function CubeSide(size, startingX, startingZ, side, sideID,neighborSides,cellSize){
     this.size=size;
     this.cells={};
     this.startingX=startingX;
@@ -68,14 +89,16 @@ function CubeSide(size, startingX, startingZ, side, sideID,neighborSides){
     this.side=side;
     this.sideID=sideID;
     this.neighborSides=neighborSides;
+    this.cellSize=cellSize
 
     this.addCells=()=>{
         let newCells={};
         let test=0;
+        let cSize=this.cellSize
         for(var y=0;y<this.size;y++){    
             for(var x=0;x<this.size;x++){
-                let xCor=x*5+startingX
-                let zCor=y*5+startingZ
+                let xCor=x*cSize+startingX
+                let zCor=y*cSize+startingZ
 
                 let newCell=new Cell(
                     x,
@@ -88,8 +111,7 @@ function CubeSide(size, startingX, startingZ, side, sideID,neighborSides){
                     this.zCor
                 )
                 let id=`${this.sideID}.${x}.${y}`
-
-                newCell.createWalls()
+                newCell.addMesh(this.cellSize)
                 newCell.edge=checkEdge(x,y,size-1);
                 newCell.startingX=xCor
                 newCell.startingZ=zCor
@@ -97,23 +119,23 @@ function CubeSide(size, startingX, startingZ, side, sideID,neighborSides){
                 newCell.startingPosition.z=zCor
                 newCell.startingPosition.y=-30
                 newCell.addNeighbors(newCell,this.sideID,size);
-                newCell.mesh.position.x=this.size*5/2;
+                newCell.mesh.position.x=this.size*2/2;
                 newCell.mesh.position.y=-2;
-                newCell.mesh.position.z=this.size*5/2;
+                newCell.mesh.position.z=this.size*2/2;
 
-                // newCell.mesh.position.x=xCor+(-50+(Math.random()*100))+100;
-                // newCell.mesh.position.z=zCor+(-50+(Math.random()*100))-100;
-                // newCell.mesh.position.y=-100;
+                newCell.mesh.position.x=xCor;
+                newCell.mesh.position.z=zCor;
 
-                newCell.mesh.rotation.x=-10+(Math.random()*20);
+                // newCell.mesh.rotation.x=-10+(Math.random()*20);
                 // newCell.mesh.rotation.y=-10+(Math.random()*20);
-                newCell.mesh.rotation.z=-10+(Math.random()*20);
+                // newCell.mesh.rotation.z=-10+(Math.random()*20);
 
                 newCell.id=id
                 newCell.sideName=this.side
+                
 
                 newCell.cubeEdge=checkCubeEdge(y,x,this.size-1)
-                calculateSidePosition(newCell,this.side,y,x,startingX,startingZ,this.size); 
+                calculateSidePosition(newCell,this.side,y,x,startingX,startingZ,this.size,cSize); 
                 newCell.cubePosition=newCell.targetPosition
                 newCell.cubeRotation=newCell.targetRotation
                 if(newCell.edge!==null){
@@ -145,19 +167,24 @@ function checkEdge(x,y,size){
     return edge
 }
 
-function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ){
+function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ,cSize){
     this.x=x;
     this.y=y;
     this.size=size;
     this.neighborSides=neighborSides;
-    this.visited=false;
+
     this.id=null;
     this.edge=null;
     this.side=side;
     this.side=sideID;
     this.edgeCoordinates=null;
     this.neighbors=[];
-    this.walls=[true, true, true, true];
+    this.cSize=0
+
+    this.wall=false
+    this.f=0;
+    this.g=0;
+    this.h=0;
     this.current=false;
     this.startingX=startingX;
     this.startingZ=startingZ;
@@ -182,9 +209,24 @@ function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ){
         z:0
     }
 
-    this.geometry= new THREE.BoxBufferGeometry( 5, 0.5, 5 );
-    this.material= new THREE.MeshStandardMaterial( {color:'green'});
-    this.mesh=new THREE.Mesh( this.geometry, this.material);
+    this.geometry=null;
+    this.material=null;
+    this.mesh=null;
+
+    this.addWall=(cellSize)=>{
+        this.wall=true;        
+        let geometry= new THREE.IcosahedronBufferGeometry( cellSize, 0 );
+        let material= new THREE.MeshStandardMaterial( {color:'black'} );
+        let mesh=new THREE.Mesh( geometry, material);
+        mesh.scale.y=0.5
+        this.mesh.add(mesh)
+    }
+
+    this.addMesh=(cellSize)=>{
+        this.geometry= new THREE.BoxBufferGeometry( cellSize, 0.5, cellSize );
+        this.material= new THREE.MeshStandardMaterial( {color:'darkslategray'});
+        this.mesh=new THREE.Mesh( this.geometry, this.material);
+    }
 
     this.addEdgeCoordinates=()=>{
         let e=this.edge;
@@ -212,17 +254,17 @@ function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ){
         if(cell.x-1<0) neighbors.push(null)
         else neighbors.push(sideID+'.'+Number(cell.x-1)+'.'+cell.y);
 
+        neighbors.push(sideID+'.'+Number(cell.x+1)+'.'+Number(cell.y+1))
+        neighbors.push(sideID+'.'+Number(cell.x-1)+'.'+Number(cell.y+1))
+        neighbors.push(sideID+'.'+Number(cell.x+1)+'.'+Number(cell.y-1))
+        neighbors.push(sideID+'.'+Number(cell.x-1)+'.'+Number(cell.y-1))
+
+
         this.neighbors=neighbors
     }
 
-    this.setWalls=(current)=>{
-        current.mesh.children[0].visible=current.walls[0];
-        current.mesh.children[1].visible=current.walls[1];
-        current.mesh.children[2].visible=current.walls[2];
-        current.mesh.children[3].visible=current.walls[3];
-    }
 
-    this.addEdgeNeigbors=(current,cubes,sides)=>{
+    this.addEdgeNeigbors=(current,cubes,sides,cellSize)=>{
         
         let neighbors=[];
         let side=this.side;
@@ -236,22 +278,22 @@ function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ){
         let cubeEdge=this.cubeEdge;
 
         if(current.edge===0||cubeEdge===1||cubeEdge===0){
-            top=calculateTop(current,cubes,sides);
+            top=calculateTop(current,cubes,sides,cellSize);
             if(top) this.neighbors[0]=top.id
         }
 
         if(current.edge===2||cubeEdge===2||cubeEdge===3){
-            bottom=calculateBot(current,cubes,sides);
+            bottom=calculateBot(current,cubes,sides,cellSize);
             if(bottom) this.neighbors[2]=bottom.id
         }
 
         if(current.edge===3||cubeEdge===0||cubeEdge===3){
-            left=calculateLeft(current,cubes,sides);
+            left=calculateLeft(current,cubes,sides,cellSize);
             if(left) this.neighbors[3]=left.id
         }
         
         if(current.edge===1||cubeEdge===1||cubeEdge===2){
-            right=calculateRight(current,cubes,sides);
+            right=calculateRight(current,cubes,sides,cellSize);
             if(right) this.neighbors[1]=right.id
         }
 
@@ -286,102 +328,52 @@ function Cell(x,y,side,sideID,neighborSides,size, startingX, startingZ){
             return undefined;
         }
     }
-
-    this.createWalls=()=>{
-        let currentWalls=[];
-
-        if(this.walls[0]){
-            currentWalls.push({
-                position:[this.x,this.y,this.z],
-                geometry:[6,1,1],
-                pos:'top'
-            })
-        }
-        if(this.walls[1]){
-            currentWalls.push({
-                position:[this.x,this.y,this.z],
-                geometry:[1,1,6],
-                pos:'right'
-            })
-        }
-        if(this.walls[2]){
-            currentWalls.push({
-                position:[this.x,this.y,this.z],
-                geometry:[6,1,1],
-                pos:'bot'
-            })            
-        }
-        if(this.walls[3]){
-            currentWalls.push({
-                position:[this.x,this.y,this.z],
-                geometry:[1,1,6],
-                pos:'left'
-            })            
-        }
-
-        currentWalls.map(wall=>{
-                let geo = new THREE.BoxBufferGeometry( ...wall.geometry )
-                let mat =  new THREE.MeshStandardMaterial( {color:'black'} );
-                let wall1=new THREE.Mesh( geo, mat);
-                wall1.position.x=wall1.position.x+(wall.pos==='right'?2.5:wall.pos==='left'?-2.5:0);
-                wall1.position.z=wall1.position.z+(wall.pos==='top'?-2.5:wall.pos==='bot'?2.5:0);
-                this.mesh.add(wall1);
-        })
-    }
 }
 
-function calculateTop(current,cubes,sides){
+function calculateTop(current,cubes,sides,cellSize){
 
     let id=`${current.neighborSides[0]}.${current.x}.${current.size-1}`
 
     if(cubes[id]){
         let distance=calcuteDistance(current.targetPosition,cubes[id].targetPosition) 
-        if(distance>5) id=calculateFromDistance(current,sides,cubes)     
+        if(distance>5) id=calculateFromDistance(current,sides,cubes,cellSize)     
     }
-
-    current.walls[0]=false
 
     return cubes[id]
 }
-function calculateBot(current,cubes,sides){
+function calculateBot(current,cubes,sides,cellSize){
 
     let id=`${current.neighborSides[2]}.${current.x}.${0}`
 
     if(cubes[id]){
         let distance=calcuteDistance(current.targetPosition,cubes[id].targetPosition) 
-        if(distance>5) id=calculateFromDistance(current,sides,cubes)     
+        if(distance>5) id=calculateFromDistance(current,sides,cubes,cellSize)     
     }
-
-    current.walls[2]=false
     
     return cubes[id]
 }
-function calculateLeft(current,cubes,sides){
+function calculateLeft(current,cubes,sides,cellSize){
     let id=`${current.neighborSides[3]}.${current.size-1}.${current.y}`
     
     if(cubes[id]){
         let distance=calcuteDistance(current.targetPosition,cubes[id].targetPosition) 
-        if(distance>5) id=calculateFromDistance(current,sides,cubes)    
+        if(distance>5) id=calculateFromDistance(current,sides,cubes,cellSize)    
     }
-
-    current.walls[3]=false
     
     return cubes[id]
 }
-function calculateRight(current,cubes,sides){
+function calculateRight(current,cubes,sides,cellSize){
     let id=`${current.neighborSides[1]}.${0}.${current.y}`
 
     if(cubes[id]){
         let distance=calcuteDistance(current.targetPosition,cubes[id].targetPosition)
-        if(distance>5) id=calculateFromDistance(current,sides,cubes)    
+        if(distance>5) id=calculateFromDistance(current,sides,cubes,cellSize)    
     }
-
-    current.walls[1]=false
 
     return cubes[id]
 }
 
-function calculateFromDistance(current,sides,cubes){
+function calculateFromDistance(current,sides,cubes,cellSize){
 
     let cTarget=current.targetPosition;
     let targetSide=sides.filter(side=>side.sideID===current.neighborSides[current.edge])
@@ -392,20 +384,15 @@ function calculateFromDistance(current,sides,cubes){
         let found=null;
         let keys=Object.keys(cells);
 
-        for(var i=0;i>keys.length-1;i++){
+        for(var i=0;i<keys.length-1;i++){
             let aTarget=cells[keys[i]].targetPosition
             let distance=calcuteDistance(cTarget,aTarget)
-            if(distance<6) {
-                found=cells[keys[i]]
+            if(distance<cellSize*1.1) {
+                found=keys[i]
                 break
             }
         }
 
-        // if(cubes[found]){
-        //     if(cubes[found].edge!==null){
-        //         cubes[found].walls=[false,false,false,false]
-        //     }
-        // }
         return found       
     }
 }
@@ -418,16 +405,16 @@ function calcuteDistance(current, target){
     return distance
 }
 
-function calculateSidePosition(grid,side,i,j,startX,startY,size){
+function calculateSidePosition(grid,side,i,j,startX,startY,size,cellSize){
 
-    let padding=2.5
-    let sideLength=size*5;
+    let padding=cellSize/2
+    let sideLength=size*cellSize;
 
     if(side==='top'){
         grid.targetPosition={
-            x:((j*5)+startX),
+            x:((j*cellSize)+startX),
             y:0,
-            z:((i*5)+startY),
+            z:((i*cellSize)+startY),
 
         }  
         grid.targetRotation={
@@ -439,8 +426,8 @@ function calculateSidePosition(grid,side,i,j,startX,startY,size){
 
     if(side==='front'){
         grid.targetPosition={
-            x:((j*5)+startX),
-            y:((startY-(i*5))-startY)-padding,
+            x:((j*cellSize)+startX),
+            y:((startY-(i*cellSize))-startY)-padding,
             z:startY-padding,
 
         }  
@@ -454,8 +441,8 @@ function calculateSidePosition(grid,side,i,j,startX,startY,size){
     if(side==='left'){
         grid.targetPosition={
             x:0-padding,
-            y:((-sideLength+(j*5)))+padding,
-            z:(i*5),
+            y:((-sideLength+(j*cellSize)))+padding,
+            z:(i*cellSize),
         }
         grid.targetRotation={
             x:0,
@@ -466,8 +453,8 @@ function calculateSidePosition(grid,side,i,j,startX,startY,size){
     if(side==='right'){
         grid.targetPosition={
             x:startX-padding, 
-            y:(j*-5)-padding,
-            z:(i*5),
+            y:(j*-cellSize)-padding,
+            z:(i*cellSize),
 
         }
         grid.targetRotation={
@@ -478,8 +465,8 @@ function calculateSidePosition(grid,side,i,j,startX,startY,size){
     }
     if(side==='back'){
         grid.targetPosition={
-            x:(j*5)+startX,
-            y:-sideLength+(i*5)+padding,
+            x:(j*cellSize)+startX,
+            y:-sideLength+(i*cellSize)+padding,
             z:0-padding,
 
         }
@@ -491,9 +478,9 @@ function calculateSidePosition(grid,side,i,j,startX,startY,size){
     }
     if(side==='bot'){
         grid.targetPosition={
-            x:(j*5),
+            x:(j*cellSize),
             y:-sideLength,
-            z:sideLength-(i*5)-5,
+            z:sideLength-(i*cellSize)-cellSize,
 
         }
         grid.targetRotation={

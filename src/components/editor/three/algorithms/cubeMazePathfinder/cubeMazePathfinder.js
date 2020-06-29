@@ -18,7 +18,7 @@ import ControlPanel from './../../../../../utils/helpers/text/panel/controlPanel
 // let rotation = [-0.5, -0.90, 0];
 let rotation = [0, 0, 0];
 
-export default function CubeMaze2(props) {
+export default function CubeMazePathfinder(props) {
 
     const {
         position,

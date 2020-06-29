@@ -62,7 +62,7 @@ export default function Astar({ size, position, renderer }) {
         })
         cubes.current=newGridcells;
         savedData.current.current=newGridcells[0];
-        newGridcells[newGridcells.length-1].wall=false;
+        // newGridcells[newGridcells.length-1].wall=false;
         setGridCells(newGridcells)
 
         setTimeout(()=>{

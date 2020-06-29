@@ -1,21 +1,24 @@
+import { Vector3 } from 'three';
 
 export function calculatePosition(size,position,grid=5){
     return [(size[0]*-grid/2)+position[0],0+position[1],size[1]*-grid/2+position[2]]
 }
 
-export function calculateCubePosition(size,position,grid=5){
-    console.log(size,position,grid)
+export function calculateCubePosition(size,position,grid){
+
     return [
         (size[0]*-grid/2)+position[0],
         (size[0]*+grid/2)+position[1],
         size[1]*-grid/2+position[1]
     ]
+
 }
-export function calculateGroupPosition(size,position,grid=5){
+export function calculateGroupPosition(size,cellSize=5){
+
     return [
-        (size[0]*5)/2,
-        size[0]*-2,
-        (size[0]*5)/2
+        (size[0]*cellSize)/2,
+        0-(size[0]*cellSize)/2,
+        (size[0]*cellSize)/2
     ]
 }
 
@@ -134,4 +137,48 @@ export function updateCubeAnimation(blocks,speed,rotationSpeed=0.05){
     }
 
     return flag
+}
+
+export function setCubePosition(blocks){
+
+    let keys=Object.keys(blocks)
+
+    for(var i=0;i<keys.length;i++){
+
+        let targetPos=blocks[keys[i]].targetPosition
+        let currentPos=blocks[keys[i]].mesh.position
+        let posKeys=Object.keys(targetPos)
+
+        for(var a=0;a<posKeys.length;a++){
+            let index=posKeys[a]
+            currentPos[index]=targetPos[index]
+        }
+
+        let targetRotation=blocks[keys[i]].targetRotation
+        let currentRotation=blocks[keys[i]].mesh.rotation
+        let rotationKeys=Object.keys(targetRotation)
+        
+        for(var a=0;a<rotationKeys.length;a++){
+            let index=rotationKeys[a]
+            currentRotation[index]=targetRotation[index]
+        }
+
+    }
+
+    return true
+}
+
+
+export function calculatePathPosition(cor,cellSize){
+
+    let offset=cellSize;
+    let xOffset=cor.sideName==='right'?offset:cor.sideName==='left'?-offset:0
+    let yOffset=cor.sideName==='top'?offset:cor.sideName==='bot'?-offset:0
+    let zOffset=cor.sideName==='front'?offset:cor.sideName==='back'?-offset:0
+    
+    return new Vector3(
+        cor.cubePosition.x+xOffset, 
+        cor.cubePosition.y+yOffset, 
+        cor.cubePosition.z+zOffset
+    )
 }
