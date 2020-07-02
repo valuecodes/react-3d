@@ -3,12 +3,13 @@ import Cell from './cell'
 import Tracker from './tracker'
 import Astar from './astar'
 import Maze from './maze'
+import Tracker from './tracker'
 import { useFrame } from 'react-three-fiber'
 import { 
     calculatePosition, 
     calculateTextHeaderPosition, 
     calculateListPosition, 
-    updateAnimation 
+    updateAnimation,
 }from './../../../../../utils/other/calculatePosition'
 import HeaderText from './../../../../../utils/helpers/text/header/headerText'
 import TextList from './../../../../../utils/helpers/text/list/textList'
@@ -57,7 +58,6 @@ export default function MazePathFinder({ size, position, renderer }) {
         return () => {
             mesh.current.children.forEach(elem => disposeElements(elem,renderer))
             disposeElements(mesh.current,renderer)
-            
         }
     },[])
 

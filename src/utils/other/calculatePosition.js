@@ -4,27 +4,25 @@ export function calculatePosition(size,position,grid=5){
     return [(size[0]*-grid/2)+position[0],0+position[1],size[1]*-grid/2+position[2]]
 }
 
-export function calculateCubePosition(size,position,grid){
-
+export function calculateCubePosition(size,cellSize){
     return [
-        (size[0]*-grid/2)+position[0],
-        (size[0]*+grid/2)+position[1],
-        size[1]*-grid/2+position[1]
+        (size*-cellSize)/2,
+        (size*+cellSize)/2,
+        (size*-cellSize)/2
     ]
-
 }
-export function calculateGroupPosition(size,cellSize=5){
-
+export function calculateGroupPosition(size,cellSize){
     return [
-        (size[0]*cellSize)/2,
-        0-(size[0]*cellSize)/2,
-        (size[0]*cellSize)/2
+        (size*cellSize)/2,
+        0-(size*cellSize)/2,
+        (size*cellSize)/2
     ]
 }
 
 export function rotateToCurrentSide(group,current){
+
     let rotation=group.current.rotation;
-    let side=current.sideName;
+    let side=current.side;
     let target={
         x:0,
         y:0,
@@ -36,7 +34,7 @@ export function rotateToCurrentSide(group,current){
         target.z=0
     }
     if(side==='back'){
-        target.x=Math.PI/2
+        target.y=Math.PI
     }
     if(side==='front'){
         target.x=-Math.PI/2
@@ -52,6 +50,19 @@ export function rotateToCurrentSide(group,current){
     }
 
     return target
+}
+
+export function getRandomCell(cells){
+
+    let index=Math.floor(
+        Object.keys(cells).length-
+        (Math.random()*(Object.keys(cells).length/2))
+    )
+    return cells[Object.keys(cells)[index]]
+}
+
+export function getFirstCell(cells){
+    return cells[Object.keys(cells)[0]]
 }
 
 export function calculateTextHeaderPosition(size,position){
@@ -101,7 +112,7 @@ export function updateCubeAnimation(blocks,speed,rotationSpeed=0.05){
 
     for(var i=0;i<keys.length;i++){
 
-        let targetPos=blocks[keys[i]].targetPosition
+        let targetPos=blocks[keys[i]].targetFormation.position
         let currentPos=blocks[keys[i]].mesh.position
         let posKeys=Object.keys(targetPos)
 
@@ -117,7 +128,7 @@ export function updateCubeAnimation(blocks,speed,rotationSpeed=0.05){
             }
         }
 
-        let targetRotation=blocks[keys[i]].targetRotation
+        let targetRotation=blocks[keys[i]].targetFormation.rotation
         let currentRotation=blocks[keys[i]].mesh.rotation
         let rotationKeys=Object.keys(targetRotation)
         
@@ -145,7 +156,7 @@ export function setCubePosition(blocks){
 
     for(var i=0;i<keys.length;i++){
 
-        let targetPos=blocks[keys[i]].targetPosition
+        let targetPos=blocks[keys[i]].targetFormation.position
         let currentPos=blocks[keys[i]].mesh.position
         let posKeys=Object.keys(targetPos)
 
@@ -154,7 +165,7 @@ export function setCubePosition(blocks){
             currentPos[index]=targetPos[index]
         }
 
-        let targetRotation=blocks[keys[i]].targetRotation
+        let targetRotation=blocks[keys[i]].targetFormation.rotation
         let currentRotation=blocks[keys[i]].mesh.rotation
         let rotationKeys=Object.keys(targetRotation)
         
@@ -170,15 +181,17 @@ export function setCubePosition(blocks){
 
 
 export function calculatePathPosition(cor,cellSize){
-
-    let offset=cellSize;
-    let xOffset=cor.sideName==='right'?offset:cor.sideName==='left'?-offset:0
-    let yOffset=cor.sideName==='top'?offset:cor.sideName==='bot'?-offset:0
-    let zOffset=cor.sideName==='front'?offset:cor.sideName==='back'?-offset:0
     
+    let offset=cellSize;
+    let position=cor.cubeFormation.position
+
+    let xOffset=cor.side==='right'?offset:cor.side==='left'?-offset:0
+    let yOffset=cor.side==='top'?offset:cor.side==='bot'?-offset:0
+    let zOffset=cor.side==='front'?offset:cor.side==='back'?-offset:0
+
     return new Vector3(
-        cor.cubePosition.x+xOffset, 
-        cor.cubePosition.y+yOffset, 
-        cor.cubePosition.z+zOffset
+        position.x+xOffset, 
+        position.y+yOffset, 
+        position.z+zOffset
     )
 }

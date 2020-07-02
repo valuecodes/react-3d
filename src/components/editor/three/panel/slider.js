@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
-import { extend, useThree } from "react-three-fiber";
-import { disposeElements } from './../../../other/disposeElements'
-import { calculateListPosition } from './../../../other/calculatePosition'
-import DragControl from './../../../other/dragControl'
+import { extend } from "react-three-fiber";
+import { disposeElements } from './../../../../utils/other/disposeElements'
+import { calculateListPosition } from './../../../../utils/other/calculatePosition'
+import DragControl from './../../../../utils/other/dragControl'
 
 extend({ TextMesh });
 

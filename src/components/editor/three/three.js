@@ -13,10 +13,11 @@ import HelperAxes from './../../../utils/helpers/helperAxes'
 // import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 // import Maze from './algorithms/maze/maze'
 // import AStar from './algorithms/astar/astar'
-import CubeMaze from './algorithms/cubemaze/cubemaze'
-import CubeMaze2 from './algorithms/cubeMaze2/cubemaze2'
+import CubeMaze from './algorithms/cubeMaze/cubemaze'
 import CubeAstar from './algorithms/cubeAstar/cubeastar'
 import CubeMazePathfinder from './algorithms/cubeMazePathfinder/cubeMazePathfinder'
+
+import HexaSphere from './algorithms/hexasphere/hexasphere'
 
 
 import Navigation from './navigation/navigation'
@@ -31,8 +32,8 @@ export default function Three() {
     const renderer=useRef()
 
     const [cameraSettings, setCameraSettings]=useState({
-        cameraPosition:[0,70,100],
-        cameraRotation:[0.5,0,0],
+        cameraPosition:[0,70,120],
+        cameraRotation:[0.6,0,0],
         orbit:true,
         axes:false,
         grid:false,
@@ -40,9 +41,9 @@ export default function Three() {
     })
 
     const [scene, setScene] = useState([        
-        <CubeMazePathfinder position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
-        <CubeAstar position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
-        // <CubeMaze2 position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
+        // <CubeMazePathfinder position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
+        // <CubeAstar position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
+        // <CubeMaze position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
         // <CubeMaze position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
 
         // <Maze position={[0,0,0]} size={[20,20]} renderer={renderer}/>,
@@ -52,9 +53,6 @@ export default function Three() {
 
     const main=useRef();
     
-
-
-
 
     const trackPosition=(e)=>{
         setLight([e.clientX-window.innerWidth/2 ,(e.clientY-window.innerHeight/2)*-1,-150])
@@ -83,7 +81,7 @@ export default function Three() {
             >
             <Canvas
                 camera={{
-                    position:[20,100,20]
+                    // position:[20,50,20]
                 }}   
                 
             >
@@ -97,7 +95,7 @@ export default function Three() {
                 <group
                     rotation={cameraSettings.cameraRotation}
                     size={[160,160,160]}
-                    position={[0,0,0]}
+                    position={[0,40,0]}
                     ref={main}
                 >
                     
@@ -110,7 +108,7 @@ export default function Three() {
                             return elem
                         }
                     })}
-
+                    <HexaSphere/>
                     <webGLRenderer antialias={true} ref={renderer}/>
                 </group>
 

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import usePromise from "react-promise-suspense"
-import { disposeElements } from './../../../other/disposeElements'
+import { disposeElements } from './../../../../utils/other/disposeElements'
 import Header from './header'
 import Buttons from './buttons'
 import List from './list'
@@ -14,11 +13,18 @@ export default function ControlPanel(props) {
         buttonClick,
         updateSliderValue,
         options,
-        selectOption,
-        cubes
+        cubes,
+        controlPanel,
+        pathLine,
+        aStarRef,
+        tracker
     } = props
     return (
         <>
+        <group
+                position={[-100,0,-20]}
+                ref={controlPanel}
+        >
             <Header 
                 text={'Maze Cube'}
                 renderer={renderer}     
@@ -33,15 +39,19 @@ export default function ControlPanel(props) {
                 renderer={renderer} 
             />
             <Options
-                options={controlPanelOptions.options}
+                controlPanelOptions={controlPanelOptions.options}
                 renderer={renderer} 
-                selectOption={selectOption}
                 cubes={cubes}
+                pathLine={pathLine}
+                aStarRef={aStarRef}
+                options={options}
+                tracker={tracker}
             />
             <Slider
                 renderer={renderer} 
                 updateSliderValue={updateSliderValue}
             />
+        </group>
         </>
     )
 }

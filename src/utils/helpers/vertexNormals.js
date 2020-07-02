@@ -6,11 +6,12 @@ extend({ VertexNormalsHelper })
 export default function VertexNormals({current, setPosition}) {
     const helper=useRef();
     if(current){
-        
+        console.log(helper)
     return (
         <vertexNormalsHelper
+        onClick={e => console.log(helper)}
         ref={helper} 
-        args={[current,3,'red']}
+        args={[current,20,'red']}
         /> 
     )        
     }else return null;

@@ -1,18 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
 import { extend } from "react-three-fiber";
-import { disposeElements } from './../../../other/disposeElements'
-import { calculateButtonPosition, updateCubeAnimation } from './../../../other/calculatePosition'
+import { disposeElements } from './../../../../utils/other/disposeElements'
+import { 
+    calculateButtonPosition, 
+    updateCubeAnimation,
+} from './../../../../utils/other/calculatePosition'
+import {
+    addPathLine,
+    updatePathPosition,
+    updateTrackerPosition
+} from './../../../../components/editor/three/algorithms/shapes/calculations'
 import { useFrame } from 'react-three-fiber'
 
 extend({ TextMesh });
 
 export default function Options(props) {
+    
     const {
         options,
         renderer,
-        // selectOption,
         cubes,
+        pathLine,
+        aStarRef,
+        controlPanelOptions,
+        tracker
     } = props
 
     const mesh=useRef();
@@ -22,7 +34,7 @@ export default function Options(props) {
 
     useEffect(()=>{
         let newOptions=[];
-        newOptions = options.map(option => 
+        newOptions = controlPanelOptions.map(option => 
             option={
                 option:option,
                 selected:false
@@ -37,13 +49,12 @@ export default function Options(props) {
             let speed=5
             let rotationSpeed=0.1
             let ready = updateCubeAnimation(blocks,speed,rotationSpeed)
+            // console.log(aStarRef)
+            updatePathPosition(aStarRef.current.path,blocks,pathLine,options,opt[1].selected)
+            updateTrackerPosition(tracker,aStarRef.current.path)
             if(ready) setAnimation(false)
         }
     })
-
-    // if(listMesh===null&&mesh.current!==undefined){
-    //     addListMesh(mesh.current.children)
-    // }
 
     function selectOption(option){
 
@@ -54,7 +65,7 @@ export default function Options(props) {
         if(option==='Show frame'){
             let current=opt.filter(opt => opt.option===option)
             let selected =current[0].selected
-            console.log(current)
+
             {Object.keys(cubeCells).forEach((elem,index)=>
                 cubeCells[elem].mesh.material.visible=selected
             )}
@@ -65,12 +76,11 @@ export default function Options(props) {
 
         if(option==='Hide Walls'){
             let current=updatedOpt[2].selected
-            console.log(current)
+
             {Object.keys(cubeCells).forEach((elem,index)=>
                 cubeCells[elem].mesh.children.forEach(elem =>
                     elem.material.visible=current
                 )
-                // cubeCells[elem].mesh.material.visible=selected
             )}
             updatedOpt[2].selected = !current
             setOpt(updatedOpt)
@@ -78,28 +88,16 @@ export default function Options(props) {
 
         if(option==='Open Cube'){
             let current=updatedOpt[1].selected
-            console.log(cubeCells)
-            // let selected =!current.selected
-            if(!current){
-                {Object.keys(cubeCells).forEach((elem,index)=>
-                    [                
-                        cubeCells[elem].targetPosition=cubeCells[elem].startingPosition,
-                        cubeCells[elem].targetRotation=cubeCells[elem].startingRotation
-                ]
-                )}
-                console.log(cubeCells,cubeCells.cubePosition)
 
+            if(!current){
+                Object.keys(cubeCells).forEach(elem =>
+                        cubeCells[elem].targetFormation=cubeCells[elem].openFormation,
+                )
             }else{
-                {Object.keys(cubeCells).forEach((elem,index)=>
-                    [                
-                        cubeCells[elem].targetPosition=cubeCells[elem].cubePosition,
-                        cubeCells[elem].targetRotation=cubeCells[elem].cubeRotation
-                ]
-                )}
-            }
-            // current[0].selected = !selected
-            // updatedOpt[0]=current[0]
-            
+                Object.keys(cubeCells).forEach(elem =>        
+                        cubeCells[elem].targetFormation=cubeCells[elem].cubeFormation,
+                )
+            }       
             setAnimation(true)
 
             updatedOpt[1].selected = !current
@@ -108,10 +106,9 @@ export default function Options(props) {
 
     }
 
-    console.log(options)
-    // useEffect(()=>{
-    //     return () => disposeElements(mesh.current, renderer)
-    // },[])
+    useEffect(()=>{
+        return () => disposeElements(mesh.current, renderer)
+    },[])
 
     return (
         <group 

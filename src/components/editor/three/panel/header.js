@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 
-import usePromise from "react-promise-suspense"
 import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
-import { extend, Canvas } from "react-three-fiber";
-import { disposeElements } from './../../../other/disposeElements'
+import { extend } from "react-three-fiber";
+import { disposeElements } from './../../../../utils/other/disposeElements'
 extend({ TextMesh });
 
 export default function HeaderText({ text, renderer }) {

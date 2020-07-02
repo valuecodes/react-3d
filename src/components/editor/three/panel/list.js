@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
 import { extend } from "react-three-fiber";
-import { disposeElements } from './../../../other/disposeElements'
-import { calculateListPosition } from './../../../other/calculatePosition'
+import { disposeElements } from './../../../../utils/other/disposeElements'
+import { calculateListPosition } from './../../../../utils/other/calculatePosition'
 extend({ TextMesh });
 
 export default function List(props) {
@@ -78,7 +78,6 @@ function ListElement({ text, position, renderer }) {
                 onClick={e=>console.log(mesh)}
                 text={''}
                 fontSize={5}
-                // anchorX="left"
                 anchorY="middle"
             >
                 <meshPhongMaterial attach="material" color="black" side={2}/>     

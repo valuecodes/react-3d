@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react'
-import createNewCube from './cubeSide'
-import { useFrame } from 'react-three-fiber'
 import { 
     calculateCubePosition, 
     calculateTextHeaderPosition, 
@@ -8,20 +6,57 @@ import {
     updateCubeAnimation,
     calculateGroupPosition,
     rotateToCurrentSide,
-    setCubePosition
+    setCubePosition,
+    getFirstCell
 }from './../../../../../utils/other/calculatePosition'
-import HeaderText from './../../../../../utils/helpers/text/header/headerText'
-import Buttons from './../../../../../utils/helpers/text/buttons/buttons'
+import {
+    resetCube
+} from './../shapes/calculations'
+
 import { disposeElements } from './../../../../../utils/other/disposeElements'
 import { useSpring, animated, useTrail } from 'react-spring/three'
-import ControlPanel from './../../../../../utils/helpers/text/panel/controlPanel'
-
+import ControlPanel from './../../panel/controlPanel'
+import PathLine from './../shapes/pathLine'
+import CubeCells from './../shapes/cubecells'
 import Algorithm from './algorithm'
+import createNewCube from './../shapes/cube'
+import Tracker from './../shapes/tracker'
 
-// let rotation = [-0.5, -0.90, 0];
-let rotation = [0, 0, 0];
+let rotation = [-0.5, -0.90, 0];
+// let rotation = [0, 0, 0];
 
 export default function CubeMaze2(props) {
+
+    const [options, setOptions]=useState({
+        size:30,
+        cellSize:2,        
+        cubeSides:{
+            top:true,
+            front:true,
+            right:true,
+            // left:true,
+            // back:true,
+            // bot:true
+        },
+        obstacles:true,
+        walls:false,
+        wallsVisible:false,
+        fullNeighbors:true,
+        animation:true,
+        automaticRotation:false,
+        colorScheme:{
+            initial:'#262729',
+            obstacle:'dimgray',
+            wall:'#1a1a1a',
+            current:'gray',
+            next:'purple',
+            closedSet:'yellow',
+            openSet:'seagreen',
+            path:'navy',
+            pathLine:'red',
+            tracker:'red'
+        }
+    })
 
     const {
         position,
@@ -32,18 +67,7 @@ export default function CubeMaze2(props) {
     const [sideRotation, setSideRotation] = useSpring(() => ({
         rotation: [...rotation],
         config: { mass: 5, friction: 40, tension: 400 },
-      }))
-
-    const [cubeCells, setCubeCells] = useState([]);
-    const [start, setStart]=useState(false)
-    const [pause, setPause]=useState(false)
-    const [ready, setReady]=useState(false)
-    const [currentPos, setCurrentPos]=useState([])
-    const [cubeSize, setCubeSize]=useState(null);
-    const [animation, setAnimation]=useState(false)
-    const [size, setSize]=useState([20,20])
-    const [cellSize, setCellSize]=useState(3)
-    const [sides, setSides]=useState([]);
+    }))
 
     const [controlPanelOptions, setControlPanelOptions]=useState({
         header:'Cube pathfinder',
@@ -52,22 +76,41 @@ export default function CubeMaze2(props) {
         options:['Show frame','Open Cube','Hide Walls']
     })
 
+    const [cubeCells, setCubeCells] = useState([]);
+    const [sides, setSides]=useState([]);
+    
+    const [state, setState]=useState({
+        maze:false,
+        pause:false,
+        aStar:false,
+        ready:false,
+        animation:false,
+        tracking:false,
+    })        
+    let newState={...state}  
+
     const cubes=useRef();
     const mesh=useRef();
     const controlPanel=useRef();
     const group=useRef();
-    let savedData=useRef({
-        current:null,
-        stack:[],
-        count:2,
+    const pathLine=useRef();
+    const tracker=useRef();
+    let aStarRef=useRef({
+        openSet:[],
+        closedSet:[],
+        path:[],
+        noSolution:false,
+        start:[],
+        end:[]
     })
 
     useEffect(()=>{
 
-        createNew(size)
-    
+        createNew()
+
         setTimeout(()=>{
-            setAnimation(true)        
+            newState.animation=true
+            setState(newState)          
         },[2000])
         return () => {
             mesh.current.children.forEach(elem => disposeElements(elem,renderer))
@@ -75,88 +118,37 @@ export default function CubeMaze2(props) {
         }
     },[])
     
-    function createNew(newSize){
-        let newCubeCells = createNewCube(size[0],cellSize);
+    function createNew(){
+        let newCubeCells = createNewCube(options);
         cubes.current=newCubeCells[0];
-        savedData.current.current=newCubeCells[0][0+'.'+0+'.'+0]  
         setCubeCells(newCubeCells[0]) 
         setSides(newCubeCells[1])
     }
-    
-      useFrame(()=>{
-
-        if(animation){
-            let blocks=cubes.current
-            let speed=1*(size[0]/10)
-            let rotationSpeed=0.1*(size[0]/10)
-            let ready = updateCubeAnimation(blocks,speed,rotationSpeed)
-
-            ready=setCubePosition(blocks,speed,rotationSpeed)
-
-            if(ready) setAnimation(false)
-        }
-
-        if(ready){
-            // group.current.rotation.x-=0.003
-            // group.current.rotation.y-=0.002
-            // group.current.rotation.z+=0.003
-        }
-
-        if(start && !pause){
-            // let current=savedData.current.current
-            // let target=rotateToCurrentSide(group,current)
-            // if(target){
-            //     setSideRotation({ rotation: [target.x-0.5,target.y-0.9,target.z] });
-            // }
-     
-        }     
-    })
-
-    function resetCube(){
-
-        Object.keys(cubes.current).forEach(cube=>{
-            cubes.current[cube].material.color.set( 'darkslategray' )
-            cubes.current[cube].visited=false
-            // cubes.current[cube].walls=[true,true,true,true]
-            // cubes.current[cube].setWalls(cubes.current[cube])
-            
-        })
-
-        for(var i=0;i<sides.length;i++){
-            let keys=Object.keys(sides[i].sideEdges)
-            for(var a=0;a<keys.length;a++){
-                sides[i].sideEdges[keys[a]].addEdgeNeigbors(sides[i].sideEdges[keys[a]],cubes.current,sides)
-            }
-        } 
-
-        savedData.current={
-            current:null,
-            stack:[],
-            count:2,
-        }
-
-        savedData.current.current=cubes.current[0+'.'+0+'.'+0]
-    }
-
 
     function buttonClick(action){
+   
         if(action==='Start'){
-            setStart(true)
-            setPause(false)
+            newState.aStar=true
+            newState.pause=false
         }
+
         if(action==='Pause'){
-            setPause(!pause)
+            newState.pause=!newState.pause
         }
+
         if(action==='Reset'){
-            resetCube();
-            setStart(false)
-            setPause(false)
-            setReady(false)
+            resetCube(cubes,sides,pathLine,options,aStarRef,tracker)
+            newState.maze=false
+            newState.pause=false
+            newState.ready=false
+            newState.aStar=false
         }
+
+        setState(newState)
     }
 
     function updateSliderValue(newValue){
-        if(newValue!==size[0]){
+        if(newValue!==options.size){
             console.log(newValue)
             // resetCube()
             // createNew([newValue,newValue])
@@ -165,17 +157,11 @@ export default function CubeMaze2(props) {
         }
     }
 
-    function selectOption(option){
-        console.log(option)
-        if(option==='Show frame'){
-            {Object.keys(cubeCells).forEach((elem,index)=>
-                cubeCells[elem].mesh.material.visible=false
-            )}
+    function automaticRotation(current){
+        let target=rotateToCurrentSide(group,current)
+        if(target){
+            setSideRotation({ rotation: [target.x-0.5,target.y-0.9,target.z] });
         }
-    }
-
-    function updateSideRotation(target){
-        setSideRotation({ rotation: [target.x-0.5,target.y-0.9,target.z] });
     }
 
     return (
@@ -183,61 +169,53 @@ export default function CubeMaze2(props) {
             <animated.group
                 {...sideRotation}
                 ref={group}
-                position={calculateGroupPosition(size,cellSize)}
+                position={calculateGroupPosition(options.size,options.cellSize)}
             >
                 <mesh
                 ref={mesh}
-                position={calculateCubePosition(size,position,cellSize)}
+                position={calculateCubePosition(options.size,options.cellSize)}
                 >
-                    <Algorithm 
-                        cubeCells={cubeCells}
-                        start={start}
-                        pause={pause}    
+                <CubeCells cubeCells={cubeCells} />
+                    <Algorithm   
                         cubes={cubes}
-                        savedData={savedData}
-                        group={group}
-                        updateSideRotation={updateSideRotation}
                         sides={sides}
-                        size={size}
-                        cellSize={cellSize}
-                    />
-                </mesh>
-            </animated.group>
-            <group
-                position={[-100,0,-20]}
-                ref={controlPanel}
-            >
-                <ControlPanel 
-                    controlPanelOptions={controlPanelOptions}
-                    renderer={renderer}
-                    buttonClick={buttonClick}
-                    updateSliderValue={updateSliderValue}
-                    selectOption={selectOption}
-                    cubes={cubes}
+                        options={options}
+                        aStarRef={aStarRef}
+                        pathLine={pathLine}
+                        state={state}
+                        setState={setState}
+                        options={options}
+                        automaticRotation={automaticRotation}
+                    />                
+                    
+                <PathLine 
+                    options={options}
+                    pathLine={pathLine}
                 />
-            </group>
+                <Tracker
+                    state={state}
+                    setState={setState}
+                    tracker={tracker}
+                    aStarRef={aStarRef}
+                    options={options}
+                    automaticRotation={automaticRotation}
+                />
+                </mesh>
+
+            </animated.group>
+
+            <ControlPanel 
+                controlPanelOptions={controlPanelOptions}
+                renderer={renderer}
+                buttonClick={buttonClick}
+                updateSliderValue={updateSliderValue}
+                cubes={cubes}
+                pathLine={pathLine}
+                aStarRef={aStarRef}
+                options={options}
+                tracker={tracker}
+            />
+
             </>
     )
 }
-
-
-function removeWalls(a, b) {
-
-    let x = a.x - b.x;
-    if (x === 1) {
-      a.walls[3] = false;
-      b.walls[1] = false;
-    } else if (x === -1) {
-      a.walls[1] = false;
-      b.walls[3] = false;
-    }
-    let y = a.y - b.y;
-    if (y === 1) {
-      a.walls[0] = false;
-      b.walls[2] = false;
-    } else if (y === -1) {
-      a.walls[2] = false;
-      b.walls[0] = false;
-    }
-
-  }

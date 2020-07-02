@@ -1,7 +1,6 @@
 import React,{useRef, useEffect, useState} from 'react'
-// import TextListElement from './textListElement'
-import { calculateButtonPosition }from './../../../other/calculatePosition'
-import { disposeElements } from './../../../other/disposeElements'
+import { calculateButtonPosition }from './../../../../utils/other/calculatePosition'
+import { disposeElements } from './../../../../utils/other/disposeElements'
 
 export default function Buttons(props) {
 
