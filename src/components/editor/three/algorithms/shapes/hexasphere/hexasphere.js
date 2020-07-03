@@ -12,84 +12,222 @@ extend({ VertexNormalsHelper })
 export function createHexasphere(options,group){
 
     let array=[];
-    
-    let geometry= new THREE.IcosahedronGeometry(options.size,4);
-    let edgeGeometry= new THREE.IcosahedronGeometry(options.size,1);
+
+    let geometry= new THREE.IcosahedronGeometry(options.size,options.detail);
+    let pentagonGeometry= new THREE.IcosahedronGeometry(options.size,1);
 
     let positions=geometry.vertices
-    let edgePositions=edgeGeometry.vertices
+    let pentagonPositions=pentagonGeometry.vertices
+    let pentagons=getPentagonCoordinates(pentagonPositions,options)
 
-    let edges=getEdgeCoordinates(edgePositions,options)
+    let hexaSphere={
+        q1:[],
+        q2:[],
+        q3:[],
+        q4:[],
+        q5:[],
+        q6:[],
+        q7:[],
+        q8:[],
+        seam:[],
+        pentagon:[]
+    }
+
+    let distanceToNext=positions[0].distanceTo(positions[1])
 
     for(var i=0;i<positions.length;i++){
-        let edge=checkIfEdge(positions[i],edges)
-        array.push(new HexagonTile(options,positions[i],i,edge,group))
+        
+        let pentagon=checkIfPentagon(positions[i],pentagons)
+        
+        array.push(
+            new HexagonTile(options,positions[i],i,pentagon,group,distanceToNext)
+        )
+
+        if(array[i].semiQuarter){
+            array[i].qID=hexaSphere[array[i].semiQuarter].length
+            hexaSphere[array[i].semiQuarter].push(array[i])
+        }
+        if(array[i].seam){
+            hexaSphere.seam.push(array[i])
+        }
+        if(array[i].pentagon){
+            hexaSphere.pentagon.push(array[i])
+        }
+    }  
+
+    let seamNeighbors=[];
+    
+    for(var q=1;q<=8;q++){
+        let semiQuarter=hexaSphere[`q${q}`]
+        let sNeighbors=addQuarterNeighbors(semiQuarter,array,options,distanceToNext,hexaSphere)
+        seamNeighbors=[...seamNeighbors,...sNeighbors]
+        console.log(q+' Ready')
     }
 
-    for(var i=0;i<array.length;i++){
-        array[i].addNeighbors(array);
+    let seam=hexaSphere.seam
+    let totalSeam=[...seam,...seamNeighbors]
+
+    for(var i=0;i<seam.length;i++){
+        searchNeigborsFrom(seam[i],array,distanceToNext)
     }
+    console.log(hexaSphere)
 
     for(var i=0;i<array.length;i++){
-        if(!array[i].edge){
+        if(!array[i].pentagon){
             array[i].createHexagon(array[i]);        
         }   
+        if(array[i].pentagon){
+            array[i].createPentagon(array[i],options);   
+        }
     }
     
     return array
 }
-function HexagonTile(options,position,id,edge,group){
+
+function searchNeigborsFrom(current,section,dist){
+
+    let newNeigbors=current.neigbors;
+    let curCenter=current.center
+    
+    for(var i=0;i<section.length;i++){
+        if(section[i]){
+            let target=section[i].center
+            let distance=curCenter.distanceTo(target)
+            if(distance<0.1){
+                continue
+            }
+            if(distance<dist*1.40){
+                newNeigbors.push(section[i])
+                if(newNeigbors.length===6){
+                    current.neigborsFound=true
+                    break
+                }
+            }             
+        }
+    }
+
+    return newNeigbors
+}
+
+function addQuarterNeighbors(semiQuarter,array,options,distanceToNext,hexaSphere){
+    
+    let {
+        size,
+        detail
+    } =options   
+
+    let seamNeighbors=[];
+
+    for(var i=0;i<semiQuarter.length;i++){
+        let current=semiQuarter[i];
+        let currentNeigbors=searchNeigborsFrom(current,semiQuarter,distanceToNext)
+        if(currentNeigbors.length===6){
+            current.neigbors=currentNeigbors
+        }else{
+            seamNeighbors.push(current)
+            let seam=hexaSphere.seam
+            let currentNeigbors=searchNeigborsFrom(current,seam,distanceToNext)
+            current.neigbors=currentNeigbors
+        }
+    }
+    return seamNeighbors
+}
+
+function createId(options,current,hexaSphere){
+    let semiQuarter=current.semiQuarter;
+    let xedge=new THREE.Vector3(25,0,0);
+    let x=Math.floor(xedge.distanceTo(current.center))
+    let yedge=new THREE.Vector3(0,25,0);
+    let y=Math.floor(yedge.distanceTo(current.center))
+    // let zedge=new THREE.Vector3(0,0,25);
+    // let z=Math.floor(zedge.distanceTo(current.center))
+    return `${semiQuarter}.${x}.${y}`
+}
+
+function HexagonTile(options,position,id,pentagon,group,distanceToNext){
     this.center=position
     this.neigbors=[];
     this.id=id;
-    this.edge=edge;
+    this.pentagon=pentagon;
     this.options=options;
-    this.quarter=getQuarter(this)
-    this.seam=getSeam(this)
-    this.color=''
+    this.color='gray'    
+    this.distanceToNext=distanceToNext
+    this.setColor=(color)=>{
+        this.color=color
+    } 
+    this.semiQuarter=getSemiQuarter(this,options)
+    this.seam=getSeam(this,distanceToNext,options) 
     this.group=group
     this.hexagon=null;
-    // let geometry= new  THREE.CircleGeometry()
-    // this.material=new THREE.MeshStandardMaterial({color:'red',side:2})
+    this.quarterID=null;
+    this.neigborsFound=false;
     this.mesh=new THREE.Mesh()
 
-    this.addNeighbors=(all)=>{
+    this.addNeighbors=(all,dist,hexaSphere)=>{
 
+        let {
+            size,
+            detail
+        } = this.options
         let current=this.center;
+        let semiq=this.semiQuarter;
+        let neighbors
         let newNeigbors=[]
-        let maxDist=this.options.cellSize*3
+        
         for(var i=0;i<all.length;i++){
-            if(i===id) continue
             if(all[i]){
                 let target=all[i].center
                 let distance=current.distanceTo(target)
-                if(distance<4.5){
+                if(distance<0.1){
+                    // currentIndex=i
+                    continue
+                }
+                if(distance<dist*1.4){
                     newNeigbors.push(all[i])
                 }             
             }
 
         }
-        console.log(newNeigbors.length)
+        // console.log(newNeigbors.length)
         this.neigbors=newNeigbors
     }
     
-    this.createHexagon=(current)=>{
-        current.hexagon=true
-        // let cVertex=current.mesh.geometry.vertices
+    this.createPentagon=(current,options)=>{
+        let colorScheme=options.colorScheme
         let path=getPathFromNeighbors(current);
-
-        // path=modifyPath(path,5,6)
-        // path=modifyPath(path,6,5)
-
         var geometry = new THREE.Geometry();
         geometry.vertices.push(...path)
-        console.log(geometry)
-        var material = new THREE.MeshPhongMaterial( { color : '#262729',side:2 } );
+        var material = new THREE.MeshPhongMaterial( { color : colorScheme.pentagon,side:2 } );
+
+        geometry.faces.push(
+            new THREE.Face3(0,1,3),
+            new THREE.Face3(1,2,3),
+            new THREE.Face3(3,4,0),
+        )
+
+        geometry.computeBoundingSphere();
+        geometry.computeFaceNormals();
+        geometry.computeVertexNormals();
+        this.mesh.add(new THREE.Mesh( geometry, material ) )
+
+        createWalls(path,this.mesh);
+        this.walls=[true,true,true,true,true,true]
+
+    }
+
+    this.createHexagon=(current)=>{
+        current.hexagon=true
+        let path=getPathFromNeighbors(current);
+        let col=this.color
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(...path)
+        // console.log(geometry)
+        var material = new THREE.MeshPhongMaterial( { color : col,side:2 } );
 
         let normal=new THREE.Vector3( 1, 0, 0 );
 
         geometry.faces.push(
-            new THREE.Face3(0,1,3) ,
+            new THREE.Face3(0,1,3),
             new THREE.Face3(5,0,3),            
             new THREE.Face3(1,2,3) ,
             new THREE.Face3(3,4,5) ,
@@ -97,29 +235,28 @@ function HexagonTile(options,position,id,edge,group){
         geometry.computeBoundingSphere();
         geometry.computeFaceNormals();
         geometry.computeVertexNormals();
-        
         this.mesh.add(new THREE.Mesh( geometry, material ) )
-        
-        // for(var i=0;i<cVertex.length;i++){
-        //     // let distance=cVertex.distanceTo(target)
-        //     let nearest=getNearestNeighbor(current,cVertex[i])
-        //     // path.push(nearest)
-        //     console.log(current.mesh.geometry.vertices[i],nearest)
-        //     current.mesh.geometry.vertices[i].x=nearest.x
-        //     current.mesh.geometry.vertices[i].y=nearest.y
-        //     current.mesh.geometry.vertices[i].z=nearest.z
-        //     // current.mesh.geometry.verticesNeedUpdate=true
-        // }   
-        // console.log(current.color)
-        // path=getPathFromNeighbors(current);
-        var material = new THREE.LineBasicMaterial({color:'black'})
-        // console.log(path)
-        var geometry = new THREE.BufferGeometry().setFromPoints( path );
-        
-        var line = new THREE.Line( geometry, material );
-        this.mesh.add( line );
+
+        createWalls(path,this.mesh);
+        this.walls=[true,true,true,true,true,true]
+
     }
 
+}
+
+
+function createWalls(path,mesh){
+    let walls=[];
+    for(var i=0;i<path.length;i++){
+        walls.push([path[i],path[(i+1)%path.length]])
+    }
+
+    for(var i=0;i<walls.length;i++){
+        var material = new THREE.LineBasicMaterial({color:'red'})
+        var geometry = new THREE.BufferGeometry().setFromPoints( walls[i] );
+        var wall = new THREE.Line( geometry, material );
+        mesh.add( wall );
+    }
 }
 
 function modifyPath(path,a,b){
@@ -134,29 +271,20 @@ function lineCentroid(a,b){
 }
 
 function getPathFromNeighbors(current){
+
     let path=[];
     let start=current.center;
     let hexStart;
-    // path.push(start);
-
 
     for(var i=0;i<current.neigbors.length;i++){
-        // if(!current.neigbors[i].edge){
-            
-            let target=current.neigbors[i].center
-            current.neigbors[i].hexagon=false
-            // if(path.length===1){
-            //     hexStart=target
-            //     // path.push(hexStart)  
-            // }              
-            
-            path.push(target)         
-        // }
+        let target=current.neigbors[i].center
+        current.neigbors[i].hexagon=false
+        path.push(target)         
+        
     }
-    // path.push(current.neigbors[0].center);
 
     let len=path.length
-    for(var a=0;a<10;a++){
+    for(var a=0;a<2;a++){
         for(var i=0;i<len;i++){
             let dist1=path[i].distanceTo(path[(i+1)%len])
             let dist2=path[i].distanceTo(path[(i+2)%len])
@@ -169,8 +297,6 @@ function getPathFromNeighbors(current){
     let pathCopy=path[0]
     for(var i=0;i<path.length;i++){
         let index=i;
-        
-        // if(index===0) index=1
         let dist=current.center
         let dist1=path[index]
         let dist2;
@@ -180,9 +306,7 @@ function getPathFromNeighbors(current){
             dist2=path[index+1]
         }
         path[i]=getCentroid(dist,dist1,dist2)
-        
     }
-
     return path
 }
 
@@ -190,45 +314,6 @@ function getCentroid(a,b,c){
     return new THREE.Vector3( ((a.x+b.x+c.x)/3), ((a.y+b.y+c.y)/3), ((a.z+b.z+c.z)/3) ); 
 }
 
-function sortPath(path){
-
-
-        
-
-    
-    // sortedPath=path.sort((a,b)=>a.distanceTo(b)+b.distanceTo(a));
-    console.log(path)
-    return path
-}
-
-function findNearest(path,current){
-    let minDist=Infinity
-    let closest;
-    for(var a=1;a<path.length;a++){
-        let dist=current.distanceTo(path[a])
-        if(dist<minDist){
-            closest=path[a]
-        }
-    }
-    return closest
-}
-
-function getNearestNeighbor(current, cVertex){
-    
-    let nearest=50
-    let found=null
-    for(var i=0;i<current.neigbors.length;i++){
-        let target=current.neigbors[i].mesh.position
-    
-        let distance=cVertex.distanceTo(target)
-        if(distance<nearest) {
-            found=target
-            nearest=distance
-        }
-    }
-    // console.log(found)
-    return found;
-}
 
 function calculateNormals(faces){
 
@@ -249,122 +334,103 @@ function calculateNormals(faces){
     return normals
 }
 
-function getSeam(tile){
+function getSeam(tile,distanceToNext,options){
+    let colorScheme=options.colorScheme
     let pos=tile.center;
-    
-    let seam=null;
-    if(pos.x===0){
+    distanceToNext*=0.80
+    // distanceToNext*=0.6
+    let seam=false;
+    if(Math.abs(pos.x)<distanceToNext){
         seam='x'
-        // tile.color='dimgray'
+        tile.color=colorScheme.seam
+        tile.semiQuarter=false
         // tile.mesh.material.color.set('dimgray')
         // if(pos.y<0)
     }
-    if(pos.y===0){
+    if(Math.abs(pos.y)<distanceToNext){
         seam='y'
-        // tile.color='dimgray'
+        tile.color=colorScheme.seam
+        tile.semiQuarter=false
+        // tile.color='gray'
         // tile.mesh.material.color.set('dimgray')
     }
-    if(pos.z===0){
+    if(Math.abs(pos.z)<distanceToNext){
         seam='z'
-        // tile.color='dimgray'
+        tile.color=colorScheme.seam
+        tile.semiQuarter=false
+        // tile.color='gray'
         // tile.mesh.material.color.set('dimgray')
     }
     return seam
 }
 
-function getQuarter(tile){
+function getSemiQuarter(tile,options){
+
+    let {
+        colorScheme
+    } = options
+
     let pos=tile.center;
-    let quarter=null;
+    let semiQuarter=false;
 
     if(pos.x>0&&pos.y>0&&pos.z>0){
-        quarter=0
-        tile.color='yellow'
+        semiQuarter='q1'
+        // console.log(tile)
+        tile.color=colorScheme.q1
         // tile.mesh.material.color.set('yellow')
     }
     if(pos.x<0&&pos.y>0&&pos.z>0){
-        quarter=2
-        tile.color='blue'
+        semiQuarter='q2'
+        tile.color=colorScheme.q2
         // tile.mesh.material.color.set('blue')
     }
     if(pos.x<0&&pos.y<0&&pos.z>0){
-        quarter=5
-        tile.color='yellow'
+        semiQuarter='q3'
+        tile.color=colorScheme.q3
         // tile.mesh.material.color.set('brown')
     }  
     if(pos.x>0&&pos.y<0&&pos.z>0){
-        quarter=3
-        tile.color='yellow'
+        semiQuarter='q4'
+        tile.color=colorScheme.q4
         // tile.mesh.material.color.set('seagreen')
     }
 
     if(pos.x>0&&pos.y>0&&pos.z<0){
-        quarter=3
-        tile.color='yellow'
+        semiQuarter='q5'
+        tile.color=colorScheme.q5
         // tile.mesh.material.color.set('gold')
     }
     if(pos.x<0&&pos.y<0&&pos.z<0){
-        quarter=1
-        tile.color='yellow'
+        semiQuarter='q6'
+        tile.color=colorScheme.q6
         // tile.mesh.material.color.set('green')
     }
     if(pos.x>0&&pos.y<0&&pos.z<0){
-        quarter=4
-        tile.color='yellow'
+        semiQuarter='q7'
+        tile.color=colorScheme.q7
         // tile.mesh.material.color.set('purple')
     }
     if(pos.x<0&&pos.y>0&&pos.z<0){
-        quarter=5
-        tile.color='yellow'
+        semiQuarter='q8'
+        tile.color=colorScheme.q8
         // tile.mesh.material.color.set('pink')
     }
-    return quarter;
+    return semiQuarter;
 }
 
 
-// function createCenterPosition(position){
-//     console.log(position)
-//     let color=edge?'black':'red'
-
-//     // let geometry= new  THREE.CircleGeometry(options.cellSize,1)
-//     // let material= new THREE.MeshStandardMaterial( {color:color,side:2} );
-//     let mesh=new Vector3()
-    
-//     mesh.position.x=position.x
-//     mesh.position.y=position.y
-//     mesh.position.z=position.z
-
-//     // mesh.lookAt(center)
-//     // mesh.rotation.z=0.5
-//     // let edge=false;
-
-//     // if(mesh.quaternion._x===0&&mesh.quaternion._z===0) edge=true
-//     // if(mesh.quaternion._x===0&&mesh.quaternion._y===0) edge=true
-//     // if(mesh.quaternion._y===0&&mesh.quaternion._z===0) edge=true
-//     // if(mesh.rotation.x===0&&mesh.rotation.z===0) edge=true
-//     // if(mesh.rotation.x===0&&mesh.rotation.y===0) edge=true
-//     // if(mesh.rotation.y===0&&mesh.rotation.z===0) edge=true
-//     // if(mesh.rotation.y===0&&mesh.rotation.z===0&&mesh.rotation.x===0) edge=true
-//     // if(mesh.quaternion._w===0) edge=true
-
-//     // if(edge){
-//     //     mesh.material.color.set('black')
-//     // }
-
-//     return mesh
-// }
-
-function checkIfEdge(current,edges){
-    for(var a=0;a<edges.length;a++){
-        if(JSON.stringify(current)===JSON.stringify(edges[a])){
+function checkIfPentagon(current,pentagons){
+    for(var a=0;a<pentagons.length;a++){
+        if(JSON.stringify(current)===JSON.stringify(pentagons[a])){
             return true
         }
     }
     return false
 }
 
-function getEdgeCoordinates(positions,options){
+function getPentagonCoordinates(positions,options){
 
-    let edges=[];
+    let pentagons=[];
     for(var i=0;i<positions.length;i++){
         let current=positions[i]
         let neigbors=[];
@@ -377,8 +443,8 @@ function getEdgeCoordinates(positions,options){
             }
         }
         if(neigbors.length===5){
-            edges.push(current)
+            pentagons.push(current)
         }
     }
-    return edges;
+    return pentagons;
 }

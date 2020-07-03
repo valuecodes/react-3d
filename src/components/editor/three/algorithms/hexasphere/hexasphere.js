@@ -8,15 +8,38 @@ export default function HexaSphere() {
     const [tiles, setTiles]=useState([]);
 
     const [options, setOptions]=useState({
-        size:50,
-        cellSize:4,        
-        // cellSize:1,        
+        size:80,
+        detail:4,
+        colorScheme:{
+            q1:'#262729',
+            q2:'#262729',
+            q3:'#262729',
+            q4:'#262729',
+            q5:'#262729',
+            q6:'#262729',
+            q7:'#262729',
+            q8:'#262729',
+            seam:'#262729',
+            pentagon:'#262729'
+        },
+        // colorScheme:{
+        //     q1:'yellow',
+        //     q2:'blue',
+        //     q3:'brown',
+        //     q4:'seagreen',
+        //     q5:'gold',
+        //     q6:'green',
+        //     q7:'purple',
+        //     q8:'pink',
+        //     seam:'#262729',
+        //     pentagon:'black'
+        // }
     })
 
 
     useEffect(()=>{
         let hexagonSphere = createHexasphere(options,group)
-        console.log(hexagonSphere)
+        // console.log(hexagonSphere)
         setTiles(hexagonSphere)
     },[])
 
