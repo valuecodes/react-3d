@@ -8,32 +8,33 @@ export default function HexaSphere() {
     const [tiles, setTiles]=useState([]);
 
     const [options, setOptions]=useState({
-        size:30,
-        cellSize:3,        
+        size:50,
+        cellSize:4,        
         // cellSize:1,        
     })
 
 
     useEffect(()=>{
-        let hexagonSphere = createHexasphere(options)
+        let hexagonSphere = createHexasphere(options,group)
         console.log(hexagonSphere)
         setTiles(hexagonSphere)
     },[])
 
-    const ring=useRef();
+    const group=useRef();
 
     return (
         <>
         <group
             position={[0,-20,0]}
+            ref={group}
         >
             <CubeCells cubeCells={tiles} />
             <mesh
             // onClick={e => console.log(ring)}
-            ref={ring}
+            // ref={ring}
             position={[0,0,0]}
             >
-                <icosahedronBufferGeometry attach="geometry" args={[options.size,1]}/>
+                {/* <icosahedronBufferGeometry attach="geometry" args={[options.size,1]}/> */}
                 <meshBasicMaterial attach="material" color='gray' side={2} 
                 // wireframe
                 />
