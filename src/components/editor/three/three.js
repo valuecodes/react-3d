@@ -18,7 +18,8 @@ import CubeAstar from './algorithms/cubeAstar/cubeastar'
 import CubeMazePathfinder from './algorithms/cubeMazePathfinder/cubeMazePathfinder'
 
 import HexaSphere from './algorithms/hexasphere/hexasphere'
-
+import Instancing from './instancing'
+import Instance from './instance/app'
 
 import Navigation from './navigation/navigation'
 
@@ -108,6 +109,8 @@ export default function Three() {
                             return elem
                         }
                     })}
+                    {/* <Instancing main={main}/> */}
+                    {/* <Instance/> */}
                     <HexaSphere/>
                     <webGLRenderer antialias={true} ref={renderer}/>
                 </group>
