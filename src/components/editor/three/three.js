@@ -30,16 +30,24 @@ export default function Three() {
 
     const [light,setLight]=useState([25,50,50]);
     const [position, setPosition] = useState(0);
-    const renderer=useRef()
-
+    const [renderer, setRenderer]=useState(null)
     const [cameraSettings, setCameraSettings]=useState({
-        cameraPosition:[0,70,120],
+        cameraPosition:[0,90,120],
         cameraRotation:[0.6,0,0],
         orbit:true,
         axes:false,
         grid:false,
         mode:'orbit'
     })
+
+    useEffect(()=>{
+        const renderer = new WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        console.log(renderer)
+        setRenderer(renderer)
+        // renderer.current=renderer
+    },[])
 
     const [scene, setScene] = useState([        
         // <CubeMazePathfinder position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
@@ -86,11 +94,16 @@ export default function Three() {
                 }}   
                 
             >
+                {/* <directionalLight
+                    position={[200,200,200]}
+                    castShadow={false}
+                /> */}
+
                 <ambientLight />
                 <pointLight 
                     // position={light} 
                     // position={[0,-100,-100]} 
-                    position={[100,100,-100]} 
+                    position={[250,250,250]} 
                     />
 
                 <group
@@ -111,8 +124,8 @@ export default function Three() {
                     })}
                     {/* <Instancing main={main}/> */}
                     {/* <Instance/> */}
-                    <HexaSphere/>
-                    <webGLRenderer antialias={true} ref={renderer}/>
+                    <HexaSphere renderer={renderer}/>
+                    {/* <webGLRenderer antialias={true} ref={renderer}/> */}
                 </group>
 
             </Canvas>
