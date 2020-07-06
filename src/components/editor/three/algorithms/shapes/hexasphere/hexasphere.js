@@ -195,7 +195,7 @@ function createPentagon(current,options){
     mesh.center=current.center
     mesh.diameter=current.center.distanceTo(path[0])
     let vertices=createVertices(path,current);
-    current.walls=[true,true,true,true,true,true]
+    current.walls=[true,true,true,true,true]
     return {mesh,vertices}
 }
 
@@ -398,8 +398,8 @@ function addWallPositionsToFaces(geom,vertices){
         geom.faces[geom.faces.length-6].position=lineCenterPoint(vertices[2][0],vertices[2][1])
         geom.faces[geom.faces.length-7].position=lineCenterPoint(vertices[1][0],vertices[1][1])
         geom.faces[geom.faces.length-8].position=lineCenterPoint(vertices[1][0],vertices[1][1])
-        geom.faces[geom.faces.length-9].position=lineCenterPoint(vertices[0][0],vertices[0][1])
-        geom.faces[geom.faces.length-10].position=lineCenterPoint(vertices[0][0],vertices[0][1])                    
+        geom.faces[geom.faces.length-9].position=lineCenterPoint(vertices[0][0],vertices[0][1])    
+        geom.faces[geom.faces.length-10].position=lineCenterPoint(vertices[0][0],vertices[0][1])                  
     }
 
 

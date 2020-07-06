@@ -14,21 +14,22 @@ export default function HexaSphere() {
     })
 
     const [maze, setMaze]=useState(false)
+    const [astar, setAstar]=useState(false)
 
     const [options, setOptions]=useState({
         size:50,
-        detail:4,
+        detail:2,
         wallWidth:4,
         wallColors:{
-            unvisited:'red',
-            visited:'black',
+            unvisited:'black',
+            visited:'red',
             notVisible:'',
         },
         colorScheme:{
             q1:'#262729',
             q2:'#262729',
             q3:'#262729',
-            q4:'seagreen',
+            q4:'#262729',
             q5:'#262729',
             q6:'#262729',
             q7:'#262729',
@@ -36,8 +37,11 @@ export default function HexaSphere() {
             seam:'#262729',
             pentagon:'#262729',
             notVisible:'',
-            selected:'yellow',
+            selected:'red',
             current:'purple',
+            openSet:'green',
+            closedSet:'orange',
+            path:'blue'
         },
         // colorScheme:{
         //     q1:'red',
@@ -50,7 +54,9 @@ export default function HexaSphere() {
         //     q8:'pink',
         //     seam:'#262729',
         //     pentagon:'black',
-        //     notVisible:null
+        //     notVisible:'',
+        //     selected:'yellow',
+        //     current:'purple',
         // }
     })
 
@@ -64,10 +70,19 @@ export default function HexaSphere() {
         // let next=1
 
         // removeWalls(0, next, hexagonSphere);
-
+        console.log(hexagonSphere)
         setHexaSphere(hexagonSphere)
         setMaze(true)
     },[])
+
+    let aStarRef=useRef({
+        openSet:[],
+        closedSet:[],
+        path:[],
+        noSolution:false,
+        start:[],
+        end:[]
+    })
 
     useFrame(()=>{
  
@@ -105,11 +120,144 @@ export default function HexaSphere() {
                 hexaSphere.walls.geometry.elementsNeedUpdate = true;   
                 hexaSphere.mesh.geometry.elementsNeedUpdate = true;
                 setMaze(false)
+                aStarRef.current={
+                    openSet:[tiles[5]],
+                    closedSet:[],
+                    path:[],
+                    noSolution:false,
+                    start:tiles[5],
+                    end:tiles[60],
+                    currentTarget:null
+                }  
+                setAstar(true)
             }
+        }
 
-            
+        if(astar){
+            let {
+                openSet,
+                closedSet,
+                path,
+                noSolution,
+                start,
+                end,
+                currentTarget
+            }=aStarRef.current;
+
+            let tiles=hexaSphere.allTiles
+
+            if(openSet.length >0){
+
+                var winner=0;
+
+                for(var i=0;i<openSet.length;i++){
+                    if(openSet[i].f<openSet[winner].f){
+                        winner=i;
+                    }
+                }
+
+                var currentTile = openSet[winner];
+
+                currentTile.setColor(12)
+                console.log(currentTile)
+                if(openSet[winner]===end){
+                    for(var i=0;i<path.length;i++){
+                        path[i].setColor(15)
+                    }   
+
+                    console.log('Done!')
+                    // aStarRef.current.path=calculatePath(currentTile);
+                }
+
+                // for(var i=0;i<tiles.length;i++){
+                //     tiles[i].setColor(1)
+                // }
+        
+
+                removeFromArray(openSet,currentTile)
+                closedSet.push(currentTile);
+        
+                let neighbors=currentTile.neighbors;
+                console.log(openSet)
+                for(var i=0;i<neighbors.length;i++){
+                    var neighbor=neighbors[i];
+                    
+                    if(!neighbor){
+                        console.log('neigbor not found!')
+                        continue
+                    }
+
+                    let wallBetween=calculateWallBetween(currentTile,neighbor,hexaSphere)   
+                    // let wallBetween=currentTile.walls[i];   
+                    console.log(wallBetween)
+                    if(!closedSet.includes(neighbor)&&!wallBetween){
+                        var tempG=currentTile.g+1;
+                        let newPath=false;
+
+                        if(openSet.includes(neighbor)){
+                            if(tempG<neighbor.g){
+                                neighbor.g=tempG
+                                newPath=true;
+                            }
+                        }else{
+                            neighbor.g=tempG;
+                            newPath=true;
+                            console.log('pushhing')
+                            openSet.push(neighbor);
+                        }
+
+                        if(newPath){
+                            neighbor.h=heuristic(neighbor,end)
+                            neighbor.f=neighbor.g+neighbor.h;  
+                            neighbor.previous=currentTile                   
+                        }
+
+                    }
+                    neighbor.g=currentTile.g+1;
+
+                }
+                // aStarRef.current.openSet=openSet
+                // aStarRef.current.closedSet=closedSet
+   
+                }else{
+
+                    // if(!noSolution){
+                    //     path=calculatePath(currentTile);
+                    // }
+    
+                    // for(var i=0;i<path.length;i++){
+                    //     path[i].setColor(15)
+                    // }  
+                    // notFound=false
+                    for(var i=0;i<path.length;i++){
+                        path[i].setColor(15)
+                    }   
+                    noSolution=true;
+                    console.log('No solution')
+                    setAstar(false)
+                }
+
+                hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+                for(var q=0;q<closedSet.length;q++){
+                    closedSet[q].setColor(14)
+                }
+
+                for(var z=0;z<openSet.length;z++){
+                    openSet[z].setColor(13)
+                }
+        
+
+                if(!noSolution){
+                    path=calculatePath(currentTile);
+                }
+
+                for(var i=0;i<path.length;i++){
+                    path[i].setColor(15)
+                }   
+                aStarRef.current.path=path
 
         }
+
     })
 
 
@@ -127,6 +275,59 @@ export default function HexaSphere() {
         </group>
     )
 }
+
+export function calculatePath(currentCell){
+    let path=[];
+    var temp=currentCell;
+    path.push(temp)
+    if(temp){
+        while(temp.previous){
+            path.push(temp.previous)
+            temp=temp.previous
+        }                           
+    }
+    return path
+}
+
+export function calcuteDistance(current, target){
+    let distance=
+    Math.abs(current.x-target.x)+
+    Math.abs(current.y-target.y)+
+    Math.abs(current.z-target.z) 
+    return distance
+}
+
+export function heuristic(a,b){
+    // console.log(a,b)
+    return calcuteDistance(a.center,b.center)
+}
+
+function calculateWallBetween(a, b,hexaSphere) {
+    let first=a
+    let second=b
+
+    let aFaces=first.wallFaces
+    let bFaces=second.wallFaces
+    let faces=hexaSphere.walls.geometry.faces;
+    let distanceToNext=first.distanceToNext
+
+    let aClosest;
+    let bClosest;
+
+    console.log(aFaces,a.walls,a.neighbors)
+
+    for(var i=0;i<aFaces.length;i++){
+        let distance=faces[aFaces[i][0]].position.distanceTo(second.center)
+        if(distance<distanceToNext*0.7){
+            
+            aClosest=i
+        }
+    }
+    console.log(a.walls[aClosest])
+    return a.walls[aClosest]
+
+  }
+
 
 function removeWallsBetween(a, b,hexaSphere) {
     let first=hexaSphere.allTiles[a]
@@ -159,3 +360,14 @@ function removeWallsBetween(a, b,hexaSphere) {
     second.removeWall(bClosest)
 
   }
+
+  export function removeFromArray(arr,elt){
+    //   console.log(arr)
+    for(var i=arr.length-1;i>=0;i--){
+        // console.log(arr[i],elt)
+        if(arr[i].id==elt.id){
+            arr.splice(i,1);
+        }
+    }
+    // console.log(arr)
+}
