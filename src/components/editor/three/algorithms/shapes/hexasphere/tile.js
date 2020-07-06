@@ -43,13 +43,24 @@ export default function Tile(options,position,id,pentagon,distanceToNext){
         }
     }
 
-    this.removeWalls=(tiles)=>{
+    this.setWallColors=()=>{
         let walls=this.wallFaces.flat()
         let meshFaces=this.wallMesh.geometry.faces
         for(var i = 0 ; i < walls.length; i++){
             meshFaces[walls[i]].materialIndex=1
         }
-        // this.wallMesh.geometry.elementsNeedUpdate = true;
+    }
+
+    this.removeWall=(index)=>{
+        let walls=this.wallFaces[index]
+        let meshFaces=this.wallMesh.geometry.faces
+        if(walls){
+            for(var i = 0 ; i < walls.length; i++){
+                meshFaces[walls[i]].materialIndex=2
+            }
+            this.wallMesh.geometry.elementsNeedUpdate = true;       
+        }
+
     }
 
 }

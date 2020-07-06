@@ -336,12 +336,12 @@ function createWalls(tiles,vertices,meshes,options){
         if(meshes[i].type==='hexagon'){
             mesh = createHexagonWalls(meshes[i],vertices[i],hexafaces,options)
             tiles[i].wallFaces=[
-                [wallCount    ,wallCount + 6 ],
-                [wallCount + 1,wallCount + 7 ],
-                [wallCount + 2,wallCount + 8 ],
-                [wallCount + 3,wallCount + 9 ],
-                [wallCount + 4,wallCount + 10],
-                [wallCount + 5,wallCount + 11],
+                [wallCount    ,wallCount + 1 ],
+                [wallCount + 2,wallCount + 3 ],
+                [wallCount + 4,wallCount + 5 ],
+                [wallCount + 6,wallCount + 7 ],
+                [wallCount + 8,wallCount + 9 ],
+                [wallCount + 10,wallCount + 11],
             ]      
             wallCount+=12
         }
@@ -349,23 +349,68 @@ function createWalls(tiles,vertices,meshes,options){
             mesh = createPentagonWalls(meshes[i],vertices[i],pentafaces,options) 
 
             tiles[i].wallFaces=[
-                [wallCount    ,wallCount + 5],
-                [wallCount + 1,wallCount + 6],
-                [wallCount + 2,wallCount + 7],
-                [wallCount + 3,wallCount + 8],
-                [wallCount + 4,wallCount + 9],
+                [wallCount    ,wallCount + 1],
+                [wallCount + 2,wallCount + 3],
+                [wallCount + 4,wallCount + 5],
+                [wallCount + 6,wallCount + 7],
+                [wallCount + 8,wallCount + 9],
             ] 
             wallCount+=10
         }
         geom.mergeMesh(mesh);  
+        addWallPositionsToFaces(geom,vertices[i],options)
+
     }
 
-    var material = new THREE.MeshStandardMaterial( { color: 'red', side: THREE.DoubleSide, visible:options.wallWidth===false?false:true} );
-    var material2 = new THREE.MeshStandardMaterial( { color: 'blue', side: THREE.DoubleSide,visible:false} );
+    var material = new THREE.MeshStandardMaterial( { color: options.wallColors.unvisited, side: THREE.DoubleSide, visible:options.wallWidth===false?false:true} );
+    
+    var material1 = new THREE.MeshStandardMaterial( { color: options.wallColors.visited, side: THREE.DoubleSide, visible:options.wallWidth===false?false:true} );
 
-    let combinedMesh = new THREE.Mesh( geom, [material,material2] );  
-    console.log(combinedMesh)
+    var material2 = new THREE.MeshStandardMaterial( { color: '', side: THREE.DoubleSide,visible:false} );
+    let combinedMesh = new THREE.Mesh( geom, [material,material1,material2] );  
+
     return combinedMesh
+}
+
+function addWallPositionsToFaces(geom,vertices){
+
+    if(vertices.length===6){
+        geom.faces[geom.faces.length-1].position=lineCenterPoint(vertices[5][0],vertices[5][1])
+        geom.faces[geom.faces.length-2].position=lineCenterPoint(vertices[5][0],vertices[5][1])
+        geom.faces[geom.faces.length-3].position=lineCenterPoint(vertices[4][0],vertices[4][1])
+        geom.faces[geom.faces.length-4].position=lineCenterPoint(vertices[4][0],vertices[4][1])
+        geom.faces[geom.faces.length-5].position=lineCenterPoint(vertices[3][0],vertices[3][1])
+        geom.faces[geom.faces.length-6].position=lineCenterPoint(vertices[3][0],vertices[3][1])
+        geom.faces[geom.faces.length-7].position=lineCenterPoint(vertices[2][0],vertices[2][1])
+        geom.faces[geom.faces.length-8].position=lineCenterPoint(vertices[2][0],vertices[2][1])
+        geom.faces[geom.faces.length-9].position=lineCenterPoint(vertices[1][0],vertices[1][1])
+        geom.faces[geom.faces.length-10].position=lineCenterPoint(vertices[1][0],vertices[1][1])
+        geom.faces[geom.faces.length-11].position=lineCenterPoint(vertices[0][0],vertices[0][1])    
+        geom.faces[geom.faces.length-12].position=lineCenterPoint(vertices[0][0],vertices[0][1])              
+    }
+
+    if(vertices.length===5){
+        geom.faces[geom.faces.length-1].position=lineCenterPoint(vertices[4][0],vertices[4][1])
+        geom.faces[geom.faces.length-2].position=lineCenterPoint(vertices[4][0],vertices[4][1])
+        geom.faces[geom.faces.length-3].position=lineCenterPoint(vertices[3][0],vertices[3][1])
+        geom.faces[geom.faces.length-4].position=lineCenterPoint(vertices[3][0],vertices[3][1])
+        geom.faces[geom.faces.length-5].position=lineCenterPoint(vertices[2][0],vertices[2][1])
+        geom.faces[geom.faces.length-6].position=lineCenterPoint(vertices[2][0],vertices[2][1])
+        geom.faces[geom.faces.length-7].position=lineCenterPoint(vertices[1][0],vertices[1][1])
+        geom.faces[geom.faces.length-8].position=lineCenterPoint(vertices[1][0],vertices[1][1])
+        geom.faces[geom.faces.length-9].position=lineCenterPoint(vertices[0][0],vertices[0][1])
+        geom.faces[geom.faces.length-10].position=lineCenterPoint(vertices[0][0],vertices[0][1])                    
+    }
+
+
+}
+
+function lineCenterPoint(start,end){
+    return new Vector3(
+        (start.x+end.x)/2,
+        (start.y+end.y)/2,
+        (start.z+end.z)/2
+    )
 }
 
 function createPentagonWalls(mesh,wall,faces,options){
@@ -382,6 +427,7 @@ function createPentagonWalls(mesh,wall,faces,options){
         wall[4][0],
     ]
     var geome = new THREE.Geometry();  
+    
     geome.faces=faces
     geome.vertices=vertices
     geome.computeBoundingSphere();

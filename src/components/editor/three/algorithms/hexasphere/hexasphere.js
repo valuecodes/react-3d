@@ -3,12 +3,8 @@ import { createHexasphere } from './../shapes/hexasphere/hexasphere'
 import CubeCells from './../shapes/cubecells'
 import VertexNormals from './../../../../../utils/helpers/vertexNormals'
 import { useFrame } from 'react-three-fiber';
-
-// 12,4,5
-
-// 1.3
-// 2.1
-export default function HexaSphere({renderer}) {
+import * as THREE from 'three'
+export default function HexaSphere() {
 
     const [hexaSphere, setHexaSphere]=useState(null);
     let savedData=useRef({
@@ -17,16 +13,22 @@ export default function HexaSphere({renderer}) {
         count:2,
     })
 
+    const [maze, setMaze]=useState(false)
+
     const [options, setOptions]=useState({
         size:50,
-        detail:5,
-        wallWidth:5,
-        wallColor:0,
+        detail:4,
+        wallWidth:4,
+        wallColors:{
+            unvisited:'red',
+            visited:'black',
+            notVisible:'',
+        },
         colorScheme:{
             q1:'#262729',
             q2:'#262729',
             q3:'#262729',
-            q4:'#262729',
+            q4:'seagreen',
             q5:'#262729',
             q6:'#262729',
             q7:'#262729',
@@ -56,14 +58,22 @@ export default function HexaSphere({renderer}) {
         let hexagonSphere = createHexasphere(options,group)
         group.current.add(hexagonSphere.mesh)
         group.current.add(hexagonSphere.walls)
+
+        // let tiles=hexagonSphere.allTiles
+        // let currentTile=tiles[0]
+        // let next=1
+
+        // removeWalls(0, next, hexagonSphere);
+
         setHexaSphere(hexagonSphere)
+        setMaze(true)
     },[])
 
     useFrame(()=>{
-        if(hexaSphere.mesh){
+ 
+        if(maze){
             
             let {current,stack,count}=savedData.current
-            
             let tiles=hexaSphere.allTiles
             let currentTile=tiles[current]
             currentTile.visited=true
@@ -73,28 +83,32 @@ export default function HexaSphere({renderer}) {
 
                 tiles[next].setColor(12)
                 stack.push(currentTile);
-                // tiles[next].removeWalls(tiles)
-                // currentTile.removeWalls(tiles)
+                removeWallsBetween(current, next, hexaSphere);
+
                 savedData.current={
                     current:next,
                     stack,
                     count
                 }    
+                hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+                hexaSphere.walls.geometry.elementsNeedUpdate = true;                
 
             }else if(stack.length > 0){
+
                 let next=stack.pop().id;
-                tiles[next].setColor(12)
                 savedData.current={
                     current:next,
                     stack,
                     count
                 }   
             }else{
-
+                hexaSphere.walls.geometry.elementsNeedUpdate = true;   
+                hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+                setMaze(false)
             }
-            hexaSphere.mesh.geometry.elementsNeedUpdate = true;
-            console.log( renderer.info.render);
-            // console.log(hexaSphere)
+
+            
+
         }
     })
 
@@ -113,3 +127,35 @@ export default function HexaSphere({renderer}) {
         </group>
     )
 }
+
+function removeWallsBetween(a, b,hexaSphere) {
+    let first=hexaSphere.allTiles[a]
+    let second=hexaSphere.allTiles[b]
+
+    let aFaces=first.wallFaces
+    let bFaces=second.wallFaces
+    let faces=hexaSphere.walls.geometry.faces;
+    let distanceToNext=first.distanceToNext
+
+    let aClosest;
+    let bClosest;
+
+    for(var i=0;i<aFaces.length;i++){
+        let distance=faces[aFaces[i][0]].position.distanceTo(second.center)
+        if(distance<distanceToNext*0.7){
+            
+            aClosest=i
+        }
+    }
+
+    for(var i=0;i<bFaces.length;i++){
+        let distance=faces[bFaces[i][0]].position.distanceTo(first.center)
+        if(distance<distanceToNext*0.7){
+            bClosest=i
+        }
+    }
+
+    first.removeWall(aClosest)
+    second.removeWall(bClosest)
+
+  }

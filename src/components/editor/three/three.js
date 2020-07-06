@@ -24,13 +24,14 @@ import Instance from './instance/app'
 import Navigation from './navigation/navigation'
 
 import { useSpring, useTransition, animated, config } from 'react-spring/three'
-import { WebGLRenderer } from 'three';
+// import { WebGLRenderer } from 'three';
 
 export default function Three() {
 
     const [light,setLight]=useState([25,50,50]);
     const [position, setPosition] = useState(0);
-    const [renderer, setRenderer]=useState(null)
+    const renderer=useRef()
+
     const [cameraSettings, setCameraSettings]=useState({
         cameraPosition:[0,90,120],
         cameraRotation:[0.6,0,0],
@@ -39,15 +40,6 @@ export default function Three() {
         grid:false,
         mode:'orbit'
     })
-
-    useEffect(()=>{
-        const renderer = new WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        console.log(renderer)
-        setRenderer(renderer)
-        // renderer.current=renderer
-    },[])
 
     const [scene, setScene] = useState([        
         // <CubeMazePathfinder position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
