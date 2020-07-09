@@ -1,8 +1,6 @@
-
 import * as THREE from 'three'
-import { Vector3, VertexColors } from 'three';
+import { Vector3 } from 'three';
 import {calcuteDistance} from './../calculations'
-import Three from '../../../three';
 import Tile from './tile'
 
 export function createHexasphere(options,group){
@@ -23,19 +21,29 @@ export function createHexasphere(options,group){
     let tiles=createTiles(hexaSphere,options)
 
     addNeighbors(tiles,hexaSphere,options)
-
     let geom=createHexasphereGeometry(tiles,options,hexaSphere)
     let materials=createMaterials(geom.geom,options,tiles)
     let mesh=new THREE.Mesh(geom.geom, materials)
-    
 
     hexaSphere.mesh=mesh
     hexaSphere.allTiles=tiles
     hexaSphere.walls=geom.walls
-
+    
     addMeshToTiles(tiles,mesh,geom.walls)
-
+    addObtacles(hexaSphere,options)
     return hexaSphere
+}
+
+function addObtacles(hexaSphere,options){
+    if(options.obstacles){
+        hexaSphere.allTiles.forEach(tile =>{
+            if(Math.random()<0.3){
+                tile.obstacle=true
+                tile.setColor(17)                
+            }
+        })
+        console.log(hexaSphere)
+    }
 }
 
 function addMeshToTiles(tiles,merged,walls){
@@ -67,19 +75,18 @@ function createTiles(hexaSphere,options){
 
         if(tiles[i].quarterName){            
             tiles[i].qID=Object.keys(hexaSphere[tiles[i].quarterName]).length
-            let index=hexaSphere[tiles[i].quarterName].length
             hexaSphere[tiles[i].quarterName].push(tiles[i])
             tiles[i].shape='hexagon'
         }
 
         if(tiles[i].seam){
-            tiles[i].materialIndex=8
+            tiles[i].materialIndex=options.colorScheme.color?0:9
             hexaSphere.seam.push(tiles[i])
             tiles[i].shape='hexagon'
         }
 
         if(tiles[i].pentagon){
-            tiles[i].materialIndex=9
+            tiles[i].materialIndex=options.colorScheme.color?0:10
             hexaSphere.pentagon.push(tiles[i])
             tiles[i].shape='pentagon'
         }
@@ -95,7 +102,6 @@ function createMaterials(geom,options,tiles){
     let colorScheme=options.colorScheme
 
     let sections=Object.keys(colorScheme);
-    let materials=[]
     geom.materials=[];
 
     for(var i=0;i<sections.length;i++){
@@ -118,7 +124,6 @@ function addNeighbors(tiles,hexaSphere,options){
     }
 
     let seam=hexaSphere.seam
-    let totalSeam=[...seam,...seamNeighbors]
 
     for(var i=0;i<seam.length;i++){
         searchNeighborsFrom(seam[i],tiles,distanceToNext,options)
@@ -129,9 +134,6 @@ function addNeighbors(tiles,hexaSphere,options){
 function getPathFromNeighbors(current){
 
     let path=[];
-    let start=current.center;
-    let hexStart;
-    let distanceToNext=current.distanceToNext;
 
     for(var i=0;i<current.neighbors.length;i++){
         let target=current.neighbors[i].center
@@ -163,7 +165,7 @@ function getPathFromNeighbors(current){
         let dist=current.center
         let dist1=path[index]
         let dist2;
-        if(index+1==len){   
+        if(index+1===len){   
             dist2=pathCopy
         }else{
             dist2=path[index+1]
@@ -175,7 +177,6 @@ function getPathFromNeighbors(current){
 
 
 function createPentagon(current,options){
-    let colorScheme=options.colorScheme
     let path=getPathFromNeighbors(current);
     var geometry = new THREE.Geometry();
     geometry.vertices.push(...path)
@@ -233,13 +234,12 @@ function createHexasphereGeometry(tiles,options){
 
     let meshes=[];
     let vertices=[];
-    let geometries=[];
+
     for(var i=0;i<tiles.length;i++){
         if(tiles[i].shape==='hexagon'){
             let hexagon=createHexagon(tiles[i])
             meshes.push(hexagon.mesh);        
-            vertices.push(hexagon.vertices);     
-            // geometries.push(hexagon.geom)   
+            vertices.push(hexagon.vertices);      
         }else{
             let pentagon= createPentagon(tiles[i],options)
             meshes.push(pentagon.mesh);
@@ -320,7 +320,6 @@ function calculateCenter(start,end,options){
 
 function createWalls(tiles,vertices,meshes,options){
 
-    let walls=[]
     var geom=new THREE.Geometry();
 
     var hexaGeometry = new THREE.RingGeometry( 4, 5, 6 );
@@ -359,7 +358,6 @@ function createWalls(tiles,vertices,meshes,options){
         }
         geom.mergeMesh(mesh);  
         addWallPositionsToFaces(geom,vertices[i],options)
-
     }
 
     var material = new THREE.MeshStandardMaterial( { color: options.wallColors.unvisited, side: THREE.DoubleSide, visible:options.wallWidth===false?false:true} );
@@ -433,11 +431,11 @@ function createPentagonWalls(mesh,wall,faces,options){
     geome.computeBoundingSphere();
     geome.computeFaceNormals();
     geome.computeVertexNormals();
-    var mesh = new THREE.Mesh( geome); 
-    mesh.scale.x=1.0005
-    mesh.scale.y=1.0005
-    mesh.scale.z=1.0005
-    return mesh
+    var newMesh = new THREE.Mesh( geome); 
+    newMesh.scale.x=1.0005
+    newMesh.scale.y=1.0005
+    newMesh.scale.z=1.0005
+    return newMesh
 }
 
 function createHexagonWalls(mesh,wall,faces,options){
@@ -461,11 +459,11 @@ function createHexagonWalls(mesh,wall,faces,options){
     geome.computeBoundingSphere();
     geome.computeFaceNormals();
     geome.computeVertexNormals();
-    var mesh = new THREE.Mesh( geome); 
-    mesh.scale.x=1.0005
-    mesh.scale.y=1.0005
-    mesh.scale.z=1.0005
-    return mesh
+    let newMesh = new THREE.Mesh( geome); 
+    newMesh.scale.x=1.0005
+    newMesh.scale.y=1.0005
+    newMesh.scale.z=1.0005
+    return newMesh
 }
 
 function searchNeighborsFrom(current,section,dist,options){
@@ -495,12 +493,7 @@ function searchNeighborsFrom(current,section,dist,options){
 }
 
 function addQuarterNeighbors(quarterName,tiles,options,distanceToNext,hexaSphere){
-    
-    let {
-        size,
-        detail
-    } =options   
-
+      
     let seamNeighbors=[];
 
     for(var i=0;i<quarterName.length;i++){
@@ -517,47 +510,6 @@ function addQuarterNeighbors(quarterName,tiles,options,distanceToNext,hexaSphere
     }
     return seamNeighbors
 }
-
-function createId(options,current,hexaSphere){
-    let quarterName=current.quarterName;
-    let xedge=new THREE.Vector3(25,0,0);
-    let x=Math.floor(xedge.distanceTo(current.center))
-    let yedge=new THREE.Vector3(0,25,0);
-    let y=Math.floor(yedge.distanceTo(current.center))
-    // let zedge=new THREE.Vector3(0,0,25);
-    // let z=Math.floor(zedge.distanceTo(current.center))
-    return `${quarterName}.${x}.${y}`
-}
-
-
-
-
-
-function lineCentroid(a,b){
-    return new THREE.Vector3( ((a.x+b.x)/2), ((a.y+b.y)/2), ((a.z+b.z)/2) );
-}
-
-
-function calculateNormals(faces){
-
-    let normals=[];
-
-    for(var i=0;i<faces.length;i++){
-
-        let a=faces[i].a
-        let b=faces[i].b
-        let c=faces[i].c
-
-
-        normals[a]=faces[i].vertexNormals[0]
-        normals[b]=faces[i].vertexNormals[1]
-        normals[c]=faces[i].vertexNormals[2]
-
-    }
-    return normals
-}
-
-
 
 function checkIfPentagon(current,pentagons){
     for(var a=0;a<pentagons.length;a++){

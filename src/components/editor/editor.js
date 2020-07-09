@@ -1,8 +1,7 @@
-import React,{useState} from 'react'
+import React from 'react'
 import Three from './three/three'
 
 export default function Editor() {
-    const [boxes,setBoxes]=useState([]);
     return (
         <div className='editor'>
             <Three/>

@@ -86,6 +86,7 @@ export default function Maze(props) {
                 next.mesh.material.color.set( colorScheme.next )
                 list[0].children[0].text=count+' / '+Object.keys(currentCubes).length+'  ('+((count/Object.keys(currentCubes).length)*100).toFixed(1)+'%)'
                 list[0].children[1].text='Creating Maze...'
+                
                 next.visited = true;
                 stack.push(current);
                 removeWalls(current, next);

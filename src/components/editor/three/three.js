@@ -1,36 +1,33 @@
-import React,{useState,useEffect,useRef,useRender} from 'react'
-import ReactDOM from 'react-dom'
-
-
-import { Canvas, useFrame,useThree} from 'react-three-fiber'
+import React,{useState,useRef} from 'react'
+import { Canvas } from 'react-three-fiber'
 
 import OrbitControl from './../../../utils/orbit/orbitControl'
 import CameraControls from './../../../utils/orbit/cameraControls'
-import HelperGrid from './../../../utils/helpers/helperGrid'
-import HelperAxes from './../../../utils/helpers/helperAxes'
+// import HelperGrid from './../../../utils/helpers/helperGrid'
+// import HelperAxes from './../../../utils/helpers/helperAxes'
 
 
 // import MazePathFinder from './algorithms/mazeAStar/mazePathFinder'
 // import Maze from './algorithms/maze/maze'
 // import AStar from './algorithms/astar/astar'
-import CubeMaze from './algorithms/cubeMaze/cubemaze'
-import CubeAstar from './algorithms/cubeAstar/cubeastar'
-import CubeMazePathfinder from './algorithms/cubeMazePathfinder/cubeMazePathfinder'
+// import CubeMaze from './algorithms/cubeMaze/cubemaze'
+// import CubeAstar from './algorithms/cubeAstar/cubeastar'
+// import CubeMazePathfinder from './algorithms/cubeMazePathfinder/cubeMazePathfinder'
 
-import HexaSphere from './algorithms/hexasphere/hexasphere'
-import Instancing from './instancing'
-import Instance from './instance/app'
+import HexaSphereMaze from './algorithms/hexasphere/hexaSphereMaze'
+import HexaSpherePathfinder from './algorithms/hexasphere/hexaSpherePathfinder'
+import HexaMazePathfinder from './algorithms/hexasphere/hexaMazePathfinder'
+
+// import Instancing from './instancing'
+// import Instance from './instance/app'
 
 import Navigation from './navigation/navigation'
-
-import { useSpring, useTransition, animated, config } from 'react-spring/three'
-// import { WebGLRenderer } from 'three';
 
 export default function Three() {
 
     const [light,setLight]=useState([25,50,50]);
     const [position, setPosition] = useState(0);
-    const renderer=useRef()
+    // const renderer=useRef()
 
     const [cameraSettings, setCameraSettings]=useState({
         cameraPosition:[0,90,120],
@@ -42,6 +39,9 @@ export default function Three() {
     })
 
     const [scene, setScene] = useState([        
+        // <HexaSphereMaze/>,
+        // <HexaSpherePathfinder/>,
+        <HexaMazePathfinder/>
         // <CubeMazePathfinder position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
         // <CubeAstar position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
         // <CubeMaze position={[0,0,0]} size={[10,10]} renderer={renderer} cameraSettings={cameraSettings}/>,
@@ -92,16 +92,14 @@ export default function Three() {
                 /> */}
 
                 <ambientLight />
-                <pointLight 
-                    // position={light} 
-                    // position={[0,-100,-100]} 
+                {/* <pointLight 
                     position={[250,250,250]} 
-                    />
+                /> */}
 
                 <group
                     rotation={cameraSettings.cameraRotation}
                     size={[160,160,160]}
-                    position={[0,40,0]}
+                    position={[2,2,2]}
                     ref={main}
                 >
                     
@@ -116,7 +114,9 @@ export default function Three() {
                     })}
                     {/* <Instancing main={main}/> */}
                     {/* <Instance/> */}
-                    <HexaSphere renderer={renderer}/>
+                    {/* <HexaMazePathfinder/> */}
+                    {/* <HexaSpherePathfinder/> */}
+                     {/* <HexaSphereMaze renderer={renderer}/> */}
                     {/* <webGLRenderer antialias={true} ref={renderer}/> */}
                 </group>
 

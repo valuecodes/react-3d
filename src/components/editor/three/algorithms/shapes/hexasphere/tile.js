@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 
 export default function Tile(options,position,id,pentagon,distanceToNext){
     this.center=position
@@ -17,11 +16,13 @@ export default function Tile(options,position,id,pentagon,distanceToNext){
     this.mesh=null;
     this.mesh=null;
     this.visited=false;
+    this.obstacle=false;
     this.f = 0;
     this.g = 0;
     this.h = 0;
     this.current = false;
     this.previous = null;
+    this.availableNeighbors=[];
     this.setColor=(materialIndex)=>{
         let faces=this.faces;
         let meshFaces=this.mesh.geometry.faces
@@ -56,16 +57,30 @@ export default function Tile(options,position,id,pentagon,distanceToNext){
         }
     }
 
+    this.setWalls=()=>{
+        
+        let walls=this.walls
+        let meshFaces=this.wallMesh.geometry.faces
+ 
+        for(var a=0;a<walls.length;a++){
+            let wallFaces=this.wallFaces[a]
+            if(walls[a]){
+                for(var i = 0 ; i < wallFaces.length; i++){
+                    meshFaces[wallFaces[i]].materialIndex=2
+                } 
+            }
+        }
+    }
+
     this.removeWall=(index)=>{
         let walls=this.wallFaces[index]
         let meshFaces=this.wallMesh.geometry.faces
         if(walls){
             for(var i = 0 ; i < walls.length; i++){
-                meshFaces[walls[i]].materialIndex=2
-                this.walls[i]=false
-            }      
+                meshFaces[walls[i]].materialIndex=2    
+            } 
+            this.walls[index]=false     
         }
-
     }
 
 }
@@ -82,7 +97,7 @@ function getQuarterName(tile,options){
     if(pos.x>0&&pos.y>0&&pos.z>0){
         quarterName='q1'
         tile.qID=1
-        tile.materialIndex=0
+        tile.materialIndex=colorScheme.color?0:1
         // console.log(tile)
         tile.color=colorScheme.q1
         // tile.mesh.material.color.set('yellow')
@@ -90,21 +105,21 @@ function getQuarterName(tile,options){
     if(pos.x<0&&pos.y>0&&pos.z>0){
         quarterName='q2'
         tile.qID=2
-        tile.materialIndex=1
+        tile.materialIndex=colorScheme.color?0:2
         tile.color=colorScheme.q2
         // tile.mesh.material.color.set('blue')
     }
     if(pos.x<0&&pos.y<0&&pos.z>0){
         quarterName='q3'
         tile.qID=3
-        tile.materialIndex=2
+        tile.materialIndex=colorScheme.color?0:3
         tile.color=colorScheme.q3
         // tile.mesh.material.color.set('brown')
     }  
     if(pos.x>0&&pos.y<0&&pos.z>0){
         quarterName='q4'
         tile.qID=4
-        tile.materialIndex=3
+        tile.materialIndex=colorScheme.color?0:4
         tile.color=colorScheme.q4
         // tile.mesh.material.color.set('seagreen')
     }
@@ -112,28 +127,28 @@ function getQuarterName(tile,options){
     if(pos.x>0&&pos.y>0&&pos.z<0){
         quarterName='q5'
         tile.qID=5
-        tile.materialIndex=4
+        tile.materialIndex=colorScheme.color?0:5
         tile.color=colorScheme.q5
         // tile.mesh.material.color.set('gold')
     }
     if(pos.x<0&&pos.y<0&&pos.z<0){
         quarterName='q6'
         tile.qID=6
-        tile.materialIndex=5
+        tile.materialIndex=colorScheme.color?0:6
         tile.color=colorScheme.q6
         // tile.mesh.material.color.set('green')
     }
     if(pos.x>0&&pos.y<0&&pos.z<0){
         quarterName='q7'
         tile.qID=7
-        tile.materialIndex=6
+        tile.materialIndex=colorScheme.color?0:7
         tile.color=colorScheme.q7
         // tile.mesh.material.color.set('purple')
     }
     if(pos.x<0&&pos.y>0&&pos.z<0){
         quarterName='q8'
         tile.qID=8
-        tile.materialIndex=7
+        tile.materialIndex=colorScheme.color?0:8
         tile.color=colorScheme.q8
         // tile.mesh.material.color.set('pink')
     }

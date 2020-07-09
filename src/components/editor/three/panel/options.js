@@ -3,11 +3,9 @@ import { TextMesh } from "troika-3d-text/dist/textmesh-standalone.umd.js";
 import { extend } from "react-three-fiber";
 import { disposeElements } from './../../../../utils/other/disposeElements'
 import { 
-    calculateButtonPosition, 
     updateCubeAnimation,
 } from './../../../../utils/other/calculatePosition'
 import {
-    addPathLine,
     updatePathPosition,
     updateTrackerPosition
 } from './../../../../components/editor/three/algorithms/shapes/calculations'
@@ -143,8 +141,6 @@ function Option(props) {
 
     const mesh=useRef();
     const mesh1=useRef();
-    const mesh2=useRef();
-    const background=useRef();
 
     useEffect(()=>{
         return () =>{

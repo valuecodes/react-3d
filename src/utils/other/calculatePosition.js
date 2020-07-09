@@ -11,6 +11,16 @@ export function calculateCubePosition(size,cellSize){
         (size*-cellSize)/2
     ]
 }
+
+export function calculateSpherePosition(size){
+    return [
+        0,
+        0,
+        0
+    ]
+}
+
+
 export function calculateGroupPosition(size,cellSize){
     return [
         (size*cellSize)/2,
