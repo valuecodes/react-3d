@@ -3,44 +3,8 @@ body{
     margin: 0px;
 }
 
-/* Navigation */
-.navbar{
-    position: absolute;
-    height: 100vh;
-    width: 80px;
-    background-color: rgb(255, 255, 255);
-    border-right: 2px solid black;
-    z-index: 1;
-    display: grid;
-    grid-template-rows: 100px 200px;
-}
 
-.navigation{
-    position: absolute;
-    width: 100vw;
-    top: 0px;
-}
-.navigationBar{
-    /* position: relative; */
-    width: 200px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-}
-.navigationBarButton{
-    height: 20px;
-}
 
-.options{
-    width: 1fr;
-    display: grid;
-    grid-template-columns: 1fr 0px;
-    grid-template-rows: 50px;
-}
-
-.optionButton{
-    height: 50px;
-}
 
 .addNew{
     position: relative;
@@ -57,10 +21,15 @@ body{
     background: linear-gradient(#ffffff, #969696);
 }
 
+#three{
+    height: 100vh;
+}
+
 /* Canvas */
 #canvas{
     height: 100vh;
     width: 100vw;
+    /* z-index: 1; */
 }
 
 /* Camera Controls */
@@ -136,4 +105,54 @@ body{
 .edit{
     grid-row:7/8;
     grid-column: 3/4;
+}
+
+.navigation{
+    position: absolute;
+    margin: auto;
+    width: 100vw;
+    top: 0px;
+}
+
+.navigationBar{
+    /* position: relative; */
+    width: 200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+}
+
+.navigationBarButton{
+    height: 20px;
+}
+
+/* Options */
+.options{
+    height: 10vh;
+    width: 70vw;
+    margin: auto;
+    /* background-color: #96969644; */
+}
+
+.controls{
+    height: 600px;
+    width: 300px;
+    background-color: rgb(184, 184, 184);
+}
+
+.header{
+    font-size: 3em;
+    margin: 0px;
+    width: 50%;
+    /* width: 700px; */
+    padding-left: 40px;
+    padding-top: 15px;
+    height: 85px;
+    background-color: beige;    
+}
+
+.option{
+    background-color: rgb(184, 184, 184);
+    height: 90px;
+    border: 2px solid black;
 }

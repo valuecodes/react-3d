@@ -14,16 +14,20 @@ export default function Tile(options,position,id,pentagon,distanceToNext){
     this.qID=null;
     this.shape=null;
     this.mesh=null;
-    this.mesh=null;
     this.visited=false;
     this.obstacle=false;
+    this.start=false;
+    this.target=false;
     this.f = 0;
     this.g = 0;
     this.h = 0;
     this.current = false;
     this.previous = null;
     this.availableNeighbors=[];
+
     this.setColor=(materialIndex)=>{
+        if(this.target) return
+        if(this.start) return
         let faces=this.faces;
         let meshFaces=this.mesh.geometry.faces
         for(var i = 0 ; i < faces.length; i++){
@@ -48,11 +52,11 @@ export default function Tile(options,position,id,pentagon,distanceToNext){
         }
     }
 
-    this.setWallColors=()=>{
+    this.setWallColors=(index)=>{
         let walls=this.wallFaces.flat()
         let meshFaces=this.wallMesh.geometry.faces
         for(var i = 0 ; i < walls.length; i++){
-            meshFaces[walls[i]].materialIndex=1
+            meshFaces[walls[i]].materialIndex=index
             this.walls[i]=false
         }
     }

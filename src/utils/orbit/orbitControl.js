@@ -7,10 +7,10 @@ import { element } from 'prop-types';
 
 extend({ OrbitControls })
 
-export default function OrbitControlPanel({cameraSettings}) {
+export default function OrbitControlPanel({cameraSettings,options}) {
+
     const {cameraPosition, orbit}=cameraSettings
     const cameraRef =useRef();
-    const [cameraPos, setCameraPos]=useState([0,70,100])
     const [buttonClick, setButtonClick] =useState(false);
     const {
         camera,
@@ -18,71 +18,49 @@ export default function OrbitControlPanel({cameraSettings}) {
     } = useThree()
 
 
+    // useEffect(()=>{
+    //     setCameraPos(cameraPosition)
+    //     setButtonClick(true);
+    // },[cameraPosition])
+
     useEffect(()=>{
-        setCameraPos(cameraPosition)
-        setButtonClick(true);
-    },[cameraPosition])
+        updateCameraPosition([0,70,100])
+        cameraRef.current.currentPosition=[0,70,100]
+    },[])
+
+
+    useEffect(()=>{
+        
+        if(options.Position==='Outside'){
+            // updateCameraPosition(cameraRef.current.currentPosition)
+        }
+        if(options.Position==='Inside'){
+            updateCameraPosition([1,1,1])
+        }
+    },[options])
 
         // Camera
 
-    const calculateX=(current, target)=>{
+    useFrame(()=>{        
+        if(options.Mode==='Rotate'){
+            if(Object.values(camera.position).some(item => Math.abs(item>2))){
+                cameraRef.current.currentPosition=Object.values(camera.position)
+            }
+        }
+        
+    })
 
-    }
-
-    // useFrame(() => {
-    //     if(buttonClick){
-
-    //         if (camera.position.x<cameraPos[0]) {
-    //             camera.position.x+=3
-    //         }
-    //         if (camera.position.x>cameraPos[0]) {
-    //             camera.position.x-=3
-    //         }
-
-    //         if (camera.position.y<cameraPos[1]) {
-    //             camera.position.y+=3
-    //         }
-    //         if (camera.position.y>cameraPos[1]) {
-    //             camera.position.y-=3
-    //         }
-
-    //         if (camera.position.z<cameraPos[2]) {
-    //             camera.position.z+=3
-    //         }
-    //         if (camera.position.z>cameraPos[2]) {
-    //             camera.position.z-=3
-    //         }
-    //         cameraRef.current.update();
-
-    //         if(
-    //             Math.abs(cameraPos[0]-camera.position.x)<=3 && 
-    //             Math.abs(cameraPos[1]-camera.position.y)<=3 && 
-    //             Math.abs(cameraPos[2]-camera.position.z)<=3 
-    //         ){
-    //             camera.position.x=cameraPos[0]
-    //             camera.position.y=cameraPos[1]
-    //             camera.position.z=cameraPos[2]
-    //             cameraRef.current.update();
-    //             setButtonClick(false)
-    //         }
-    //     }
-
-    //   })
-
-    if(cameraRef.current){
+    function updateCameraPosition(cameraPos){
         camera.position.x=cameraPos[0]
         camera.position.y=cameraPos[1]
         camera.position.z=cameraPos[2]
         cameraRef.current.update();
-        // setButtonClick(false)        
     }
-
 
     return (
         <orbitControls 
             ref={cameraRef} 
             args={[camera, domElement]}
-            enabled = {orbit}
             enablePan = {false}
         />
     )

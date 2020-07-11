@@ -8,12 +8,13 @@ export default function HexaSphereMaze() {
     const [hexaSphere, setHexaSphere]=useState(null);
     const pathLine=useRef();
     const [astar, setAstar]=useState(false)
+    const [mouseDown,setMouseDown]=useState(false)
 
     const [options, setOptions]=useState({
         size:50,
         detail:5,
         wallWidth:false,
-        obstacles:true,
+        obstacles:false,
         pathLine:'white',
         wallColors:{
             unvisited:'black',
@@ -103,10 +104,23 @@ export default function HexaSphereMaze() {
 
     const group=useRef();
 
+    function selectHexagon(e){
+        
+        if(e.face.parent&&mouseDown){
+            e.face.parent.setColor(13)
+            hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+        }
+        
+    }
+    console.log(mouseDown)
     return (
         <group
-            position={[0,-20,0]}
+            // position={[0,0,0]}
             ref={group}
+            onClick={e => selectHexagon(e)}
+            onPointerMove={e => selectHexagon(e)}
+            onPointerDown={e => setMouseDown(true)}
+            onPointerUp={e => setMouseDown(false)}
         >
             <Pathfinder
                 astar={astar}

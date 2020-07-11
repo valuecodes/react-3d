@@ -4,10 +4,7 @@ import MazeAstar from './../shapes/hexasphere/mazeAstar'
 import PathLine from './../shapes/hexasphere/pathline'
 import download from './../shapes/download'
 import mazes from './../shapes/hexasphere/ReadyMazes'
-import {
-    calculateGroupPosition,
-    calculateSpherePosition
-} from './../../../../../utils/other/calculatePosition'
+import Rotation from './../shapes/hexasphere/rotation'
 
 export default function HexaMazePathfinder() {
 
@@ -67,14 +64,12 @@ export default function HexaMazePathfinder() {
     useEffect(()=>{
 
         let hexagonSphere = createHexasphere(options,group)
-
-        // hexagonSphere.mesh.position.set(...calculateSpherePosition(options.size))
-        // hexagonSphere.walls.position.set(...calculateSpherePosition(options.size))
         group.current.add(hexagonSphere.mesh)
         group.current.add(hexagonSphere.walls)
 
         addMaze(hexagonSphere)
         setHexaSphere(hexagonSphere)
+        
     },[])
 
     function addMaze(hexaSphere){
@@ -119,7 +114,6 @@ export default function HexaMazePathfinder() {
 
     return (
         <group
-            // position={calculateGroupPosition(options.size,5)}
             ref={group}
             onClick={e => startAstar()}
             // onClick={e => createMaze()}
@@ -139,6 +133,11 @@ export default function HexaMazePathfinder() {
                 pathLine={pathLine}
             />
             
+            <Rotation 
+                hexaSphere={hexaSphere}
+                group={group}
+            />
+
         </group>
     )
 }

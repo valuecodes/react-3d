@@ -30,20 +30,70 @@ export function createHexasphere(options,group){
     hexaSphere.walls=geom.walls
     
     addMeshToTiles(tiles,mesh,geom.walls)
-    addObtacles(hexaSphere,options)
+    if(options.obstacles){
+        addObstacles(hexaSphere)
+    }
     return hexaSphere
 }
 
-function addObtacles(hexaSphere,options){
-    if(options.obstacles){
-        hexaSphere.allTiles.forEach(tile =>{
-            if(Math.random()<0.3){
-                tile.obstacle=true
-                tile.setColor(17)                
-            }
-        })
-        console.log(hexaSphere)
+export function addObstacles(hexaSphere){
+    hexaSphere.allTiles.forEach(tile =>{
+        tile.obstacle=false
+        tile.start=false
+        tile.target=false
+        tile.setColor(0)
+        if(Math.random()<0.3){
+            tile.obstacle=true
+            tile.setColor(17)   
+            tile.setWallColors(1)             
+        }
+    })
+    hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+    hexaSphere.walls.geometry.elementsNeedUpdate = true;
+}
+
+export function clearObstacles(hexaSphere){
+    hexaSphere.allTiles.forEach(tile =>{
+        tile.obstacle=false
+        tile.start=false
+        tile.target=false
+        tile.setColor(0)
+        tile.setWallColors(0)  
+    })
+    hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+    hexaSphere.walls.geometry.elementsNeedUpdate = true;
+}
+
+export function resetHexasphere(hexaSphere,ref,savedData){
+    hexaSphere.allTiles.forEach(tile =>{
+        tile.obstacle=false
+        tile.start=false
+        tile.target=false
+        tile.f=0;
+        tile.g=0;
+        tile.h=0;
+        tile.current=false;
+        tile.previous=false;
+        tile.setColor(0)
+        tile.setWallColors(0)
+    })
+    ref.current={
+        currentStart:null,
+        currentTarget:null,
+        openSet:[],
+        closedSet:[],
+        path:[],
+        noSolution:false,
+        start:[],
+        end:null
     }
+    savedData.current={
+        current:0,
+        stack:[],
+        count:2,
+    }
+    hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+    hexaSphere.walls.geometry.elementsNeedUpdate = true;
 }
 
 function addMeshToTiles(tiles,merged,walls){
@@ -262,6 +312,10 @@ function createHexasphereGeometry(tiles,options){
             geom.faces[geom.faces.length-2].materialIndex=meshes[i].materialIndex
             geom.faces[geom.faces.length-3].materialIndex=meshes[i].materialIndex
             geom.faces[geom.faces.length-4].materialIndex=meshes[i].materialIndex
+            geom.faces[geom.faces.length-1].parent=tiles[i]
+            geom.faces[geom.faces.length-2].parent=tiles[i]
+            geom.faces[geom.faces.length-3].parent=tiles[i]
+            geom.faces[geom.faces.length-4].parent=tiles[i]
             tiles[i].faces=[
                 geom.faces.length-1,
                 geom.faces.length-2,
@@ -283,6 +337,9 @@ function createHexasphereGeometry(tiles,options){
             geom.faces[geom.faces.length-1].materialIndex=meshes[i].materialIndex
             geom.faces[geom.faces.length-2].materialIndex=meshes[i].materialIndex
             geom.faces[geom.faces.length-3].materialIndex=meshes[i].materialIndex
+            geom.faces[geom.faces.length-1].parent=tiles[i]
+            geom.faces[geom.faces.length-2].parent=tiles[i]
+            geom.faces[geom.faces.length-3].parent=tiles[i]
             tiles[i].faces=[
                 geom.faces.length-1,
                 geom.faces.length-2,

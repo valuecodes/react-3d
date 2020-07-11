@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import NavigationBarButton from './navigationBarButton'
+import Options from './options/options'
 
 export default function Navigation({ changePosition}) {
 
@@ -12,6 +13,7 @@ export default function Navigation({ changePosition}) {
                     <NavigationBarButton button={button} changePosition={changePosition}/>
                 )}
             </div>
+            <Options/>
         </div>
     )
 }

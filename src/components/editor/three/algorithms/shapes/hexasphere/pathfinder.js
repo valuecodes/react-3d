@@ -117,17 +117,18 @@ export default function Pathfinder(props) {
                         path[i].setColor(16)
                     }   
 
-                    addPathLine(path,pathLine,options) 
+                    addPathLine(path,pathLine) 
 
                     aStarRef.current.path=path
                     hexaSphere.mesh.geometry.elementsNeedUpdate = true;
+                    
             }
     
         })
     return false
 }
 
-export function addPathLine(path, pathLine,options,openFormation=false){
+export function addPathLine(path, pathLine){
     
     let coordinates = path.map(tile =>
         tile.center
