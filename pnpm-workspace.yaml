@@ -1,0 +1,13 @@
+# Settings only: this is a single package, not a workspace (no `packages` key).
+# pnpm reads its configuration from this file since v10.
+
+allowBuilds:
+  # Vite and Vitest both reach esbuild: Vite 8 bundles with rolldown, but
+  # esbuild is still used for dependency pre-bundling and by Vitest's
+  # transform pipeline, so its binary has to be linked.
+  esbuild: true
+
+# 14 days, in minutes. A newly published version is not resolvable until it has
+# been on the registry this long, which blunts the compromised-release window.
+# "latest" therefore means "newest stable at least 14 days old".
+minimumReleaseAge: 20160

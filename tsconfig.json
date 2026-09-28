@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client"]
+  },
+  // Only the live hexasphere path is type-checked. The scene families that are
+  // unreachable from src/main.tsx (cube, 2D grid, mesh editor, instancing,
+  // panel, utils/*) are still legacy JS and are ported in a later PR; until
+  // then they are outside `include` so tsc never parses them.
+  "include": [
+    "src/*.ts",
+    "src/*.tsx",
+    "src/lib/**/*",
+    "src/context/**/*",
+    "src/components/editor/*.tsx",
+    "src/components/editor/three/*.tsx",
+    "src/components/editor/three/navigation/**/*",
+    "src/components/editor/three/algorithms/hexasphere/HexaSphere.tsx",
+    "src/components/editor/three/algorithms/shapes/hexasphere/**/*",
+    "src/components/editor/three/algorithms/shapes/download.ts",
+    "src/utils/orbit/**/*",
+    "vite.config.ts",
+    "prettier.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
