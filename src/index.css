@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/*
+ * Light palette. The canvas is transparent (react-three-fiber creates the
+ * WebGL context with alpha), so `page` is also what shows behind the scene.
+ */
+@theme {
+  --color-page: #f3f4f6;
+  --color-card: #ffffff;
+  --color-raised: #e5e7eb;
+  --color-ink: #111827;
+  --color-muted: #4b5563;
+  --color-line: #d1d5db;
+  --color-accent: #1d4ed8;
+  --color-good: #15803d;
+  --color-warn: #b45309;
+  --color-bad: #b91c1c;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    overscroll-behavior: none;
+    @apply bg-page text-ink antialiased;
+  }
+}
