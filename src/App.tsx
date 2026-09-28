@@ -1,12 +1,5 @@
-import "./App.css";
-
-import Editor from "./components/editor/editor";
-import { GlobalOptionsProvider } from "./context/GlobalOptions";
+import { AppShell } from "./components/shell/AppShell";
 
 export default function App() {
-  return (
-    <GlobalOptionsProvider>
-      <Editor />
-    </GlobalOptionsProvider>
-  );
+  return <AppShell />;
 }

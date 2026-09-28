@@ -218,7 +218,21 @@
           "intensity",
           "rotation",
           "position",
-          "object"
+          "object",
+          "args",
+          "attach",
+          "castShadow",
+          "receiveShadow",
+          "color",
+          "linewidth",
+          "transparent",
+          "opacity",
+          "dispose",
+          "frustumCulled",
+          "visible",
+          "wireframe",
+          "quaternion",
+          "count"
         ]
       }
     ],

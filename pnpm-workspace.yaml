@@ -6,6 +6,9 @@ allowBuilds:
   # esbuild is still used for dependency pre-bundling and by Vitest's
   # transform pipeline, so its binary has to be linked.
   esbuild: true
+  # Tailwind's native scanner. Without the build step Tailwind silently emits
+  # no utilities at all.
+  "@tailwindcss/oxide": true
 
 # 14 days, in minutes. A newly published version is not resolvable until it has
 # been on the registry this long, which blunts the compromised-release window.

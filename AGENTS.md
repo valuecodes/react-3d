@@ -41,7 +41,7 @@ When porting one, remove it from all three exclusion lists in the same change.
 
 ```bash
 pnpm install                     # Install dependencies
-pnpm dev                         # Vite dev server at http://localhost:5173
+pnpm dev                         # Vite dev server at http://localhost:3000
 pnpm build                       # Production build to dist/
 pnpm preview                     # Serve dist/
 

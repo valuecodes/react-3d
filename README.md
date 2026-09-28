@@ -13,7 +13,7 @@ Requires Node.js 24 (`.nvmrc`) and pnpm 11 (`packageManager` in `package.json`).
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:5173
+pnpm dev        # http://localhost:3000
 ```
 
 ## Scripts

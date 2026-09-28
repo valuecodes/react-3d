@@ -16,22 +16,11 @@
     "resolveJsonModule": true,
     "types": ["vite/client"]
   },
-  // Only the live hexasphere path is type-checked. The scene families that are
-  // unreachable from src/main.tsx (cube, 2D grid, mesh editor, instancing,
-  // panel, utils/*) are still legacy JS and are ported in a later PR; until
-  // then they are outside `include` so tsc never parses them.
+  // `allowJs` is off, so the only JavaScript tsc sees is through a `.d.ts`
+  // (ReadyMazes.js, the precomputed maze data).
   "include": [
-    "src/*.ts",
-    "src/*.tsx",
-    "src/lib/**/*",
-    "src/context/**/*",
-    "src/components/editor/*.tsx",
-    "src/components/editor/three/*.tsx",
-    "src/components/editor/three/navigation/**/*",
-    "src/components/editor/three/algorithms/hexasphere/HexaSphere.tsx",
-    "src/components/editor/three/algorithms/shapes/hexasphere/**/*",
-    "src/components/editor/three/algorithms/shapes/download.ts",
-    "src/utils/orbit/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "vite.config.ts",
     "prettier.config.ts"
   ],
