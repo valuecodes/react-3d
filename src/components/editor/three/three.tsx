@@ -17,6 +17,9 @@ const INITIAL_CAMERA: CameraSettings = {
   mode: "orbit",
 };
 
+/** Stable object so react-three-fiber never re-applies it on re-render. */
+const CAMERA = { position: [0, 70, 100] as [number, number, number] };
+
 /** Scenes the navigation bar can step through. More are added as the legacy scenes are ported. */
 const SCENES = [{ name: "Hexasphere", render: () => <HexaSphere /> }] as const;
 
@@ -44,7 +47,7 @@ export default function Three() {
       <Canvas
         id="canvas"
         flat
-        camera={{ position: [0, 70, 100] }}
+        camera={CAMERA}
         onDoubleClick={() => setOption({ key: "Mode", value: "Rotate" })}
       >
         {/* Lights are physically based since three r155; PI restores the legacy intensity. */}

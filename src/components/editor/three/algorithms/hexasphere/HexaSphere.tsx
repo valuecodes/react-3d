@@ -28,8 +28,11 @@ export default function HexaSphere() {
   );
 
   // Commands carry a sequence number; remember the last one handled so a
-  // re-render never replays it.
-  const handled = useRef({ Obstacles: 0, Simulation: 0 });
+  // re-render (or a remount of this scene) never replays it.
+  const handled = useRef({
+    Obstacles: options.Obstacles?.seq ?? 0,
+    Simulation: options.Simulation?.seq ?? 0,
+  });
 
   useEffect(() => {
     simulation.setAlgorithm(options.Algorithm);
