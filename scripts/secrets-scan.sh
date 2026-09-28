@@ -6,7 +6,7 @@
 # binary is preferred when it is on PATH and new enough to have the `git`
 # subcommand (v8.19+); otherwise the pinned Docker image runs instead. Extra
 # arguments are passed through to `gitleaks git`, e.g.
-# `pnpm secrets:scan --log-opts="origin/main..HEAD"`.
+# `pnpm secrets:scan --log-opts="origin/master..HEAD"`.
 #
 # Exit code is gitleaks' own: 0 clean, 1 leaks found. 2 means neither runner
 # is available.

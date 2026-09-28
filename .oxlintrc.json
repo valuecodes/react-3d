@@ -1,26 +1,18 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
 
-  // Every rule below is listed explicitly and every category is off, because
-  // oxlint's categories are not the same set as the ESLint presets this
-  // replaced (`eslint:recommended` + typescript-eslint `recommended` +
-  // `recommendedTypeChecked` + `stylisticTypeChecked` + react-hooks
-  // `recommended-latest`). Turning on `correctness` instead would both drop
-  // rules we had and add ones we never ran.
-  //
-  // Generated from the old flat config with `@oxlint/migrate --type-aware`,
-  // then flattened by hand: the tool mirrors ESLint's config-array shape, which
-  // meant eight `overrides` entries repeating the same rules four times.
+  // Every rule below is listed explicitly and every category is off. The set
+  // mirrors the ESLint presets it replaces (`eslint:recommended` +
+  // typescript-eslint `recommended`, `recommendedTypeChecked`,
+  // `stylisticTypeChecked` + react-hooks `recommended-latest`); turning on
+  // oxlint's `correctness` category instead would both drop rules from that
+  // set and add ones it never had, including checks tsc already reports for
+  // TypeScript (`no-const-assign`, `constructor-super`, `no-unreachable`).
   //
   // `unicorn` and `oxc` are ON by default, so `plugins` has to be explicit to
   // keep them off -- an empty/absent `plugins` is not the same as "none".
-  //
-  // `correctness` has to be turned off by NAME, not by an empty `categories`
-  // object: `{}` leaves oxlint's default category on, which silently adds ~57
-  // rules at `warn` -- including the ones typescript-eslint deliberately
-  // disables for TS because tsc already reports them (`no-const-assign`,
-  // `constructor-super`, `no-unreachable`, ...). Those are omitted below for
-  // the same reason: every source file in this repo is TypeScript.
+  // Likewise `correctness` has to be turned off by NAME: an empty
+  // `categories` object leaves oxlint's default category on.
   "plugins": ["typescript", "import", "react"],
   "categories": { "correctness": "off" },
 
@@ -31,11 +23,10 @@
   "options": { "typeAware": true },
   "env": { "builtin": true },
 
-  // `.gitignore` is read natively by oxlint, which is what keeps `dist/`,
-  // `.turbo/` and `.cache/` out -- the old config had to feed it in through
-  // `includeIgnoreFile`. Only the config-file glob has to be repeated here:
-  // `postcss.config.mjs`, `vite.config.ts` and `vitest.config.ts` sit outside
-  // every tsconfig `include`, so type-aware rules cannot resolve them.
+  // `.gitignore` is read natively by oxlint, which keeps `dist/` and
+  // `.cache/` out. Config files are skipped because they are tooling, not
+  // application code, and the legacy JavaScript below is skipped until each
+  // family is ported to TypeScript (see AGENTS.md).
   "ignorePatterns": [
     "**/*.config.*",
     // Precomputed maze data: a 376 KB literal covered by ReadyMazes.d.ts.
@@ -161,9 +152,9 @@
     "typescript/consistent-generic-constructors": "error",
     "typescript/consistent-indexed-object-style": "error",
     "typescript/consistent-type-assertions": "error",
-    // `type` rather than the rule's `interface` default: the shared packages
-    // are written with type aliases, and unions like `LogLevel` cannot be
-    // interfaces anyway, so the alias form is the only one that spans both.
+    // `type` rather than the rule's `interface` default: unions such as
+    // `Mode` or `Action` cannot be interfaces, so the alias form is the only
+    // one that covers every declaration.
     "typescript/consistent-type-definitions": ["error", "type"],
     "typescript/dot-notation": "error",
     "typescript/no-confusing-non-null-assertion": "error",
@@ -196,13 +187,8 @@
     // eslint-plugin-import
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
 
-    // eslint-plugin-react `recommended`. These were dead under the old config:
-    // `tooling/eslint/react.ts` spread `configs.flat["jsx-runtime"]` after
-    // `configs.flat.recommended`, and since both objects carry a `rules` key the
-    // second spread replaced the first -- collapsing 22 rules down to the two
-    // "off" entries jsx-runtime declares. Enabling them here is a fix, not a
-    // new gate. `react-in-jsx-scope` and `jsx-uses-react` stay off, which is
-    // what jsx-runtime was there to do in the first place.
+    // eslint-plugin-react `recommended`. `react-in-jsx-scope` and
+    // `jsx-uses-react` stay off because the automatic JSX runtime is used.
     "react/display-name": "error",
     "react/jsx-key": "error",
     "react/jsx-no-comment-textnodes": "error",
