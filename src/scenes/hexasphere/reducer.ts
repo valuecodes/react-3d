@@ -25,8 +25,10 @@ export function hexasphereReducer(state: Options, action: Action): Options {
     case "COMMAND":
       switch (action.key) {
         case "Obstacles":
+          // Both obstacle commands clear the markers, so placement starts over.
           return {
             ...state,
+            Mode: initialModeFor(state.Algorithm),
             Obstacles: { value: action.value, seq: nextSeq(state.Obstacles) },
           };
         case "Simulation":

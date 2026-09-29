@@ -30,12 +30,11 @@ export function GridScene() {
     const cell = cellAt(event);
     if (!cell) return;
     if (mode === "start") {
-      simulation.setStart(cell);
       // Guide the user on: the target comes next, then back to orbiting.
-      setMode("target");
+      // A rejected cell (obstacle, or the other marker) keeps the mode.
+      if (simulation.setStart(cell)) setMode("target");
     } else if (mode === "target") {
-      simulation.setTarget(cell);
-      setMode("orbit");
+      if (simulation.setTarget(cell)) setMode("orbit");
     } else if (mode === "obstacle") {
       simulation.paintObstacle(cell);
     }

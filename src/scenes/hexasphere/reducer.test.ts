@@ -44,6 +44,26 @@ describe("hexasphereReducer", () => {
     expect(second.Obstacles).toBeNull();
   });
 
+  it("restarts placement when an obstacle command clears the markers", () => {
+    const pathfinder = hexasphereReducer(initialOptions, {
+      type: "SET",
+      key: "Algorithm",
+      value: "Pathfinder",
+    });
+    const placing = hexasphereReducer(pathfinder, {
+      type: "SET",
+      key: "Mode",
+      value: "Add Target",
+    });
+    const cleared = hexasphereReducer(placing, {
+      type: "COMMAND",
+      key: "Obstacles",
+      value: "Clear All",
+    });
+    expect(cleared.Mode).toBe("Add Start");
+    expect(cleared.Obstacles).toEqual({ value: "Clear All", seq: 1 });
+  });
+
   it("clamps sphere settings and keeps state identity when nothing changes", () => {
     const tooFine = hexasphereReducer(initialOptions, {
       type: "SET_SPHERE",

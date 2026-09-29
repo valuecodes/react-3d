@@ -159,8 +159,9 @@ export class GridSimulation implements SimulationControls {
     this.report();
   }
 
-  setStart(cell: GridCell): void {
-    if (cell === this.targetCell || cell.obstacle) return;
+  /** Moves the start marker. Returns false for the target cell or an obstacle. */
+  setStart(cell: GridCell): boolean {
+    if (cell === this.targetCell || cell.obstacle) return false;
     const previous = this.startCell;
     previous.start = false;
     this.startCell = cell;
@@ -168,10 +169,12 @@ export class GridSimulation implements SimulationControls {
     this.meshes.paint(previous, this.baseColor(previous));
     this.meshes.paint(cell, this.baseColor(cell));
     this.afterEdit();
+    return true;
   }
 
-  setTarget(cell: GridCell): void {
-    if (cell === this.startCell || cell.obstacle) return;
+  /** Moves the target marker. Returns false for the start cell or an obstacle. */
+  setTarget(cell: GridCell): boolean {
+    if (cell === this.startCell || cell.obstacle) return false;
     const previous = this.targetCell;
     previous.target = false;
     this.targetCell = cell;
@@ -179,6 +182,7 @@ export class GridSimulation implements SimulationControls {
     this.meshes.paint(previous, this.baseColor(previous));
     this.meshes.paint(cell, this.baseColor(cell));
     this.afterEdit();
+    return true;
   }
 
   /** Drag-painting an obstacle (A* variant). Start and target cells cannot become obstacles. */

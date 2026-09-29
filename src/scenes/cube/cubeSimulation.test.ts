@@ -208,15 +208,15 @@ describe("CubeSimulation", () => {
   it("ignores moving a marker onto the other marker", () => {
     const { simulation } = makeSimulation("astar");
     const { startCell, targetCell } = simulation;
-    simulation.setStart(targetCell);
-    simulation.setTarget(startCell);
+    expect(simulation.setStart(targetCell)).toBe(false);
+    expect(simulation.setTarget(startCell)).toBe(false);
     expect(simulation.startCell).toBe(startCell);
     expect(simulation.targetCell).toBe(targetCell);
   });
 
   it("moving a marker while idle stays idle", () => {
     const { simulation, cube, last } = makeSimulation("maze");
-    simulation.setStart(at(cube.cells, 9));
+    expect(simulation.setStart(at(cube.cells, 9))).toBe(true);
     expect(last().phase).toBe("idle");
     expect(simulation.startCell).toBe(at(cube.cells, 9));
   });
