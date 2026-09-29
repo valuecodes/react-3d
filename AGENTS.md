@@ -42,7 +42,7 @@ from its interaction mode.
 
 ## Commands
 
-**Prerequisites:** Node.js 24.12.0 (`.nvmrc`), pnpm 11.24.0 (`packageManager` in `package.json`).
+**Prerequisites:** Node.js 24.21.0 (`.nvmrc`), pnpm 11.24.0 (`packageManager` in `package.json`).
 
 ```bash
 pnpm install                     # Install dependencies

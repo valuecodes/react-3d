@@ -4,6 +4,10 @@ Maze generation and pathfinding, visualised in 3D with [three.js](https://threej
 [@react-three/fiber](https://docs.pmnd.rs/react-three-fiber). Pick a scene in the sidebar; each
 scene has its own controls, and every URL hash (`#/grid-astar`) is a link to that scene.
 
+[![A maze carved over a hexasphere, A* across the faces of a cube, and a grid maze solved](docs/promo.gif)](docs/promo.mp4)
+
+_Preview at 2× speed. Click it for the full 20-second video._
+
 | Scene                | What it shows                                                                                   |
 | -------------------- | ----------------------------------------------------------------------------------------------- |
 | Hexasphere           | A hexagon-tiled sphere: A\* with painted obstacles, a random maze, or a precomputed maze solved |
@@ -41,5 +45,15 @@ pnpm dev        # http://localhost:3000
 | `pnpm format`       | Prettier (write)              |
 | `pnpm format:check` | Prettier (check only)         |
 | `pnpm secrets:scan` | gitleaks over the git history |
+
+## Deploy
+
+The site is a static build hosted on Cloudflare Pages: build command `pnpm build`, output
+directory `dist`. Pages picks up Node from `.nvmrc` and pnpm from `packageManager`. Don't set
+`NODE_ENV=production` in the Pages environment, because pnpm then skips devDependencies and Vite
+is missing at build time.
+
+Response headers (the CSP, which allows Cloudflare Web Analytics, and the cache rules) live in
+`public/_headers`, which Vite copies into `dist/`.
 
 See `AGENTS.md` for the code layout and conventions.
