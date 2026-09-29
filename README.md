@@ -34,24 +34,26 @@ pnpm dev        # http://localhost:3000
 
 ## Scripts
 
-| Command             | Purpose                       |
-| ------------------- | ----------------------------- |
-| `pnpm dev`          | Vite dev server on port 3000  |
-| `pnpm build`        | Production build to `dist/`   |
-| `pnpm preview`      | Serve the production build    |
-| `pnpm typecheck`    | TypeScript                    |
-| `pnpm lint`         | oxlint (type-aware)           |
-| `pnpm test`         | Vitest                        |
-| `pnpm format`       | Prettier (write)              |
-| `pnpm format:check` | Prettier (check only)         |
-| `pnpm secrets:scan` | gitleaks over the git history |
+| Command             | Purpose                        |
+| ------------------- | ------------------------------ |
+| `pnpm dev`          | Vite dev server on port 3000   |
+| `pnpm build`        | Production build to `dist/`    |
+| `pnpm preview`      | Serve the production build     |
+| `pnpm run deploy`   | Build and deploy to Cloudflare |
+| `pnpm typecheck`    | TypeScript                     |
+| `pnpm lint`         | oxlint (type-aware)            |
+| `pnpm test`         | Vitest                         |
+| `pnpm format`       | Prettier (write)               |
+| `pnpm format:check` | Prettier (check only)          |
+| `pnpm secrets:scan` | gitleaks over the git history  |
 
 ## Deploy
 
-The site is a static build hosted on Cloudflare Pages: build command `pnpm build`, output
-directory `dist`. Pages picks up Node from `.nvmrc` and pnpm from `packageManager`. Don't set
-`NODE_ENV=production` in the Pages environment, because pnpm then skips devDependencies and Vite
-is missing at build time.
+The site is a static-assets Cloudflare Worker, configured in `wrangler.jsonc`, that serves
+Vite's `dist/`. Workers Builds uses the build command `pnpm run build` and the deploy command
+`npx wrangler deploy`, which runs the pinned local wrangler. It picks up Node from `.nvmrc` and
+pnpm from `packageManager`. To deploy by hand, run `pnpm run deploy` (`pnpm deploy` is a built-in
+pnpm command, not this script).
 
 Response headers (the CSP, which allows Cloudflare Web Analytics, and the cache rules) live in
 `public/_headers`, which Vite copies into `dist/`.

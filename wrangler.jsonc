@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "react-3d",
+  // The newest date the pinned wrangler's workerd supports; newer dates fail in `wrangler dev`.
+  "compatibility_date": "2026-09-18",
+  "observability": { "enabled": true },
+  // Static assets only: Vite's build output, including public/_headers. No
+  // not_found_handling, because the app uses hash routing, so unknown paths 404.
+  "assets": { "directory": "./dist" },
+}

@@ -9,6 +9,12 @@ allowBuilds:
   # Tailwind's native scanner. Without the build step Tailwind silently emits
   # no utilities at all.
   "@tailwindcss/oxide": true
+  # Wrangler's local runtime. Its binary ships in the optional
+  # @cloudflare/workerd-<platform> package, so the postinstall (a check plus a
+  # fallback download) isn't needed, and `wrangler deploy` of static assets
+  # never runs workerd. It has to be listed, even as false, or pnpm 11 fails the
+  # install with ERR_PNPM_IGNORED_BUILDS.
+  workerd: false
 
 # 14 days, in minutes. A newly published version is not resolvable until it has
 # been on the registry this long, which blunts the compromised-release window.
