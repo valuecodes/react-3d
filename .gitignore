@@ -8,6 +8,7 @@ node_modules
 # Caches
 .cache
 coverage
+.wrangler
 
 # Build Outputs
 dist

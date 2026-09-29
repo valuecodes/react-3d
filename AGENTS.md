@@ -49,6 +49,7 @@ pnpm install                     # Install dependencies
 pnpm dev                         # Vite dev server at http://localhost:3000
 pnpm build                       # Production build to dist/
 pnpm preview                     # Serve dist/
+pnpm run deploy                  # Build and `wrangler deploy` (static-assets Worker, wrangler.jsonc)
 
 pnpm typecheck                   # tsc (TypeScript 7, native compiler)
 pnpm lint                        # oxlint, type-aware, over the whole repo
