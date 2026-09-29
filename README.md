@@ -1,11 +1,23 @@
 # react-3d
 
-A hexagon-tiled sphere rendered with [three.js](https://threejs.org/) and
-[@react-three/fiber](https://docs.pmnd.rs/react-three-fiber), with three interactive algorithms:
+Maze generation and pathfinding, visualised in 3D with [three.js](https://threejs.org/) and
+[@react-three/fiber](https://docs.pmnd.rs/react-three-fiber). Pick a scene in the sidebar; each
+scene has its own controls, and every URL hash (`#/grid-astar`) is a link to that scene.
 
-- **Pathfinder** — pick a start and a target tile, paint obstacles, and watch A* search the sphere.
-- **Maze Creator** — carve a maze over the sphere with a randomised depth-first walk.
-- **Maze Pathfinder** — load a precomputed maze and let A* solve it.
+| Scene                | What it shows                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| Hexasphere           | A hexagon-tiled sphere: A\* with painted obstacles, a random maze, or a precomputed maze solved |
+| Grid A\*             | A\* on a flat board with random or painted obstacles and a tracker that walks the path          |
+| Grid Maze            | Recursive-backtracker maze on the board                                                         |
+| Grid Maze Pathfinder | Carve a maze, then let A\* solve it                                                             |
+| Cube A\*             | A\* across the faces of a cube; the cube turns to follow the search and can unfold into a net   |
+| Cube Maze            | A maze that crosses cube edges                                                                  |
+| Cube Maze Pathfinder | Maze, then A\*, then the tracker, across the cube                                               |
+| Instancing           | Thousands of cylinders in one draw call, optionally animated                                    |
+| Mesh Editor          | Select vertices, edges or faces of a box and drag them with a gizmo                             |
+
+Common controls: Start / Pause / Reset with a speed slider, camera presets, grid and axes helpers.
+Press `Esc` to leave any placing or painting mode and orbit again.
 
 ## Getting started
 
@@ -20,7 +32,7 @@ pnpm dev        # http://localhost:3000
 
 | Command             | Purpose                       |
 | ------------------- | ----------------------------- |
-| `pnpm dev`          | Vite dev server               |
+| `pnpm dev`          | Vite dev server on port 3000  |
 | `pnpm build`        | Production build to `dist/`   |
 | `pnpm preview`      | Serve the production build    |
 | `pnpm typecheck`    | TypeScript                    |
@@ -30,4 +42,4 @@ pnpm dev        # http://localhost:3000
 | `pnpm format:check` | Prettier (check only)         |
 | `pnpm secrets:scan` | gitleaks over the git history |
 
-See `AGENTS.md` for the code layout, conventions and the list of legacy scenes still to be ported.
+See `AGENTS.md` for the code layout and conventions.

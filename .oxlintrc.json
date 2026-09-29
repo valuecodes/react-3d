@@ -25,31 +25,11 @@
 
   // `.gitignore` is read natively by oxlint, which keeps `dist/` and
   // `.cache/` out. Config files are skipped because they are tooling, not
-  // application code, and the legacy JavaScript below is skipped until each
-  // family is ported to TypeScript (see AGENTS.md).
+  // application code.
   "ignorePatterns": [
     "**/*.config.*",
     // Precomputed maze data: a 376 KB literal covered by ReadyMazes.d.ts.
-    "src/components/editor/three/algorithms/shapes/hexasphere/ReadyMazes.js",
-    // Legacy JS scene families not yet ported (see AGENTS.md). Each is linted
-    // once it is migrated to TypeScript.
-    "src/components/editor/three/algorithms/astar/",
-    "src/components/editor/three/algorithms/cubeAstar/",
-    "src/components/editor/three/algorithms/cubemaze/",
-    "src/components/editor/three/algorithms/cubeMazePathfinder/",
-    "src/components/editor/three/algorithms/maze/",
-    "src/components/editor/three/algorithms/mazeAStar/",
-    "src/components/editor/three/algorithms/hexasphere/hexaSpherePathfinder.js",
-    "src/components/editor/three/algorithms/hexasphere/hexaSphereMaze.js",
-    "src/components/editor/three/algorithms/hexasphere/hexaMazePathfinder.js",
-    "src/components/editor/three/algorithms/shapes/*.js",
-    "src/components/editor/three/panel/",
-    "src/components/editor/three/instance/",
-    "src/components/editor/three/instancing.js",
-    "src/utils/edit/",
-    "src/utils/calculations/",
-    "src/utils/helpers/",
-    "src/utils/other/"
+    "src/scenes/hexasphere/model/ReadyMazes.js"
   ],
 
   "rules": {
