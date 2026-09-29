@@ -59,7 +59,10 @@ export function ElementGizmo() {
       )
         return;
       if (drag.current) {
-        // TransformControls listens for pointerup on the document.
+        // drei's TransformControls comes from three-stdlib, which registers
+        // its pointerup listener on the canvas's document (not the canvas, as
+        // three's own copy does), so a synthetic pointerup there ends the drag
+        // through the normal mouseUp / dragging-changed path.
         gl.domElement.ownerDocument.dispatchEvent(
           new PointerEvent("pointerup", { button: 0 })
         );

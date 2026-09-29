@@ -10,10 +10,10 @@ import type { HelperToggles } from "../../three/Helpers";
 import { Viewport } from "../../three/Viewport";
 import { CameraPanel } from "./CameraPanel";
 import { ScenePicker } from "./ScenePicker";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, SIDEBAR_ID } from "./Sidebar";
 
 export function AppShell() {
-  const [routeId, navigate] = useHashRoute();
+  const { id: routeId, navigate, replace } = useHashRoute();
   const scene = findScene(routeId);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [helpers, setHelpers] = useState<HelperToggles>({
@@ -24,10 +24,11 @@ export function AppShell() {
   const [command, setCommand] = useState<CameraCommand | null>(null);
   const presets = useMemo(() => presetsFor(scene.camera), [scene]);
 
-  // Make the default scene linkable: an empty hash becomes the first scene's.
+  // Keep the URL honest: an empty or unknown hash is rewritten (not pushed,
+  // so Back still leaves the app) to the scene actually shown.
   useEffect(() => {
-    if (routeId === null) navigate(scene.id);
-  }, [routeId, navigate, scene.id]);
+    if (routeId !== scene.id) replace(scene.id);
+  }, [routeId, replace, scene.id]);
 
   const onPreset = useCallback((preset: CameraPreset) => {
     setCommand((previous) => ({
@@ -61,6 +62,7 @@ export function AppShell() {
           type="button"
           aria-label="Toggle sidebar"
           aria-expanded={sidebarOpen}
+          aria-controls={SIDEBAR_ID}
           onClick={() => setSidebarOpen((open) => !open)}
           className="fixed top-3 left-3 z-30 rounded-md border border-line bg-card p-2 shadow-sm md:hidden"
         >

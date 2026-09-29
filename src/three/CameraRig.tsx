@@ -33,7 +33,8 @@ export function CameraRig({ scene, command, enabled }: Props) {
   const camera = useThree((state) => state.camera);
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const goal = useRef<Goal | null>(null);
-  const handledSeq = useRef(0);
+  // Seeded with the current command so a remount (scene change) never replays it.
+  const handledSeq = useRef(command?.seq ?? 0);
 
   // A new scene snaps the camera to its start position (no animation).
   useEffect(() => {
@@ -65,9 +66,13 @@ export function CameraRig({ scene, command, enabled }: Props) {
   }, [camera, command]);
 
   useFrame((_, delta) => {
-    const current = goal.current;
     const orbit = controls.current;
-    if (!current || !orbit) return;
+    if (!orbit) return;
+    // drei's TransformControls re-enables the default controls after a drag;
+    // the shell's setting wins.
+    if (orbit.enabled !== enabled) orbit.enabled = enabled;
+    const current = goal.current;
+    if (!current) return;
     const { position } = camera;
     const { target } = orbit;
     const dt = Math.min(delta, 0.1);

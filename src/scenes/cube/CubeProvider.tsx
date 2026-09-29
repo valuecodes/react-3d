@@ -131,8 +131,10 @@ export function CubeProvider({ variant, children }: Props) {
     [cube, meshes, pathLine, variant]
   );
 
-  // The status store belongs to whichever scene is mounted.
+  // The status store belongs to whichever scene is mounted. Re-initialising
+  // here undoes what StrictMode's discarded duplicate did to the shared cube.
   useEffect(() => {
+    simulation.initialise();
     statusStore.set(simulation.status());
     return () => statusStore.set(idleStatus());
   }, [simulation]);

@@ -192,6 +192,8 @@ export class CubeMeshes {
   private readonly scratchA = new Vector3();
   private readonly scratchB = new Vector3();
   private readonly scratchC = new Vector3();
+  /** Its own vector: `pathPointRootLocal` uses the scratch vectors internally. */
+  private readonly trackerNext = new Vector3();
   private readonly scratchQ = new Quaternion();
   private readonly trackerGoal = new Vector3();
 
@@ -439,8 +441,8 @@ export class CubeMeshes {
     this.pathPointRootLocal(at(points, index), goal);
     const next = points[index + 1];
     if (next) {
-      this.pathPointRootLocal(next, this.scratchA);
-      goal.lerp(this.scratchA, s - index);
+      this.pathPointRootLocal(next, this.trackerNext);
+      goal.lerp(this.trackerNext, s - index);
     }
     if (!tracker.visible) {
       tracker.visible = true;

@@ -347,6 +347,31 @@ describe("CubeMeshes", () => {
     meshes.dispose();
   });
 
+  it("places the tracker exactly on cross-face path points", () => {
+    const cube = createCube(options());
+    const meshes = new CubeMeshes(cube, true);
+    const start = at(at(cube.faces, 0).cells, 0);
+    const bot = at(cube.faces, 5);
+    const target = at(bot.cells, bot.cells.length - 1);
+    const { path } = search(cube, start, target, openHooks);
+    const points = pathPoints(cube, [...path].reverse());
+    const crossing = points.findIndex((point) => point.partner !== null);
+    expect(crossing).toBeGreaterThan(0);
+    const expected = at(meshes.rootLocalPoints(points), crossing).center;
+    // A hidden tracker snaps straight to its goal, so the goal is observable.
+    meshes.tracker.visible = false;
+    const last = points.length - 1;
+    meshes.updateTracker(points, crossing / last, 1 / 60);
+    expect(meshes.tracker.position.distanceTo(expected)).toBeLessThan(1e-9);
+    // Halfway toward the crossing from the previous point.
+    meshes.tracker.visible = false;
+    const before = at(meshes.rootLocalPoints(points), crossing - 1).center;
+    meshes.updateTracker(points, (crossing - 0.5) / last, 1 / 60);
+    const midpoint = before.clone().lerp(expected, 0.5);
+    expect(meshes.tracker.position.distanceTo(midpoint)).toBeLessThan(1e-9);
+    meshes.dispose();
+  });
+
   it("animates faces from the cube to the net and back", () => {
     const cube = createCube(options());
     const meshes = new CubeMeshes(cube, true);

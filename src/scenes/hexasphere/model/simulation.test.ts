@@ -184,6 +184,21 @@ describe("Simulation status reporting", () => {
     expect(last().details.map((d) => d.label)).toContain("Path length");
   });
 
+  it("refuses to place markers on obstacles and reports it", () => {
+    const { simulation, last } = makeReported();
+    const { tiles } = simulation.hexasphere;
+    simulation.setAlgorithm("Pathfinder");
+    const wall = at(tiles, 3);
+    simulation.paintObstacle(wall);
+    expect(simulation.setStart(wall)).toBe(false);
+    expect(simulation.startTile).toBeNull();
+    expect(last().message).toBe("Place a start tile");
+    expect(simulation.setStart(at(tiles, 0))).toBe(true);
+    expect(simulation.setTarget(at(tiles, 0))).toBe(false);
+    expect(simulation.setTarget(wall)).toBe(false);
+    expect(simulation.setTarget(at(tiles, 1))).toBe(true);
+  });
+
   it("reports failed when the target is walled in", () => {
     const { simulation, last } = makeReported();
     const { tiles } = simulation.hexasphere;
