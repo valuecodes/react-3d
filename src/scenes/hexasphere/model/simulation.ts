@@ -130,8 +130,12 @@ export class Simulation implements SimulationControls {
     this.report();
   }
 
-  setStart(tile: Tile): void {
-    if (tile.target) return;
+  /**
+   * Places the start. Returns false (and does nothing) when the tile is the
+   * target or an obstacle, which would make the search impossible.
+   */
+  setStart(tile: Tile): boolean {
+    if (tile.target || tile.obstacle) return false;
     if (this.startTile) {
       this.startTile.start = false;
       this.startTile.setColor(this.startTile.baseColor);
@@ -141,10 +145,12 @@ export class Simulation implements SimulationControls {
     this.startTile = tile;
     this.restartAStar();
     this.report();
+    return true;
   }
 
-  setTarget(tile: Tile): void {
-    if (tile.start) return;
+  /** Places the target; same rules as `setStart`. */
+  setTarget(tile: Tile): boolean {
+    if (tile.start || tile.obstacle) return false;
     if (this.targetTile) {
       this.targetTile.target = false;
       this.targetTile.setColor(this.targetTile.baseColor);
@@ -154,6 +160,7 @@ export class Simulation implements SimulationControls {
     this.targetTile = tile;
     this.restartAStar();
     this.report();
+    return true;
   }
 
   /** Advances whichever algorithm is running by one step. */

@@ -1,11 +1,20 @@
 import type { ReactNode } from "react";
 
 import { cx } from "../../lib/cx";
+import { useMediaQuery } from "../../lib/useMediaQuery";
+
+/** Tailwind's `md` breakpoint: the sidebar is a fixed column from here up. */
+export const SIDEBAR_STATIC_QUERY = "(min-width: 48rem)";
+export const SIDEBAR_ID = "sidebar";
 
 type Props = { open: boolean; onClose: () => void; children: ReactNode };
 
 /** Fixed on the left on wide screens; a slide-in drawer under 768px. */
 export function Sidebar({ open, onClose, children }: Props) {
+  const isStatic = useMediaQuery(SIDEBAR_STATIC_QUERY);
+  // A closed drawer is off-screen, so keep it out of the tab order and the
+  // accessibility tree too.
+  const hidden = !isStatic && !open;
   return (
     <>
       {open && (
@@ -17,6 +26,8 @@ export function Sidebar({ open, onClose, children }: Props) {
         />
       )}
       <aside
+        id={SIDEBAR_ID}
+        inert={hidden}
         className={cx(
           "fixed inset-y-0 left-0 z-20 flex w-72 shrink-0 flex-col overflow-y-auto border-r border-line bg-card transition-transform md:static md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"

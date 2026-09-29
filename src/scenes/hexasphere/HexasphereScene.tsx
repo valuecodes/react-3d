@@ -18,15 +18,21 @@ export function HexasphereScene() {
     const tile = tileAt(event);
     if (!tile) return;
     if (options.Mode === "Add Start") {
-      simulation.setStart(tile);
       // Guide the user on: the target comes next, then back to orbiting.
-      setOption({
-        key: "Mode",
-        value: simulation.targetTile ? "Rotate" : "Add Target",
-      });
+      // A rejected tile (obstacle, or the target itself) keeps the mode.
+      if (simulation.setStart(tile)) {
+        setOption({
+          key: "Mode",
+          value: simulation.targetTile ? "Rotate" : "Add Target",
+        });
+      }
     } else if (options.Mode === "Add Target") {
-      simulation.setTarget(tile);
-      setOption({ key: "Mode", value: "Rotate" });
+      if (simulation.setTarget(tile)) {
+        setOption({ key: "Mode", value: "Rotate" });
+      }
+    } else if (options.Mode === "AddWalls") {
+      // A plain click paints one tile; dragging paints many (see below).
+      simulation.paintObstacle(tile);
     }
   };
 

@@ -23,6 +23,9 @@ export function InstancingScene() {
   const count = side * side;
   const radius = spacing * 0.35;
   const mesh = useRef<InstancedMesh>(null);
+  // Ground positions (x, z per instance), filled by the layout effect so the
+  // frame loop allocates nothing.
+  const ground = useRef(new Float32Array(0));
 
   // Lay the grid out flat and colour it. Runs again whenever the grid is
   // rebuilt (the `key` below remounts the mesh when `count` changes) or the
@@ -31,25 +34,34 @@ export function InstancingScene() {
     const target = mesh.current;
     if (!target) return;
     const painter = new InstancedPainter(target, PALETTE);
+    const positions = new Float32Array(target.count * 2);
     for (let i = 0; i < target.count; i++) {
       const { col, row } = cellOf(i, side);
       const { x, z } = instancePosition(col, row, side, spacing);
+      positions[2 * i] = x;
+      positions[2 * i + 1] = z;
       scratch.position.set(x, 0, z);
       scratch.updateMatrix();
       target.setMatrixAt(i, scratch.matrix);
       painter.set(i, (col + row) % 2);
     }
+    ground.current = positions;
     target.instanceMatrix.needsUpdate = true;
   }, [side, spacing, animate]);
 
   useFrame(({ clock }) => {
     const target = mesh.current;
-    if (!target || !animate) return;
+    const positions = ground.current;
+    if (!target || !animate || positions.length < target.count * 2) return;
     const time = clock.elapsedTime;
     for (let i = 0; i < target.count; i++) {
-      const { col, row } = cellOf(i, side);
-      const { x, z } = instancePosition(col, row, side, spacing);
-      scratch.position.set(x, waveHeight(col, row, time, amplitude), z);
+      const col = i % side;
+      const row = (i - col) / side;
+      scratch.position.set(
+        positions[2 * i] ?? 0,
+        waveHeight(col, row, time, amplitude),
+        positions[2 * i + 1] ?? 0
+      );
       scratch.updateMatrix();
       target.setMatrixAt(i, scratch.matrix);
     }

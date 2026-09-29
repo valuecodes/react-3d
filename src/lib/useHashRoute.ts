@@ -15,14 +15,24 @@ function getServerSnapshot(): string | null {
   return null;
 }
 
-/** The scene id from the URL hash and a navigator that writes it. */
-export function useHashRoute(): [
-  id: string | null,
-  navigate: (id: string) => void,
-] {
+export type HashRoute = {
+  id: string | null;
+  /** Pushes a history entry, like following a link. */
+  navigate: (id: string) => void;
+  /** Rewrites the current entry without adding history; used to normalise bad or missing hashes. */
+  replace: (id: string) => void;
+};
+
+/** The scene id from the URL hash and the two ways of writing it. */
+export function useHashRoute(): HashRoute {
   const id = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const navigate = useCallback((next: string) => {
     window.location.hash = toHash(next);
   }, []);
-  return [id, navigate];
+  const replace = useCallback((next: string) => {
+    window.history.replaceState(null, "", toHash(next));
+    // replaceState fires no hashchange, so tell the subscribers ourselves.
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }, []);
+  return { id, navigate, replace };
 }

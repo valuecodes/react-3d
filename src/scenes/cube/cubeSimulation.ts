@@ -229,8 +229,13 @@ export class CubeSimulation implements Simulation {
     return cell === this.startCell ? at(cells, cells.length - 1) : cell;
   }
 
-  /** Back to idle: fresh obstacles, closed walls, plain colours, markers kept. */
-  private initialise(): void {
+  /**
+   * Back to idle: fresh obstacles, closed walls, plain colours, markers kept.
+   * Idempotent and public so the provider can re-run it on mount: React's
+   * StrictMode builds a second, discarded instance whose constructor also
+   * touched the shared cube, and this puts the kept instance's markers back.
+   */
+  initialise(): void {
     this.stage = "idle";
     this.paused = false;
     this.mazeReady = false;
@@ -239,7 +244,11 @@ export class CubeSimulation implements Simulation {
     this.astar = null;
     this.paintedPath = [];
     resetRun(this.cube);
-    for (const cell of this.cube.cells) cell.obstacle = false;
+    for (const cell of this.cube.cells) {
+      cell.obstacle = false;
+      cell.start = false;
+      cell.target = false;
+    }
     if (this.cube.options.obstacles) layObstacles(this.cube, this.random);
     this.startCell.obstacle = false;
     this.targetCell.obstacle = false;

@@ -105,6 +105,8 @@ export class GridSimulation implements SimulationControls {
       this.closeWalls();
       this.astar = null;
       this.clearPath();
+      // A rerun starts from plain colours, not the previous run's.
+      this.paintAll();
       const origin = firstCell(this.grid);
       this.maze = startMaze(origin);
       this.meshes.paint(origin, CELL_COLOR.current);
