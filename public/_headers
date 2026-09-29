@@ -1,6 +1,7 @@
 # Cloudflare Pages response headers, copied verbatim into dist/.
 # The CSP allows Cloudflare Web Analytics / Browser RUM: the injected beacon script comes from
 # static.cloudflareinsights.com and reports to /cdn-cgi/rum on this origin or cloudflareinsights.com.
+# style-src 'self' is enough: React applies `style` props through the CSSOM, which CSP doesn't block.
 
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: blob:; style-src 'self'; font-src 'self'; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
@@ -27,4 +28,6 @@
 /logo512.png
   Cache-Control: public, max-age=86400
 /manifest.json
+  Cache-Control: public, max-age=86400
+/robots.txt
   Cache-Control: public, max-age=86400
