@@ -21,6 +21,16 @@ export function ScenePicker({ scenes, activeId, onSelect }: Props) {
                 href={toHash(scene.id)}
                 aria-current={active ? "page" : undefined}
                 onClick={(event) => {
+                  // Leave modified and non-primary clicks to the browser
+                  // (open in a new tab or window); intercept plain clicks.
+                  if (
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  )
+                    return;
                   event.preventDefault();
                   onSelect(scene.id);
                 }}

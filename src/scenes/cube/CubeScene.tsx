@@ -49,9 +49,10 @@ export function CubeScene() {
     if (!cell) return;
     // Only the nearest face under the pointer takes the click.
     event.stopPropagation();
-    if (mode === "start") simulation.setStart(cell);
-    else simulation.setTarget(cell);
-    setMode("orbit");
+    // A rejected cell (the opposite marker) keeps the placement mode.
+    const placed =
+      mode === "start" ? simulation.setStart(cell) : simulation.setTarget(cell);
+    if (placed) setMode("orbit");
   };
 
   return (

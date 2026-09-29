@@ -239,12 +239,13 @@ describe("GridSimulation", () => {
   it("refuses markers on each other or on obstacles", () => {
     const { simulation } = makeSimulation("astar", { wallChance: 0 });
     const target = simulation.targetCell;
-    simulation.setStart(target);
+    expect(simulation.setStart(target)).toBe(false);
     expect(simulation.startCell).not.toBe(target);
     const blocked = cellAt(simulation, 3, 3);
     simulation.paintObstacle(blocked);
-    simulation.setTarget(blocked);
+    expect(simulation.setTarget(blocked)).toBe(false);
     expect(simulation.targetCell).toBe(target);
+    expect(simulation.setTarget(cellAt(simulation, 4, 4))).toBe(true);
     simulation.paintObstacle(simulation.startCell);
     expect(simulation.startCell.obstacle).toBe(false);
   });

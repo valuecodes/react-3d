@@ -114,14 +114,18 @@ export class CubeSimulation implements Simulation {
     this.report();
   }
 
-  setStart(cell: CubeCell): void {
-    if (cell === this.targetCell) return;
+  /** Moves the start marker. Returns false when the cell is the target. */
+  setStart(cell: CubeCell): boolean {
+    if (cell === this.targetCell) return false;
     this.moveMarker("start", cell);
+    return true;
   }
 
-  setTarget(cell: CubeCell): void {
-    if (cell === this.startCell) return;
+  /** Moves the target marker. Returns false when the cell is the start. */
+  setTarget(cell: CubeCell): boolean {
+    if (cell === this.startCell) return false;
     this.moveMarker("target", cell);
+    return true;
   }
 
   /** Advances whichever stage is running by one step. */
