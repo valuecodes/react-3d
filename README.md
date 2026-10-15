@@ -58,4 +58,20 @@ pnpm command, not this script).
 Response headers (the CSP, which allows Cloudflare Web Analytics, and the cache rules) live in
 `public/_headers`, which Vite copies into `dist/`.
 
+### Web Analytics
+
+Cloudflare Web Analytics is optional, and the build adds its beacon only when the build variable
+`VITE_CF_BEACON_TOKEN` is set. To turn it on:
+
+1. In the dashboard, add the site (Web Analytics → Add a site) with manual JS snippet
+   installation. If the hostname is proxied through Cloudflare, make sure automatic setup is off
+   for it, or the page loads a second beacon.
+2. Copy the `token` from the snippet into `VITE_CF_BEACON_TOKEN` (Workers Builds → Settings →
+   Build → Variables) on the production build only, so preview builds don't report into the site.
+3. Redeploy, then check that the live page loads `beacon.min.js`, sends a request to
+   `/cdn-cgi/rum`, and that visits show up in the dashboard.
+
+The token is public: the beacon `<script>` with it ships in `index.html`. A token that isn't 32
+lowercase hex digits fails the build.
+
 See `AGENTS.md` for the code layout and conventions.

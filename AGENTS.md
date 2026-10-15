@@ -69,6 +69,10 @@ post-edit formatting hook: run `pnpm format` yourself before committing.
 CI (`.github/workflows/`) runs typecheck, lint, format-check, test, build and secrets-scan on
 push to `master` and on PRs.
 
+`VITE_CF_BEACON_TOKEN` is an optional build variable, the Cloudflare Web Analytics token:
+`vite.config.ts` adds the beacon script to `index.html` only when it is set (production builds
+only; setup in `README.md`).
+
 ---
 
 ## Rules
